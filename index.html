@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudyBuddy PH 🇵🇭 — Smart Bullet Reviewer & Flashcards</title>
-<!-- Confetti celebration -->
+<title>StudyBuddy PRO 🇵🇭 — The World's Best AI Study Suite</title>
+<!-- Confetti Celebration CDN -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
@@ -25,7 +25,9 @@
   --red-light: #FDEAEA;
   --blue: #3A86FF;
   --blue-light: #EBF2FF;
+  --purple: #8338EC;
   --radius: 16px;
+  --radius-sm: 10px;
   --shadow: 0 8px 24px rgba(13,27,42,.08);
   --shadow-lg: 0 16px 32px rgba(13,27,42,.12);
 }
@@ -41,11 +43,11 @@ body {
 }
 
 button { font-family: inherit; cursor: pointer; border: none; outline: none; }
-input, textarea { font-family: inherit; }
+input, textarea, select { font-family: inherit; }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-  width: 260px;
+  width: 270px;
   min-height: 100vh;
   background: linear-gradient(180deg, #09111e 0%, #0d1b2a 100%);
   color: #cfd8e3;
@@ -55,7 +57,7 @@ input, textarea { font-family: inherit; }
   top: 0;
   flex-shrink: 0;
   z-index: 100;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.18);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.18);
 }
 .sidebar-header {
   padding: 24px 20px;
@@ -64,11 +66,37 @@ input, textarea { font-family: inherit; }
   gap: 12px;
   border-bottom: 1px solid rgba(255,255,255,.07);
 }
-.logo-icon { font-size: 1.8rem; }
+.logo-icon { font-size: 1.9rem; }
 .logo-text { font-size: 1.25rem; font-weight: 800; color: #fff; line-height: 1.2; }
 .logo-text em { color: var(--primary); font-style: normal; }
+.pro-pill {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-left: 6px;
+}
 
-.nav { display: flex; flex-direction: column; padding: 14px 10px; flex: 1; gap: 4px; }
+.deck-selector-box {
+  padding: 12px 16px;
+  background: rgba(255,255,255,.04);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.deck-select-dropdown {
+  width: 100%;
+  padding: 9px 12px;
+  background: #112233;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.nav { display: flex; flex-direction: column; padding: 12px 10px; flex: 1; gap: 4px; overflow-y: auto; }
 .nav-btn {
   display: flex;
   align-items: center;
@@ -76,9 +104,9 @@ input, textarea { font-family: inherit; }
   width: 100%;
   background: transparent;
   color: #94a3b8;
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  padding: 12px 16px;
+  padding: 11px 14px;
   border-radius: 12px;
   transition: all .2s;
   text-align: left;
@@ -86,36 +114,36 @@ input, textarea { font-family: inherit; }
 .nav-btn:hover { background: rgba(255,201,60,.1); color: #fff; transform: translateX(3px); }
 .nav-btn.active { background: var(--primary); color: var(--navy-dark); font-weight: 800; box-shadow: 0 4px 16px var(--primary-glow); }
 
-.sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,.07); }
-.ambient-box { background: rgba(255,255,255,.04); border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.06); }
-.ambient-header { display: flex; align-items: center; justify-content: space-between; font-size: .88rem; font-weight: 700; color: #dfe7ee; margin-bottom: 10px; }
-.audio-bars { display: flex; align-items: flex-end; gap: 3px; height: 14px; }
+.sidebar-footer { padding: 14px; border-top: 1px solid rgba(255,255,255,.07); }
+.ambient-box { background: rgba(255,255,255,.04); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+.ambient-header { display: flex; align-items: center; justify-content: space-between; font-size: .84rem; font-weight: 700; color: #dfe7ee; margin-bottom: 8px; }
+.audio-bars { display: flex; align-items: flex-end; gap: 3px; height: 12px; }
 .audio-bars span { width: 3px; background: var(--primary); border-radius: 2px; height: 4px; }
 .audio-bars.playing span { animation: eq 0.8s ease-in-out infinite alternate; }
 .audio-bars.playing span:nth-child(2) { animation-delay: 0.2s; }
 .audio-bars.playing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes eq { 0% { height: 4px; } 100% { height: 14px; } }
+@keyframes eq { 0% { height: 3px; } 100% { height: 12px; } }
 
-.ambient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ambient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 .amb-btn {
   background: rgba(255,255,255,.08);
   color: #fff;
-  font-size: 0.82rem;
-  padding: 8px 6px;
-  border-radius: 8px;
+  font-size: 0.78rem;
+  padding: 6px 4px;
+  border-radius: 6px;
   font-weight: 600;
   transition: all 0.2s;
 }
 .amb-btn.active { background: var(--primary); color: var(--navy-dark); font-weight: 800; }
 
-/* ===== MAIN CONTENT ===== */
-.main { flex: 1; padding: 36px 40px; max-width: 1040px; margin: 0 auto; width: 100%; }
+/* ===== MAIN WORKSPACE ===== */
+.main { flex: 1; padding: 34px 38px; max-width: 1040px; margin: 0 auto; width: 100%; }
 .page { display: none; }
 .page.active { display: block; animation: fadeSlide .3s cubic-bezier(0.16, 1, 0.3, 1); }
 @keyframes fadeSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 .page-title { font-size: 1.9rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
-.page-sub { color: var(--text-muted); font-size: 0.98rem; margin-bottom: 24px; }
+.page-sub { color: var(--text-muted); font-size: 0.96rem; margin-bottom: 22px; }
 
 /* BUTTONS */
 .btn {
@@ -132,7 +160,7 @@ input, textarea { font-family: inherit; }
   gap: 8px;
 }
 .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
-.btn.big { font-size: 1.08rem; padding: 14px 28px; border-radius: 14px; }
+.btn.big { font-size: 1.05rem; padding: 14px 28px; border-radius: 14px; }
 .btn-primary { background: var(--primary); color: var(--navy-dark); }
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-outline { background: transparent; color: var(--text); border: 2px solid var(--border); }
@@ -142,10 +170,10 @@ input, textarea { font-family: inherit; }
 .btn-sm { padding: 8px 14px; font-size: 0.85rem; border-radius: 8px; }
 
 /* HERO */
-.hero { padding: 10px 0 28px; }
+.hero { padding: 10px 0 26px; }
 .hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
 .hero .highlight { color: var(--primary-dark); }
-.hero p { color: var(--text-muted); font-size: 1.15rem; margin-bottom: 24px; max-width: 600px; line-height: 1.6; }
+.hero p { color: var(--text-muted); font-size: 1.12rem; margin-bottom: 24px; max-width: 620px; line-height: 1.6; }
 .hero-badges { display: flex; gap: 12px; margin-bottom: 26px; flex-wrap: wrap; }
 .hero-badge {
   background: var(--surface);
@@ -162,11 +190,11 @@ input, textarea { font-family: inherit; }
 .xp-badge { color: var(--navy-dark); border: 2px solid var(--primary); }
 .rank-badge { color: var(--blue); border: 2px solid var(--blue-light); }
 
-.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; }
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
 .mini-card {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 24px 20px;
+  padding: 22px 18px;
   box-shadow: var(--shadow);
   text-align: center;
   transition: all .2s;
@@ -174,20 +202,20 @@ input, textarea { font-family: inherit; }
   border: 2px solid transparent;
 }
 .mini-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
-.mini-card span { font-size: 2.3rem; display: block; margin-bottom: 10px; }
-.mini-card h4 { font-size: 1.05rem; margin-bottom: 6px; font-weight: 800; }
-.mini-card p { color: var(--text-muted); font-size: .88rem; }
+.mini-card span { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+.mini-card h4 { font-size: 1.05rem; margin-bottom: 4px; font-weight: 800; }
+.mini-card p { color: var(--text-muted); font-size: .86rem; }
 
-/* BULLET CREATOR FORM */
+/* BULLET CREATOR */
 .create-card {
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 32px;
+  padding: 30px;
   box-shadow: var(--shadow);
   max-width: 820px;
   margin: 0 auto;
 }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 @media(max-width:680px){ .form-row { grid-template-columns: 1fr; } }
 .field-label { display: block; font-weight: 800; margin-bottom: 8px; font-size: .92rem; }
 .req { color: var(--red); }
@@ -224,21 +252,12 @@ input, textarea { font-family: inherit; }
   margin-left: 8px;
 }
 
-.samples-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.samples-bar { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
 .sample-btn { background: var(--surface-subtle); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; font-size: 0.84rem; font-weight: 700; }
 .sample-btn:hover { background: var(--primary); border-color: var(--primary-dark); }
 
-.result-box {
-  margin-top: 24px;
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow);
-  border-left: 6px solid var(--green);
-}
-
 /* REVIEWER GUIDE */
-.page-head-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
+.page-head-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
 .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; width: 100%; }
 .filter-input {
   flex: 1;
@@ -250,7 +269,7 @@ input, textarea { font-family: inherit; }
   color: var(--text);
   font-size: 0.95rem;
 }
-.reviewer-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+.reviewer-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; }
 .reviewer-item {
   background: var(--surface);
   border-radius: var(--radius);
@@ -267,8 +286,8 @@ input, textarea { font-family: inherit; }
 .icon-btn { background: none; border: none; font-size: 1.1rem; padding: 4px 6px; border-radius: 6px; color: var(--text-muted); }
 .icon-btn:hover { background: var(--surface-subtle); color: var(--text); }
 
-/* FLASHCARDS (LEITNER BOXES) */
-.leitner-nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
+/* FLASHCARDS (LEITNER) */
+.leitner-nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
 .leitner-pill {
   background: var(--surface);
   border: 2px solid var(--border);
@@ -281,7 +300,7 @@ input, textarea { font-family: inherit; }
 }
 .leitner-pill.active { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
 
-.card-deck { display: flex; justify-content: center; margin: 10px 0 20px; flex-direction: column; align-items: center; }
+.card-deck { display: flex; justify-content: center; margin: 10px 0 18px; flex-direction: column; align-items: center; }
 .flashcard { width: 100%; max-width: 480px; height: 280px; perspective: 1200px; cursor: pointer; }
 .fc-inner { position: relative; width: 100%; height: 100%; transition: transform .5s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
 .flashcard.flip .fc-inner { transform: rotateY(180deg); }
@@ -307,7 +326,7 @@ input, textarea { font-family: inherit; }
 .fc-back .fc-box-indicator { background: var(--surface-subtle); }
 .fc-hint { position: absolute; bottom: 16px; font-size: 0.82rem; opacity: 0.6; }
 
-.fc-controls { display: flex; align-items: center; gap: 18px; justify-content: center; margin: 18px 0 10px; }
+.fc-controls { display: flex; align-items: center; gap: 18px; justify-content: center; margin: 16px 0 10px; }
 .fc-controls span { font-weight: 800; font-size: 1.15rem; min-width: 90px; text-align: center; }
 
 .spaced-rating-bar { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
@@ -317,7 +336,21 @@ input, textarea { font-family: inherit; }
 .rate-good { background: var(--green-light); color: var(--green); border: 2px solid #86EFAC; }
 .rate-easy { background: var(--blue-light); color: var(--blue); border: 2px solid #93C5FD; }
 
-/* QUIZ */
+/* QUIZ / EXAM ARENA */
+.quiz-mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.quiz-card-btn {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all .2s;
+}
+.quiz-card-btn:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow); }
+.quiz-card-btn h4 { font-size: 1.1rem; margin-bottom: 6px; font-weight: 800; }
+.quiz-card-btn p { font-size: 0.85rem; color: var(--text-muted); }
+
 .quiz-question { background: var(--surface); border-radius: var(--radius); padding: 34px; box-shadow: var(--shadow); max-width: 700px; margin: 0 auto; }
 .q-meta { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.92rem; font-weight: 700; margin-bottom: 16px; }
 .q-text { font-size: 1.35rem; font-weight: 800; margin-bottom: 22px; line-height: 1.4; }
@@ -339,6 +372,19 @@ input, textarea { font-family: inherit; }
 .q-opt.correct { background: var(--green-light); border-color: var(--green); color: var(--green); font-weight: 800; }
 .q-opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
 .q-feedback { margin-top: 18px; font-weight: 700; min-height: 26px; font-size: 1.05rem; }
+
+/* FEYNMAN TEACH-BACK STUDIO */
+.feynman-box { background: var(--surface); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); max-width: 740px; margin: 0 auto; }
+.feynman-prompt { font-size: 1.2rem; font-weight: 800; margin-bottom: 12px; }
+.feynman-textarea { width: 100%; border: 2px solid var(--border); border-radius: 12px; padding: 14px; font-size: 1rem; margin-bottom: 14px; min-height: 110px; }
+.feynman-eval-box { background: var(--surface-subtle); padding: 18px; border-radius: 12px; margin-top: 16px; display: none; }
+
+/* AI TUTOR BOT */
+.ai-tutor-box { background: var(--surface); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); max-width: 740px; margin: 0 auto; }
+.tutor-quick-prompts { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.tutor-chip { background: var(--surface-subtle); border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
+.tutor-chip:hover { background: var(--primary); border-color: var(--primary-dark); }
+.tutor-chat-log { background: var(--surface-subtle); border-radius: 12px; padding: 18px; max-height: 320px; overflow-y: auto; margin-bottom: 14px; line-height: 1.6; }
 
 /* MATCH GAME */
 .match-stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; font-size: 1rem; flex-wrap: wrap; }
@@ -477,21 +523,31 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
   <div class="sidebar-header">
     <span class="logo-icon">🎓</span>
     <div>
-      <span class="logo-text">StudyBuddy <em>PH</em></span>
-      <span style="font-size:0.72rem;color:#7f93a8;display:block">Smart Pinoy Reviewer</span>
+      <div style="display:flex;align-items:center">
+        <span class="logo-text">StudyBuddy</span>
+        <span class="pro-pill">PRO ✨</span>
+      </div>
+      <span style="font-size:0.72rem;color:#7f93a8">Global Elite Edition 🇵🇭</span>
     </div>
   </div>
 
+  <div class="deck-selector-box">
+    <label style="font-size:0.75rem;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px">ACTIVE DECK</label>
+    <select class="deck-select-dropdown" id="activeDeckSelect"></select>
+  </div>
+
   <nav class="nav">
-    <button class="nav-btn active" data-page="home"><span>🏠</span> Home Dashboard</button>
-    <button class="nav-btn" data-page="upload"><span>📝</span> Create Reviewer</button>
+    <button class="nav-btn active" data-page="home"><span>🏠</span> Dashboard</button>
+    <button class="nav-btn" data-page="upload"><span>📝</span> Create / Edit Deck</button>
     <button class="nav-btn" data-page="reviewer"><span>📖</span> Reviewer Guide</button>
-    <button class="nav-btn" data-page="flashcards"><span>🃏</span> Leitner Flashcards</button>
-    <button class="nav-btn" data-page="quiz"><span>📝</span> Practice Quiz</button>
-    <button class="nav-btn" data-page="match"><span>🧩</span> Speed Match</button>
-    <button class="nav-btn" data-page="pomodoro"><span>⏱️</span> Focus Pomodoro</button>
+    <button class="nav-btn" data-page="flashcards"><span>🃏</span> Leitner Cards</button>
+    <button class="nav-btn" data-page="quiz"><span>📝</span> Exam Arena</button>
+    <button class="nav-btn" data-page="feynman"><span>🧠</span> Feynman Studio</button>
+    <button class="nav-btn" data-page="tutor"><span>🤖</span> PareBot AI Tutor</button>
+    <button class="nav-btn" data-page="match"><span>⚡</span> Speed Match</button>
+    <button class="nav-btn" data-page="pomodoro"><span>⏱️</span> Pomodoro</button>
     <button class="nav-btn" data-page="calendar"><span>📅</span> Study Calendar</button>
-    <button class="nav-btn" data-page="tracker"><span>📊</span> Stats & Badges</button>
+    <button class="nav-btn" data-page="tracker"><span>📊</span> Analytics</button>
   </nav>
 
   <div class="sidebar-footer">
@@ -499,52 +555,53 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
       <div class="ambient-header">
         <div style="display:flex;align-items:center;gap:6px">
           <div class="audio-bars" id="audioBars"><span></span><span></span><span></span></div>
-          <span>Study Audio</span>
+          <span>Audio Studio</span>
         </div>
-        <button id="btnDark" style="background:none;color:#fff;font-size:1.1rem" title="Dark Theme">🌙</button>
+        <button id="btnDark" style="background:none;color:#fff;font-size:1.1rem" title="Toggle Theme">🌙</button>
       </div>
       <div class="ambient-grid">
         <button class="amb-btn" id="ambLofi">🎵 Lo-Fi</button>
-        <button class="amb-btn" id="ambRain">🌧️ Rain</button>
+        <button class="amb-btn" id="ambAlpha">🧠 40Hz Wave</button>
+        <button class="amb-btn" id="ambRain">🌧️ Manila Rain</button>
+        <button class="amb-btn" id="ambCafe">☕ Taft Cafe</button>
       </div>
     </div>
-    <p style="font-size:0.74rem;color:#64748b;text-align:center">Para sa kinabukasan 🇵🇭</p>
   </div>
 </aside>
 
 <!-- MAIN WORKSPACE -->
 <main class="main">
 
-  <!-- HOME PAGE -->
+  <!-- HOME DASHBOARD -->
   <section class="page active" id="page-home">
     <div class="hero">
-      <h1>Mag-review nang <span class="highlight">Smart</span>! ⚡</h1>
-      <p>Type or paste your lesson terms in bullet form, get instant Anki-grade flashcards, mock quizzes, and spaced review schedules.</p>
+      <h1>Mag-aral nang may <span class="highlight">Superpowers</span>! ⚡</h1>
+      <p>Multi-deck spaced repetition, 4 practice exam modes, Feynman teach-back evaluation, and Socratic AI tutoring.</p>
       <div class="hero-badges">
         <span id="homeStreak" class="hero-badge streak-badge">🔥 0-day streak</span>
         <span id="homeXp" class="hero-badge xp-badge">⚡ 0 XP</span>
-        <span id="homeRank" class="hero-badge rank-badge">🌟 Cum Laude Scholar</span>
+        <span id="homeRank" class="hero-badge rank-badge">🌟 Cum Laude</span>
       </div>
-      <button class="btn btn-primary big" data-page="upload">📝 Create New Reviewer & Cards →</button>
+      <button class="btn btn-primary big" data-page="upload">📝 Create / Insert New Deck →</button>
     </div>
     <div class="hero-cards">
       <div class="mini-card" data-page="upload"><span>📝</span><h4>Bullet Creator</h4><p>Paste notes to generate cards</p></div>
       <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Leitner Cards</h4><p>Spaced repetition boxes 1 to 3</p></div>
-      <div class="mini-card" data-page="quiz"><span>📝</span><h4>Smart Quiz</h4><p>Retries your weak terms</p></div>
-      <div class="mini-card" data-page="match"><span>⚡</span><h4>Speed Match</h4><p>Race the clock to connect terms</p></div>
+      <div class="mini-card" data-page="quiz"><span>🎯</span><h4>Exam Arena</h4><p>4 interactive challenge modes</p></div>
+      <div class="mini-card" data-page="feynman"><span>🧠</span><h4>Feynman Studio</h4><p>Active recall similarity tester</p></div>
     </div>
   </section>
 
-  <!-- CREATE REVIEWER (BULLET FORM) -->
+  <!-- BULLET CREATOR -->
   <section class="page" id="page-upload">
-    <h2 class="page-title">📝 Create Reviewer & Insert Terms</h2>
-    <p class="page-sub">Fill out the subject and target exam date, then paste your terms in bullet form.</p>
+    <h2 class="page-title">📝 Bullet Creator & Deck Editor</h2>
+    <p class="page-sub">Type or paste terms in bullet format to create or update your active deck.</p>
 
     <div class="create-card">
       <div class="form-row">
         <div>
           <label class="field-label">Subject / Course Name <span class="req">*</span></label>
-          <input type="text" id="subjectInput" class="input-text" placeholder="e.g. Biology 101, PH History, Calculus">
+          <input type="text" id="subjectInput" class="input-text" placeholder="e.g. Biology 101, Philippine History, Calculus">
         </div>
         <div>
           <label class="field-label">Target Exam Date <span class="req">*</span></label>
@@ -567,25 +624,17 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
             <span class="counter-live-badge" id="liveTermCount">0 terms detected</span>
           </label>
         </div>
-        <textarea id="pasteText" class="input-textarea" rows="8" placeholder="• Photosynthesis: The biochemical process where plants convert sunlight into chemical energy&#10;• Mitochondria: The powerhouse of the cell producing ATP energy&#10;• Cell Membrane: Semi-permeable phospholipid bilayer controlling entry and exit"></textarea>
+        <textarea id="pasteText" class="input-textarea" rows="8" placeholder="• Photosynthesis: The biochemical process where plants convert sunlight into chemical energy&#10;• Mitochondria: The powerhouse of the cell producing ATP&#10;• Cell Membrane: Semi-permeable phospholipid bilayer controlling cellular transport"></textarea>
       </div>
 
-      <button class="btn btn-primary big full" id="btnGenerate" style="margin-top:20px">✨ Generate Reviewer & Flashcards</button>
+      <button class="btn btn-primary big full" id="btnGenerate" style="margin-top:20px">✨ Save Deck & Generate Reviewer</button>
 
       <div class="samples-bar">
-        <span style="font-size:0.85rem;font-weight:800;color:var(--text-muted)">1-Click pre-loaded samples:</span>
+        <span style="font-size:0.85rem;font-weight:800;color:var(--text-muted)">Load Pre-loaded Samples:</span>
         <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
-        <button class="sample-btn" data-sample="hist">🇵🇭 PH History</button>
+        <button class="sample-btn" data-sample="hist">🇵🇭 PH History & Rizal</button>
         <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
       </div>
-    </div>
-
-    <div class="result-box" id="resultBox" style="display:none;max-width:820px;margin:24px auto 0">
-      <h3 style="color:var(--green);margin-bottom:8px">✅ Reviewer & Flashcards Ready!</h3>
-      <p>Subject: <strong id="detectSubject">-</strong></p>
-      <p>Added: <strong id="termCount">0</strong> flashcard concepts & definitions.</p>
-      <p>🗓️ Study sessions scheduled until exam on <strong id="examDateShow">-</strong>.</p>
-      <button class="btn btn-primary" data-page="reviewer" style="margin-top:12px">📖 Open Reviewer Guide →</button>
     </div>
   </section>
 
@@ -598,7 +647,7 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-outline btn-sm" id="btnExportCsv">💾 Export Anki CSV</button>
-        <button class="btn btn-outline btn-sm" id="btnPrintReviewer">🖨️ Print / Save PDF</button>
+        <button class="btn btn-outline btn-sm" id="btnPrintReviewer">🖨️ Print Cheatsheet</button>
       </div>
     </div>
 
@@ -608,7 +657,7 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     </div>
 
     <div id="reviewerContent" class="reviewer-content">
-      <p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded yet. Create a reviewer first!</p>
+      <p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded. Create a reviewer first!</p>
     </div>
   </section>
 
@@ -657,13 +706,28 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     </div>
   </section>
 
-  <!-- PRACTICE QUIZ -->
+  <!-- EXAM ARENA -->
   <section class="page" id="page-quiz">
-    <h2 class="page-title">📝 Practice Quiz</h2>
-    <div id="quizArea">
-      <p class="page-sub">Adaptive multiple-choice test. Incorrect answers are tagged as weak areas for smart retrying.</p>
-      <button class="btn btn-primary big" id="btnStartQuiz">▶️ Start Quiz</button>
-      <button class="btn btn-outline big" id="btnRetryWeak" style="margin-left:10px">🎯 Retry Weak Areas</button>
+    <h2 class="page-title">🎯 Multi-Mode Exam Arena</h2>
+    <p class="page-sub">Choose your test mode to validate knowledge and eliminate weak memory spots.</p>
+
+    <div id="quizModeSelectArea" class="quiz-mode-cards">
+      <div class="quiz-card-btn" data-mode="mc">
+        <h4>📝 Multiple Choice</h4>
+        <p>Standard 4-option adaptive test with distractors.</p>
+      </div>
+      <div class="quiz-card-btn" data-mode="tf">
+        <h4>⚡ True / False Blitz</h4>
+        <p>Rapid-fire verification of statements.</p>
+      </div>
+      <div class="quiz-card-btn" data-mode="id">
+        <h4>✍️ Active Recall ID</h4>
+        <p>Type in the exact term from memory.</p>
+      </div>
+      <div class="quiz-card-btn" data-mode="time">
+        <h4>⏱️ 60s Sudden Death</h4>
+        <p>Score as many points as possible before time runs out.</p>
+      </div>
     </div>
 
     <div class="quiz-question" id="quizQuestion" style="display:none">
@@ -673,6 +737,10 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
       </div>
       <p id="qText" class="q-text"></p>
       <div id="qOptions" class="q-options"></div>
+      <div id="qIdentificationBox" style="display:none;margin-top:14px">
+        <input type="text" id="qIdInput" class="input-text" placeholder="Type term name here...">
+        <button class="btn btn-primary" id="btnSubmitId" style="margin-top:10px">Submit Answer</button>
+      </div>
       <div id="qFeedback" class="q-feedback"></div>
       <button class="btn btn-primary" id="btnNextQ" style="display:none;margin-top:16px">Next Question →</button>
     </div>
@@ -680,9 +748,51 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     <div id="quizResult" style="display:none;text-align:center;padding:30px 0"></div>
   </section>
 
+  <!-- FEYNMAN STUDIO -->
+  <section class="page" id="page-feynman">
+    <h2 class="page-title">🧠 Feynman Teach-Back Studio</h2>
+    <p class="page-sub">Explain concepts in your own simple words. The evaluation engine scores keyword similarity and retention.</p>
+
+    <div class="feynman-box">
+      <div class="feynman-prompt" id="feynmanTermPrompt">Pick a term to start explaining</div>
+      <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:12px">Explain this concept as if you were teaching a friend without looking at the notes:</p>
+      <textarea id="feynmanUserText" class="feynman-textarea" placeholder="Type your explanation here..."></textarea>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" id="btnEvalFeynman">🔍 Evaluate Explanation</button>
+        <button class="btn btn-outline" id="btnNextFeynman">➡️ Next Random Term</button>
+      </div>
+      <div class="feynman-eval-box" id="feynmanEvalBox">
+        <h4 id="feynmanScoreText" style="font-size:1.1rem;margin-bottom:6px"></h4>
+        <p id="feynmanFeedbackText" style="color:var(--text);font-size:0.95rem"></p>
+        <div id="feynmanOfficialDef" style="margin-top:10px;font-size:0.85rem;color:var(--text-muted)"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAREBOT AI TUTOR -->
+  <section class="page" id="page-tutor">
+    <h2 class="page-title">🤖 PareBot AI Socratic Tutor</h2>
+    <p class="page-sub">Ask for mnemonics, simple breakdowns, or real-world Filipino analogies for any concept.</p>
+
+    <div class="ai-tutor-box">
+      <div class="tutor-quick-prompts">
+        <button class="tutor-chip" data-ask="mnemonic">💡 Give me a funny Mnemonic</button>
+        <button class="tutor-chip" data-ask="eli5">👶 Explain like I'm 10</button>
+        <button class="tutor-chip" data-ask="ph">🇵🇭 Real-world PH Analogy</button>
+      </div>
+      <div class="tutor-chat-log" id="tutorChatLog">
+        <strong>PareBot 🤖:</strong> Kamusta, Ka-Buddy! Ask me to explain any term in your deck or click a prompt above!
+      </div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="tutorInput" class="input-text" placeholder="Ask PareBot about any concept...">
+        <button class="btn btn-primary" id="btnSendTutor">Ask</button>
+      </div>
+    </div>
+  </section>
+
   <!-- SPEED MATCH -->
   <section class="page" id="page-match">
-    <h2 class="page-title">🧩 Speed Match Game</h2>
+    <h2 class="page-title">⚡ Speed Match PRO</h2>
     <p class="page-sub">Connect terms with their definitions as fast as possible to build XP streak combos!</p>
     <div id="matchGame"><button class="btn btn-primary big" id="btnStartMatch">▶️ Start Match Game</button></div>
     <div id="matchBoard" style="display:none">
@@ -704,8 +814,8 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
 
   <!-- POMODORO -->
   <section class="page" id="page-pomodoro">
-    <h2 class="page-title">⏱️ Focus Pomodoro</h2>
-    <p class="page-sub">Study in blocks of 25 minutes with short refreshing breaks.</p>
+    <h2 class="page-title">⏱️ Focus Sprint Pomodoro</h2>
+    <p class="page-sub">Scientifically structured focus intervals with restful breaks.</p>
     <div class="pomodoro-box" id="pomoBox">
       <div class="pomo-mode-tabs">
         <button class="pomo-tab active" data-mode="focus">📚 Focus (25m)</button>
@@ -735,13 +845,13 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     <div class="cal-grid" id="calGrid"></div>
   </section>
 
-  <!-- STATS -->
+  <!-- ANALYTICS -->
   <section class="page" id="page-tracker">
     <h2 class="page-title">📊 Analytics & Milestones</h2>
     
     <div class="stats-grid">
-      <div class="stat-card"><span class="stat-num" id="statTerms">0</span><p>Terms Memorized</p></div>
-      <div class="stat-card"><span class="stat-num" id="statQuiz">0</span><p>Quizzes Passed</p></div>
+      <div class="stat-card"><span class="stat-num" id="statTerms">0</span><p>Terms in Active Deck</p></div>
+      <div class="stat-card"><span class="stat-num" id="statQuiz">0</span><p>Exams Passed</p></div>
       <div class="stat-card"><span class="stat-num" id="statWeak">0</span><p>Weak Spots</p></div>
       <div class="stat-card"><span class="stat-num" id="statDays">0</span><p>Days to Exam</p></div>
       <div class="stat-card"><span class="stat-num" id="statStreak">0</span><p>🔥 Day Streak</p></div>
@@ -771,22 +881,33 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
 "use strict";
 
 /* ============================================================
-   1. STORAGE & STATE
+   1. MULTI-DECK STORAGE & STATE MANAGEMENT
    ============================================================ */
 const Store = {
-  KEY: "studybuddy_bullet_clean_v7",
+  KEY: "studybuddy_multi_v8",
   defaultData: () => ({
-    terms: [],
-    subject: "",
-    examDate: null,
-    schedule: [],
-    quizHistory: [],
-    quizCount: 0,
+    activeDeckId: "deck_default",
+    decks: {
+      "deck_default": {
+        id: "deck_default",
+        subject: "General Biology 101",
+        examDate: formatDate(new Date(Date.now() + 14 * 86400000)),
+        terms: [
+          { id: 0, term: "Photosynthesis", def: "The biochemical process by which plants use sunlight to synthesize nutrients from CO2 and water.", box: 1 },
+          { id: 1, term: "Mitochondria", def: "The powerhouse of the cell responsible for ATP cellular energy production.", box: 2 },
+          { id: 2, term: "Cell Membrane", def: "Phospholipid bilayer that regulates substances entering and exiting the cell.", box: 1 },
+          { id: 3, term: "Ribosome", def: "Cellular organelle that synthesizes proteins by translating mRNA instructions.", box: 1 },
+          { id: 4, term: "Chloroplast", def: "Organelle found in plant cells where chlorophyll captures light energy.", box: 3 }
+        ],
+        quizHistory: [],
+        schedule: []
+      }
+    },
     xp: 0,
     streak: 0,
     lastCheckin: null,
     darkMode: false,
-    pomodoroCount: 0,
+    quizCount: 0,
     matchCount: 0,
     achievedAchs: [],
     bestQuizScore: 0
@@ -799,16 +920,16 @@ const Store = {
     }
   },
   set(d) {
-    try {
-      localStorage.setItem(this.KEY, JSON.stringify(d));
-    } catch (e) {
-      console.warn(e);
-    }
+    try { localStorage.setItem(this.KEY, JSON.stringify(d)); } catch (e) { console.warn(e); }
   },
   update(fn) {
     const updated = fn(this.get());
     this.set(updated);
     return updated;
+  },
+  getActiveDeck() {
+    const d = this.get();
+    return d.decks[d.activeDeckId] || Object.values(d.decks)[0];
   }
 };
 
@@ -842,7 +963,7 @@ function esc(s) {
 }
 
 /* ============================================================
-   2. PROCEDURAL SOUND FX & AMBIENT (Web Audio API)
+   2. PROCEDURAL SOUND FX & MULTI-TRACK AMBIENT STUDIO
    ============================================================ */
 let audioCtx = null;
 function getAudioCtx() {
@@ -878,8 +999,7 @@ const failSfx = () => {
   setTimeout(() => playBeep(220, 0.2, "triangle"), 110);
 };
 
-let currentAmbient = null;
-let ambientNodes = [];
+let currentAmbient = null, ambientNodes = [];
 
 function stopAmbient() {
   ambientNodes.forEach(n => { try { n.stop ? n.stop() : n.disconnect(); } catch(e){} });
@@ -912,8 +1032,8 @@ function playAmbient(type) {
         const g = ctx.createGain();
         osc.type = "sine";
         osc.frequency.value = f;
-        g.gain.setValueAtTime(0.02, ctx.currentTime);
-        g.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 1);
+        g.gain.setValueAtTime(0.015, ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 1);
         g.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 3.8);
         osc.connect(g);
         g.connect(ctx.destination);
@@ -924,34 +1044,38 @@ function playAmbient(type) {
     playCh();
     const interval = setInterval(playCh, 4000);
     ambientNodes.push({ stop: () => clearInterval(interval) });
+  } else if (type === "alpha") {
+    // 40Hz Gamma Focus Beats
+    const left = ctx.createOscillator(), right = ctx.createOscillator(), g = ctx.createGain();
+    left.frequency.value = 200; right.frequency.value = 240; g.gain.value = 0.04;
+    left.connect(g); right.connect(g); g.connect(ctx.destination);
+    left.start(); right.start();
+    ambientNodes.push(left, right);
   } else {
-    // Rain
+    // Rain / Cafe Pink Noise
     const bufferSize = ctx.sampleRate * 2;
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
     const whiteNoise = ctx.createBufferSource();
-    whiteNoise.buffer = noiseBuffer;
-    whiteNoise.loop = true;
+    whiteNoise.buffer = noiseBuffer; whiteNoise.loop = true;
     const filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = 800;
-    const g = ctx.createGain();
-    g.gain.value = 0.05;
-    whiteNoise.connect(filter);
-    filter.connect(g);
-    g.connect(ctx.destination);
+    filter.type = "lowpass"; filter.frequency.value = (type === "rain") ? 800 : 1200;
+    const g = ctx.createGain(); g.gain.value = 0.04;
+    whiteNoise.connect(filter); filter.connect(g); g.connect(ctx.destination);
     whiteNoise.start();
     ambientNodes.push(whiteNoise);
   }
 
   $(`amb${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add("active");
   $("audioBars").classList.add("playing");
-  showToast(`🎧 Audio Studio: ${type.toUpperCase()} playing`);
+  showToast(`🎧 Audio Studio: ${type.toUpperCase()} active`);
 }
 
 $("ambLofi").addEventListener("click", () => playAmbient("lofi"));
+$("ambAlpha").addEventListener("click", () => playAmbient("alpha"));
 $("ambRain").addEventListener("click", () => playAmbient("rain"));
+$("ambCafe").addEventListener("click", () => playAmbient("cafe"));
 
 /* ============================================================
    3. THEME, XP, AND STREAKS
@@ -1024,8 +1148,36 @@ checkStreak();
 updateHomeHeader();
 
 /* ============================================================
-   4. NAVIGATION
+   4. NAVIGATION & MULTI-DECK HUB
    ============================================================ */
+function renderDeckSelector() {
+  const d = Store.get();
+  const select = $("activeDeckSelect");
+  select.innerHTML = Object.values(d.decks).map(deck => `
+    <option value="${deck.id}" ${deck.id === d.activeDeckId ? "selected" : ""}>${esc(deck.subject)} (${deck.terms.length})</option>
+  `).join("");
+}
+
+$("activeDeckSelect").addEventListener("change", e => {
+  Store.update(s => { s.activeDeckId = e.target.value; return s; });
+  showToast(`📂 Switched active deck to: ${Store.getActiveDeck().subject}`);
+  renderActiveDeckUI();
+});
+
+function renderActiveDeckUI() {
+  const deck = Store.getActiveDeck();
+  $("reviewerSubject").textContent = "Subject: " + (deck.subject || "Not Set");
+  $("subjectInput").value = deck.subject || "";
+  $("examDate").value = deck.examDate || "";
+  $("pasteText").value = deck.terms.map(t => `• ${t.term}: ${t.def}`).join("\n");
+  updateLiveCounter();
+  renderReviewer();
+  initFlashcards();
+  renderTracker();
+  renderCalendar(calView);
+  setupFeynmanTerm();
+}
+
 function navigateTo(page) {
   if (!page) return;
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === page));
@@ -1038,6 +1190,7 @@ function navigateTo(page) {
   if (page === "tracker") renderTracker();
   if (page === "calendar") renderCalendar(calView);
   if (page === "quiz") initQuizScreen();
+  if (page === "feynman") setupFeynmanTerm();
 }
 
 document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
@@ -1049,36 +1202,32 @@ document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
 });
 
 /* ============================================================
-   5. BULLET-FORM PARSER & SAMPLES
+   5. BULLET PARSER & SAMPLES
    ============================================================ */
 const SAMPLES = {
   bio: {
     subject: "General Biology 101",
-    text: `• Photosynthesis: The biochemical process by which plants use sunlight to synthesize nutrients from CO2 and water.
-• Mitochondria: The powerhouse of the cell responsible for cellular ATP energy production.
+    text: `• Photosynthesis: The biochemical process by which plants convert sunlight into chemical energy.
+• Mitochondria: The powerhouse of the cell responsible for ATP cellular energy production.
 • Cell Membrane: Phospholipid bilayer that regulates substances entering and exiting the cell.
-• Ribosome: Cellular structure that synthesizes proteins by translating mRNA genetic codes.
-• Chloroplast: Organelle found in plant cells where photosynthesis occurs.
-• DNA: Deoxyribonucleic acid carrying hereditary instructions for development and function.
-• Enzyme: Biological protein catalyst that accelerates chemical reactions in living organisms.`
+• Ribosome: Cellular organelle that synthesizes proteins by translating mRNA instructions.
+• Chloroplast: Organelle found in plant cells where chlorophyll captures light energy.`
   },
   hist: {
     subject: "Philippine History & Rizal",
     text: `• Noli Me Tangere: Seminal novel written by Jose Rizal exposing the abuses of Spanish friars.
-• Kilusang Propaganda: Peaceful reform movement in Spain advocating for Philippine equality and representation.
-• Katipunan (KKK): Secret revolutionary society founded by Andres Bonifacio in 1892 to gain independence.
-• Cry of Pugad Lawin: Historic event in August 1896 where Katipuneros tore their cedulas in defiance.
-• La Liga Filipina: Civic association founded by Jose Rizal in 1892 before his exile to Dapitan.
-• Treaty of Paris: 1898 agreement where Spain ceded the Philippines to the United States for $20 million.`
+• Kilusang Propaganda: Peaceful reform movement in Spain advocating for Philippine equality.
+• Katipunan (KKK): Secret revolutionary society founded by Andres Bonifacio in 1892.
+• Cry of Pugad Lawin: Historic event in August 1896 where Katipuneros tore their cedulas.
+• La Liga Filipina: Civic association founded by Jose Rizal in 1892 before his exile to Dapitan.`
   },
   cs: {
     subject: "Computer Science Fundamentals",
     text: `• Algorithm: A finite, step-by-step set of instructions to solve a specific computational problem.
 • Data Structure: A specialized format for organizing, storing, and accessing data efficiently.
-• Recursion: A programming technique where a function calls itself to solve smaller instances of a problem.
-• Binary Search: An efficient O(log n) search algorithm that repeatedly divides a sorted array in half.
-• API: Application Programming Interface allowing different software applications to communicate.
-• Stack: A Last-In First-Out (LIFO) linear data structure.`
+• Recursion: A programming technique where a function calls itself to solve smaller instances.
+• Binary Search: An O(log n) search algorithm that repeatedly divides a sorted array in half.
+• API: Application Programming Interface enabling software applications to communicate.`
   }
 };
 
@@ -1097,14 +1246,12 @@ document.querySelectorAll(".sample-btn").forEach(btn => {
   });
 });
 
-// SMART BULLET PARSER
 function parseBulletTerms(text) {
   const lines = (text || "").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
   const terms = [];
   const seen = new Set();
 
   for (const line of lines) {
-    // Strip leading bullets: •, -, *, 1., etc.
     const cleanLine = line.replace(/^[\s•\-\*\d\.\)]+/, "").trim();
     let parts = null;
 
@@ -1125,7 +1272,6 @@ function parseBulletTerms(text) {
       }
     }
   }
-
   return terms;
 }
 
@@ -1136,10 +1282,8 @@ function updateLiveCounter() {
 
 $("pasteText").addEventListener("input", updateLiveCounter);
 
-// GENERATE REVIEWER
 $("btnGenerate").addEventListener("click", () => {
   uiClick();
-  const d = Store.get();
   const subject = $("subjectInput").value.trim();
   const exam = $("examDate").value;
   const rawText = $("pasteText").value.trim();
@@ -1154,12 +1298,8 @@ $("btnGenerate").addEventListener("click", () => {
     return;
   }
 
-  d.subject = subject;
-  d.examDate = exam;
-  d.terms = terms;
-  d.quizHistory = [];
-  
-  // Build Spaced Calendar Schedule
+  // Generate Deck ID & Schedule
+  const deckId = "deck_" + subject.toLowerCase().replace(/[^a-z0-9]/g, "_");
   const examDt = new Date(exam + "T23:59:59");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -1172,33 +1312,42 @@ $("btnGenerate").addEventListener("click", () => {
     dt.setDate(dt.getDate() + off);
     sched.push(formatDate(dt));
   }
-  d.schedule = [...new Set(sched)];
-  Store.set(d);
 
-  $("resultBox").style.display = "block";
-  $("detectSubject").textContent = d.subject;
-  $("termCount").textContent = d.terms.length;
-  $("examDateShow").textContent = new Date(d.examDate).toDateString();
+  Store.update(s => {
+    s.decks[deckId] = {
+      id: deckId,
+      subject,
+      examDate: exam,
+      terms,
+      quizHistory: [],
+      schedule: [...new Set(sched)]
+    };
+    s.activeDeckId = deckId;
+    return s;
+  });
+
   addXP(30);
-  renderReviewer();
-  renderTracker();
+  renderDeckSelector();
+  renderActiveDeckUI();
+  showToast(`✅ Saved deck "${subject}" with ${terms.length} terms!`);
+  navigateTo("reviewer");
 });
 
 /* ============================================================
    6. REVIEWER & EXPORT
    ============================================================ */
 function renderReviewer() {
-  const d = Store.get();
-  $("reviewerSubject").textContent = "Subject: " + (d.subject || "Not Set");
+  const deck = Store.getActiveDeck();
+  $("reviewerSubject").textContent = "Subject: " + (deck.subject || "Not Set");
   const box = $("reviewerContent");
   const q = ($("reviewerSearch") ? $("reviewerSearch").value.toLowerCase() : "");
 
-  if (!d.terms || d.terms.length === 0) {
-    box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded yet. Create a reviewer first!</p>';
+  if (!deck.terms || deck.terms.length === 0) {
+    box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms in this deck. Add terms in the Creator tab!</p>';
     return;
   }
 
-  const filtered = d.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q));
+  const filtered = deck.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q));
   if (filtered.length === 0) {
     box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No matching terms found in search.</p>';
     return;
@@ -1217,7 +1366,8 @@ function renderReviewer() {
 
 window.deleteTerm = id => {
   Store.update(s => {
-    s.terms = s.terms.filter(t => t.id !== id);
+    const deck = s.decks[s.activeDeckId];
+    if (deck) deck.terms = deck.terms.filter(t => t.id !== id);
     return s;
   });
   renderReviewer();
@@ -1228,13 +1378,13 @@ $("reviewerSearch").addEventListener("input", renderReviewer);
 $("btnPrintReviewer").addEventListener("click", () => { uiClick(); window.print(); });
 
 $("btnExportCsv").addEventListener("click", () => {
-  const d = Store.get();
-  if (!d.terms.length) { showToast("⚠️ No terms to export!"); return; }
-  const csv = d.terms.map(t => `"${t.term.replace(/"/g, '""')}","${t.def.replace(/"/g, '""')}"`).join("\n");
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) { showToast("⚠️ No terms to export!"); return; }
+  const csv = deck.terms.map(t => `"${t.term.replace(/"/g, '""')}","${t.def.replace(/"/g, '""')}"`).join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `${d.subject || "reviewer"}_Anki_Deck.csv`;
+  a.download = `${deck.subject || "reviewer"}_Anki_Deck.csv`;
   a.click();
   showToast("💾 Exported Anki-ready CSV!");
 });
@@ -1245,7 +1395,8 @@ $("btnAddTermModal").addEventListener("click", () => {
   const def = prompt("Enter Definition:");
   if (!def) return;
   Store.update(s => {
-    s.terms.push({ term: t.trim(), def: def.trim(), box: 1, id: Date.now() });
+    const deck = s.decks[s.activeDeckId];
+    if (deck) deck.terms.push({ term: t.trim(), def: def.trim(), box: 1, id: Date.now() });
     return s;
   });
   renderReviewer();
@@ -1253,15 +1404,15 @@ $("btnAddTermModal").addEventListener("click", () => {
 });
 
 /* ============================================================
-   7. LEITNER FLASHCARDS (BOXES 1-3)
+   7. LEITNER FLASHCARDS
    ============================================================ */
 let fcDeck = [], fcIdx = 0, currentLeitnerBox = "all";
 
 function initFlashcards() {
-  const d = Store.get();
-  if (!d.terms || d.terms.length === 0) {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms || deck.terms.length === 0) {
     $("fcTerm").textContent = "No terms loaded";
-    $("fcDef").textContent = "Create a reviewer to start studying.";
+    $("fcDef").textContent = "Add terms in the Creator tab to start studying.";
     $("fcCounter").textContent = "0 / 0";
     return;
   }
@@ -1270,7 +1421,7 @@ function initFlashcards() {
 }
 
 function updateLeitnerPills() {
-  const terms = Store.get().terms || [];
+  const terms = Store.getActiveDeck().terms || [];
   $("boxCountAll").textContent = terms.length;
   $("boxCount1").textContent = terms.filter(t => (t.box || 1) === 1).length;
   $("boxCount2").textContent = terms.filter(t => (t.box || 1) === 2).length;
@@ -1280,7 +1431,7 @@ function updateLeitnerPills() {
 function filterLeitnerDeck(box) {
   currentLeitnerBox = box;
   document.querySelectorAll(".leitner-pill").forEach(p => p.classList.toggle("active", p.dataset.box === String(box)));
-  const all = Store.get().terms || [];
+  const all = Store.getActiveDeck().terms || [];
   if (box === "all") fcDeck = [...all];
   else if (box === "3") fcDeck = all.filter(t => (t.box || 1) >= 3);
   else fcDeck = all.filter(t => (t.box || 1) === parseInt(box));
@@ -1333,9 +1484,10 @@ function rateCurrentCard(boxDelta) {
   if (fcDeck.length === 0) return;
   const currentCard = fcDeck[fcIdx];
   Store.update(s => {
-    const target = s.terms.find(t => t.id === currentCard.id);
-    if (target) {
-      target.box = Math.max(1, Math.min(3, (target.box || 1) + boxDelta));
+    const deck = s.decks[s.activeDeckId];
+    if (deck) {
+      const target = deck.terms.find(t => t.id === currentCard.id);
+      if (target) target.box = Math.max(1, Math.min(3, (target.box || 1) + boxDelta));
     }
     return s;
   });
@@ -1368,7 +1520,6 @@ $("fcAudio").addEventListener("click", () => {
   speechSynthesis.speak(u);
 });
 
-// Keyboard controls
 window.addEventListener("keydown", e => {
   const activePage = document.querySelector(".page.active");
   if (!activePage || activePage.id !== "page-flashcards") return;
@@ -1378,98 +1529,137 @@ window.addEventListener("keydown", e => {
 });
 
 /* ============================================================
-   8. ADAPTIVE PRACTICE QUIZ
+   8. MULTI-MODE EXAM ARENA
    ============================================================ */
-let quizTerms = [], quizIdx = 0, quizCorrect = 0;
+let quizTerms = [], quizIdx = 0, quizCorrect = 0, quizCurrentMode = "mc", suddenDeathTimer = null, suddenDeathSec = 60;
 
 function initQuizScreen() {
-  const d = Store.get();
-  $("quizArea").style.display = d.terms.length ? "block" : "none";
+  $("quizModeSelectArea").style.display = "grid";
   $("quizQuestion").style.display = "none";
   $("quizResult").style.display = "none";
-  if (d.terms.length === 0) {
-    $("quizResult").style.display = "block";
-    $("quizResult").innerHTML = '<p style="color:var(--text-muted)">No terms available. Create a reviewer to take quizzes!</p>';
-    return;
-  }
-  $("btnRetryWeak").style.display = (d.quizHistory && d.quizHistory.length) ? "inline-block" : "none";
 }
 
-$("btnStartQuiz").addEventListener("click", () => startQuiz());
-$("btnRetryWeak").addEventListener("click", () => {
-  const weak = [...new Set(Store.get().quizHistory || [])];
-  if (weak.length === 0) { showToast("🎉 No weak areas tagged!"); return; }
-  startQuiz(weak);
+document.querySelectorAll(".quiz-card-btn").forEach(card => {
+  card.addEventListener("click", () => {
+    const mode = card.dataset.mode;
+    startExamMode(mode);
+  });
 });
 
-function startQuiz(ids) {
-  const all = Store.get().terms;
-  if (all.length < 2) { showToast("⚠️ Need at least 2 terms for a quiz."); return; }
-  quizTerms = ids ? all.filter(t => ids.includes(t.id)) : [...all];
-  if (quizTerms.length < 2) quizTerms = [...all];
-  quizTerms = shuffle(quizTerms);
+function startExamMode(mode) {
+  const deck = Store.getActiveDeck();
+  if (deck.terms.length < 2) { showToast("⚠️ Need at least 2 terms for exams."); return; }
+  quizCurrentMode = mode;
+  quizTerms = shuffle([...deck.terms]);
   quizIdx = 0;
   quizCorrect = 0;
-  $("quizArea").style.display = "none";
+
+  $("quizModeSelectArea").style.display = "none";
   $("quizQuestion").style.display = "block";
   $("quizResult").style.display = "none";
-  showQ();
+
+  if (mode === "time") {
+    suddenDeathSec = 60;
+    clearInterval(suddenDeathTimer);
+    suddenDeathTimer = setInterval(() => {
+      suddenDeathSec--;
+      $("qScoreLive").textContent = `⏱️ ${suddenDeathSec}s | Score: ${quizCorrect}`;
+      if (suddenDeathSec <= 0) {
+        clearInterval(suddenDeathTimer);
+        finishQuiz();
+      }
+    }, 1000);
+  }
+  showExamQuestion();
 }
 
-function showQ() {
-  const q = quizTerms[quizIdx];
-  $("qProgress").textContent = `Question ${quizIdx + 1} of ${quizTerms.length}`;
-  $("qScoreLive").textContent = `Score: ${quizCorrect}`;
-  $("qText").textContent = `What is the definition of: "${q.term}"?`;
+function showExamQuestion() {
+  const q = quizTerms[quizIdx % quizTerms.length];
+  const deck = Store.getActiveDeck();
 
-  const distractors = shuffle(Store.get().terms.filter(t => t.id !== q.id));
-  const options = shuffle([...distractors.slice(0, 3).map(t => t.def), q.def]);
-
-  $("qOptions").innerHTML = options.map(opt => `<button class="q-opt">${esc(opt)}</button>`).join("");
+  if (quizCurrentMode !== "time") {
+    $("qProgress").textContent = `Question ${quizIdx + 1} of ${quizTerms.length}`;
+    $("qScoreLive").textContent = `Score: ${quizCorrect}`;
+  }
   $("qFeedback").textContent = "";
   $("btnNextQ").style.display = "none";
 
-  document.querySelectorAll(".q-opt").forEach(btn => {
-    btn.addEventListener("click", () => handleQuizAnswer(btn, q));
-  });
+  if (quizCurrentMode === "mc" || quizCurrentMode === "time") {
+    $("qText").textContent = `What is the definition of: "${q.term}"?`;
+    $("qIdentificationBox").style.display = "none";
+    $("qOptions").style.display = "grid";
+
+    const distractors = shuffle(deck.terms.filter(t => t.id !== q.id));
+    const opts = shuffle([...distractors.slice(0, 3).map(t => t.def), q.def]);
+    $("qOptions").innerHTML = opts.map(o => `<button class="q-opt">${esc(o)}</button>`).join("");
+    document.querySelectorAll(".q-opt").forEach(b => b.addEventListener("click", () => checkExamAnswer(b.textContent === q.def, b, q.def)));
+  } else if (quizCurrentMode === "tf") {
+    $("qIdentificationBox").style.display = "none";
+    $("qOptions").style.display = "grid";
+    const isTrue = Math.random() > 0.5;
+    const testDef = isTrue ? q.def : shuffle(deck.terms.filter(t => t.id !== q.id))[0].def;
+    $("qText").textContent = `Statement: "${q.term}" is defined as "${testDef}".`;
+    $("qOptions").innerHTML = `
+      <button class="q-opt" data-ans="true">🟢 TRUE</button>
+      <button class="q-opt" data-ans="false">🔴 FALSE</button>
+    `;
+    document.querySelectorAll(".q-opt").forEach(b => b.addEventListener("click", () => checkExamAnswer((b.dataset.ans === "true") === isTrue, b, isTrue ? "TRUE" : "FALSE")));
+  } else if (quizCurrentMode === "id") {
+    $("qText").textContent = `Definition: "${q.def}"`;
+    $("qOptions").style.display = "none";
+    $("qIdentificationBox").style.display = "block";
+    $("qIdInput").value = "";
+    $("qIdInput").focus();
+  }
 }
 
-function handleQuizAnswer(btn, q) {
-  const isCorrect = btn.textContent === q.def;
-  document.querySelectorAll(".q-opt").forEach(b => {
-    b.disabled = true;
-    if (b.textContent === q.def) b.classList.add("correct");
-    else if (b === btn) b.classList.add("wrong");
-  });
+$("btnSubmitId").addEventListener("click", () => {
+  const q = quizTerms[quizIdx];
+  const userAns = $("qIdInput").value.trim().toLowerCase();
+  const correct = userAns === q.term.trim().toLowerCase();
+  checkExamAnswer(correct, null, q.term);
+});
 
+function checkExamAnswer(isCorrect, btnEl, correctStr) {
   if (isCorrect) {
     quizCorrect++;
     successSfx();
     $("qFeedback").innerHTML = '<span style="color:var(--green)">✅ Correct! +10 XP</span>';
-    Store.update(s => {
-      s.xp = (s.xp || 0) + 10;
-      if (s.quizHistory) s.quizHistory = s.quizHistory.filter(id => id !== q.id);
-      return s;
-    });
+    addXP(10);
   } else {
     failSfx();
-    $("qFeedback").innerHTML = '<span style="color:var(--red)">❌ Incorrect. Tagged into weak spots.</span>';
-    Store.update(s => {
-      s.quizHistory = [...new Set([...(s.quizHistory || []), q.id])];
-      return s;
+    $("qFeedback").innerHTML = `<span style="color:var(--red)">❌ Incorrect. Correct: "${esc(correctStr)}"</span>`;
+  }
+
+  if (btnEl) {
+    document.querySelectorAll(".q-opt").forEach(b => {
+      b.disabled = true;
+      if (b === btnEl) b.classList.add(isCorrect ? "correct" : "wrong");
     });
   }
 
-  $("btnNextQ").style.display = "inline-block";
-  $("btnNextQ").textContent = (quizIdx < quizTerms.length - 1) ? "Next Question →" : "See Final Score";
-  updateHomeHeader();
-  renderAchievements();
+  if (quizCurrentMode === "time") {
+    setTimeout(() => { quizIdx++; showExamQuestion(); }, 600);
+  } else {
+    $("btnNextQ").style.display = "inline-block";
+    $("btnNextQ").textContent = (quizIdx < quizTerms.length - 1) ? "Next Question →" : "See Final Score";
+  }
 }
 
 $("btnNextQ").addEventListener("click", () => {
   quizIdx++;
-  if (quizIdx < quizTerms.length) { showQ(); return; }
-  const scorePercent = Math.round((quizCorrect / quizTerms.length) * 100);
+  if (quizIdx < quizTerms.length) {
+    showExamQuestion();
+  } else {
+    finishQuiz();
+  }
+});
+
+function finishQuiz() {
+  clearInterval(suddenDeathTimer);
+  const total = (quizCurrentMode === "time") ? Math.max(1, quizIdx) : quizTerms.length;
+  const scorePercent = Math.round((quizCorrect / total) * 100);
+
   Store.update(s => {
     s.quizCount = (s.quizCount || 0) + 1;
     if (scorePercent >= (s.bestQuizScore || 0)) s.bestQuizScore = scorePercent;
@@ -1481,35 +1671,106 @@ $("btnNextQ").addEventListener("click", () => {
   if (scorePercent >= 80 && typeof confetti === "function") confetti({ particleCount: 100, spread: 70 });
 
   $("quizResult").innerHTML = `
-    <h2 style="font-size:2rem;margin-bottom:12px">🎉 Quiz Complete!</h2>
-    <p style="font-size:1.25rem;color:var(--text);font-weight:800">Score: ${scorePercent}% (${quizCorrect}/${quizTerms.length})</p>
-    <p style="color:var(--text-muted);margin:8px 0 20px">${scorePercent >= 100 ? "🌟 Perfect Score! Astig!" : scorePercent >= 75 ? "👍 Good job! Ready for your exam." : "💪 Keep practicing your weak areas!"}</p>
-    <div style="display:flex;gap:10px;justify-content:center">
-      <button class="btn btn-primary" id="btnQuizRestart">🔄 Retake Quiz</button>
-      <button class="btn btn-outline" id="btnQuizToStats">📊 View Stats</button>
+    <h2 style="font-size:2rem;margin-bottom:12px">🎉 Exam Complete!</h2>
+    <p style="font-size:1.25rem;color:var(--text);font-weight:800">Score: ${scorePercent}% (${quizCorrect}/${total})</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:20px">
+      <button class="btn btn-primary" onclick="initQuizScreen()">🔄 Play Another Mode</button>
+      <button class="btn btn-outline" onclick="navigateTo('tracker')">📊 View Stats</button>
     </div>
   `;
-  $("btnQuizRestart").addEventListener("click", () => startQuiz());
-  $("btnQuizToStats").addEventListener("click", () => navigateTo("tracker"));
-  renderTracker();
+}
+
+/* ============================================================
+   9. FEYNMAN STUDIO (ACTIVE RECALL SIMILARITY)
+   ============================================================ */
+let feynmanCurrentTerm = null;
+
+function setupFeynmanTerm() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) {
+    $("feynmanTermPrompt").textContent = "No terms in this deck!";
+    return;
+  }
+  feynmanCurrentTerm = shuffle([...deck.terms])[0];
+  $("feynmanTermPrompt").textContent = `Explain: "${feynmanCurrentTerm.term}"`;
+  $("feynmanUserText").value = "";
+  $("feynmanEvalBox").style.display = "none";
+}
+
+$("btnNextFeynman").addEventListener("click", () => { uiClick(); setupFeynmanTerm(); });
+
+$("btnEvalFeynman").addEventListener("click", () => {
+  if (!feynmanCurrentTerm) return;
+  const userText = $("feynmanUserText").value.trim().toLowerCase();
+  if (!userText) { showToast("⚠️ Please write your explanation first."); return; }
+
+  const defWords = feynmanCurrentTerm.def.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+  let matches = 0;
+  defWords.forEach(w => { if (userText.includes(w)) matches++; });
+
+  const ratio = defWords.length ? (matches / defWords.length) : 0;
+  const scorePct = Math.min(100, Math.round(ratio * 100) + (userText.length > 30 ? 20 : 0));
+
+  $("feynmanEvalBox").style.display = "block";
+  if (scorePct >= 65) {
+    successSfx();
+    $("feynmanScoreText").innerHTML = `🌟 Feynman Master Score: ${scorePct}%`;
+    $("feynmanFeedbackText").textContent = "Great explanation! You captured key conceptual terms and relationships.";
+    addXP(25);
+  } else {
+    failSfx();
+    $("feynmanScoreText").innerHTML = `💪 Retention Match: ${scorePct}%`;
+    $("feynmanFeedbackText").textContent = "Good try! Make sure to mention key mechanisms and core definitions.";
+  }
+  $("feynmanOfficialDef").innerHTML = `<strong>Official Definition:</strong> ${esc(feynmanCurrentTerm.def)}`;
 });
 
 /* ============================================================
-   9. SPEED MATCH
+   10. PAREBOT SOCRATIC AI TUTOR
+   ============================================================ */
+function pareBotRespond(userQuery, type = "normal") {
+  const deck = Store.getActiveDeck();
+  const log = $("tutorChatLog");
+  const randomTerm = deck.terms.length ? shuffle([...deck.terms])[0] : { term: "General Concept", def: "A core subject idea." };
+
+  let reply = "";
+  if (type === "mnemonic") {
+    reply = `💡 <strong>Mnemonic for "${randomTerm.term}":</strong> Think of <em>${randomTerm.term.slice(0, 3).toUpperCase()}</em> — remember: "${randomTerm.def.slice(0, 40)}..."`;
+  } else if (type === "eli5") {
+    reply = `👶 <strong>Explain Like I'm 10:</strong> Imagine "${randomTerm.term}" is like a helper in a big team that ${randomTerm.def.toLowerCase().replace(/process|bilayer|structure/g, "tool")}.`;
+  } else if (type === "ph") {
+    reply = `🇵🇭 <strong>Pinoy Analogy:</strong> Think of "${randomTerm.term}" like the barangay tanod or MRT traffic system — it organizes and keeps everything running smoothly!`;
+  } else {
+    reply = `Great question! For "${userQuery}", remember that in ${deck.subject}, core concepts link directly to how systems function together. Review flashcards in Box 1 to solidify it!`;
+  }
+
+  log.innerHTML += `<div style="margin-top:10px"><strong>You:</strong> ${esc(userQuery || type)}</div>`;
+  log.innerHTML += `<div style="margin-top:6px;color:var(--text)"><strong>PareBot 🤖:</strong> ${reply}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+document.querySelectorAll(".tutor-chip").forEach(c => {
+  c.addEventListener("click", () => pareBotRespond("", c.dataset.ask));
+});
+
+$("btnSendTutor").addEventListener("click", () => {
+  const q = $("tutorInput").value.trim();
+  if (!q) return;
+  pareBotRespond(q);
+  $("tutorInput").value = "";
+});
+
+/* ============================================================
+   11. SPEED MATCH PRO
    ============================================================ */
 let matchPairs = [], matchSel = null, matchMiss = 0, matchTimer = null, matchSec = 0, matchedIds = new Set(), comboMultiplier = 1;
 
 $("btnStartMatch").addEventListener("click", () => {
-  const t = Store.get().terms;
-  if (t.length < 2) { showToast("⚠️ Need at least 2 terms."); return; }
-  matchPairs = shuffle(t).slice(0, Math.min(6, t.length));
-  matchSel = null;
-  matchMiss = 0;
-  matchSec = 0;
-  comboMultiplier = 1;
-  matchedIds = new Set();
-  $("matchGame").style.display = "none";
-  $("matchBoard").style.display = "block";
+  const deck = Store.getActiveDeck();
+  if (deck.terms.length < 2) { showToast("⚠️ Need at least 2 terms."); return; }
+  matchPairs = shuffle(deck.terms).slice(0, Math.min(6, deck.terms.length));
+  matchSel = null; matchMiss = 0; matchSec = 0; comboMultiplier = 1; matchedIds = new Set();
+  $("matchGame").style.display = "none"; $("matchBoard").style.display = "block";
   clearInterval(matchTimer);
   matchTimer = setInterval(() => { matchSec++; $("matchTime").textContent = matchSec; }, 1000);
   renderMatch();
@@ -1526,8 +1787,7 @@ function renderMatch() {
 }
 
 function onMatchClick(chip) {
-  const role = chip.dataset.role;
-  const id = +chip.dataset.id;
+  const role = chip.dataset.role, id = +chip.dataset.id;
   if (matchedIds.has(id) || chip.classList.contains("done")) return;
 
   if (role === "term") {
@@ -1541,10 +1801,8 @@ function onMatchClick(chip) {
     if (termId === id) {
       successSfx();
       matchedIds.add(id);
-      chip.classList.add("done");
-      matchSel.classList.add("done");
-      matchSel.classList.remove("selected");
-      matchSel = null;
+      chip.classList.add("done"); matchSel.classList.add("done");
+      matchSel.classList.remove("selected"); matchSel = null;
       comboMultiplier++;
       $("matchScore").textContent = matchedIds.size;
       $("matchCombo").textContent = `${comboMultiplier}x`;
@@ -1552,24 +1810,15 @@ function onMatchClick(chip) {
       if (matchedIds.size === matchPairs.length) {
         clearInterval(matchTimer);
         const earnedXP = 30 * comboMultiplier;
-        Store.update(s => {
-          s.matchCount = (s.matchCount || 0) + 1;
-          s.xp = (s.xp || 0) + earnedXP;
-          return s;
-        });
+        addXP(earnedXP);
         if (typeof confetti === "function") confetti({ particleCount: 90, spread: 60 });
         showToast(`🏁 Matched in ${matchSec}s! +${earnedXP} XP (${comboMultiplier}x Combo)`);
-        renderAchievements();
-        renderTracker();
       }
     } else {
       failSfx();
-      matchMiss++;
-      comboMultiplier = 1;
-      matchSel.classList.remove("selected");
-      matchSel = null;
-      $("matchMiss").textContent = matchMiss;
-      $("matchCombo").textContent = "1x";
+      matchMiss++; comboMultiplier = 1;
+      matchSel.classList.remove("selected"); matchSel = null;
+      $("matchMiss").textContent = matchMiss; $("matchCombo").textContent = "1x";
     }
   } else {
     showToast("👈 Select a term on the left first!");
@@ -1577,12 +1826,7 @@ function onMatchClick(chip) {
 }
 
 $("btnMatchReset").addEventListener("click", () => {
-  uiClick();
-  matchSel = null;
-  matchMiss = 0;
-  matchSec = 0;
-  comboMultiplier = 1;
-  matchedIds = new Set();
+  uiClick(); matchSel = null; matchMiss = 0; matchSec = 0; comboMultiplier = 1; matchedIds = new Set();
   clearInterval(matchTimer);
   matchTimer = setInterval(() => { matchSec++; $("matchTime").textContent = matchSec; }, 1000);
   renderMatch();
@@ -1590,20 +1834,18 @@ $("btnMatchReset").addEventListener("click", () => {
 });
 
 /* ============================================================
-   10. POMODORO TIMER
+   12. POMODORO TIMER
    ============================================================ */
 const POMO = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
 let pomoMode = "focus", pomoLeft = POMO.focus, pomoInt = null;
 
 function renderPomoTime() {
-  const mm = pad(Math.floor(pomoLeft / 60));
-  const ss = pad(pomoLeft % 60);
+  const mm = pad(Math.floor(pomoLeft / 60)), ss = pad(pomoLeft % 60);
   $("pomoTime").textContent = `${mm}:${ss}`;
 }
 
 function switchPomoMode(mode) {
-  pomoMode = mode;
-  pomoLeft = POMO[mode];
+  pomoMode = mode; pomoLeft = POMO[mode];
   document.querySelectorAll(".pomo-tab").forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
   $("pomoBox").className = "pomodoro-box " + (mode === "focus" ? "focus-mode" : "break-mode");
   renderPomoTime();
@@ -1611,24 +1853,17 @@ function switchPomoMode(mode) {
 
 $("btnPomoStart").addEventListener("click", () => {
   if (pomoInt) {
-    clearInterval(pomoInt);
-    pomoInt = null;
-    $("btnPomoStart").textContent = "▶️ Resume";
-    $("pomoStatus").textContent = "Paused";
+    clearInterval(pomoInt); pomoInt = null;
+    $("btnPomoStart").textContent = "▶️ Resume"; $("pomoStatus").textContent = "Paused";
     return;
   }
-  $("btnPomoStart").textContent = "⏸️ Pause";
-  $("pomoStatus").textContent = (pomoMode === "focus") ? "Focused study session..." : "Rest & recharge!";
+  $("btnPomoStart").textContent = "⏸️ Pause"; $("pomoStatus").textContent = (pomoMode === "focus") ? "Focused study session..." : "Rest & recharge!";
   pomoInt = setInterval(() => {
-    pomoLeft--;
-    renderPomoTime();
+    pomoLeft--; renderPomoTime();
     if (pomoLeft <= 0) {
-      clearInterval(pomoInt);
-      pomoInt = null;
-      successSfx();
+      clearInterval(pomoInt); pomoInt = null; successSfx();
       if (pomoMode === "focus") {
-        Store.update(s => { s.pomodoroCount = (s.pomodoroCount || 0) + 1; s.xp = (s.xp || 0) + 25; return s; });
-        showToast("🍅 Focus session complete! +25 XP");
+        addXP(25); showToast("🍅 Focus session complete! +25 XP");
         switchPomoMode("short");
       } else {
         showToast("☕ Break ended — ready for the next sprint!");
@@ -1640,39 +1875,33 @@ $("btnPomoStart").addEventListener("click", () => {
 });
 
 $("btnPomoReset").addEventListener("click", () => {
-  uiClick();
-  clearInterval(pomoInt);
-  pomoInt = null;
+  uiClick(); clearInterval(pomoInt); pomoInt = null;
   switchPomoMode(pomoMode);
-  $("btnPomoStart").textContent = "▶️ Start Session";
-  $("pomoStatus").textContent = "Ready to focus!";
+  $("btnPomoStart").textContent = "▶️ Start Session"; $("pomoStatus").textContent = "Ready to focus!";
 });
 
 document.querySelectorAll(".pomo-tab").forEach(t => {
   t.addEventListener("click", () => {
-    uiClick();
-    clearInterval(pomoInt);
-    pomoInt = null;
-    $("btnPomoStart").textContent = "▶️ Start Session";
-    switchPomoMode(t.dataset.mode);
+    uiClick(); clearInterval(pomoInt); pomoInt = null;
+    $("btnPomoStart").textContent = "▶️ Start Session"; switchPomoMode(t.dataset.mode);
   });
 });
 renderPomoTime();
 
 /* ============================================================
-   11. CALENDAR
+   13. CALENDAR & ANALYTICS
    ============================================================ */
 let calView = new Date();
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 function renderCalendar(date) {
-  const d = Store.get();
+  const deck = Store.getActiveDeck();
   const y = date.getFullYear(), m = date.getMonth();
   $("calMonthYear").textContent = `${MONTHS[m]} ${y}`;
   const first = new Date(y, m, 1), start = first.getDay();
   const daysIn = new Date(y, m + 1, 0).getDate();
   const today = formatDate(new Date());
-  const exam = d.examDate ? formatDate(d.examDate) : null;
+  const exam = deck.examDate ? formatDate(deck.examDate) : null;
 
   let html = "";
   for (let i = 0; i < start; i++) html += '<div class="cal-day empty"></div>';
@@ -1680,11 +1909,11 @@ function renderCalendar(date) {
     const dstr = `${y}-${pad(m + 1)}-${pad(day)}`;
     let cls = "cal-day";
     if (dstr === today) cls += " today";
-    if (d.schedule && d.schedule.includes(dstr)) cls += " study";
+    if (deck.schedule && deck.schedule.includes(dstr)) cls += " study";
     if (exam && dstr === exam) cls += " exam";
 
     html += `<div class="${cls}">${day}`;
-    if (d.schedule && d.schedule.includes(dstr)) html += '<span class="badge">Review</span>';
+    if (deck.schedule && deck.schedule.includes(dstr)) html += '<span class="badge">Review</span>';
     if (exam && dstr === exam) html += '<span class="badge">Exam Day</span>';
     html += "</div>";
   }
@@ -1695,18 +1924,12 @@ $("calPrev").addEventListener("click", () => { uiClick(); calView.setMonth(calVi
 $("calNext").addEventListener("click", () => { uiClick(); calView.setMonth(calView.getMonth() + 1); renderCalendar(calView); });
 renderCalendar(calView);
 
-/* ============================================================
-   12. TRACKER & ACHIEVEMENTS
-   ============================================================ */
 const ACHS = [
-  { id: "first", icon: "🚀", name: "First Steps", desc: "Create 1st reviewer", cond: d => d.terms.length >= 1 },
-  { id: "terms10", icon: "📚", name: "10 Terms", desc: "Memorize 10 terms", cond: d => d.terms.length >= 10 },
-  { id: "terms30", icon: "🏛️", name: "Study Master", desc: "Memorize 30 terms", cond: d => d.terms.length >= 30 },
-  { id: "quiz1", icon: "📝", name: "First Quiz", desc: "Complete 1 practice quiz", cond: d => d.quizCount >= 1 },
-  { id: "quiz5", icon: "🎯", name: "Quiz Streak", desc: "Complete 5 quizzes", cond: d => d.quizCount >= 5 },
-  { id: "perfect", icon: "💯", name: "Perfect Score", desc: "Score 100% on a quiz", cond: d => d.bestQuizScore >= 100 },
+  { id: "first", icon: "🚀", name: "First Steps", desc: "Create 1st deck", cond: d => Object.keys(d.decks).length >= 1 },
+  { id: "terms10", icon: "📚", name: "10 Terms", desc: "Memorize 10 terms", cond: d => Store.getActiveDeck().terms.length >= 10 },
+  { id: "quiz1", icon: "📝", name: "First Exam", desc: "Complete 1 practice exam", cond: d => d.quizCount >= 1 },
+  { id: "quiz5", icon: "🎯", name: "Exam Streak", desc: "Complete 5 exams", cond: d => d.quizCount >= 5 },
   { id: "match1", icon: "🧩", name: "Speed Matcher", desc: "Win 1 match game", cond: d => d.matchCount >= 1 },
-  { id: "pomo3", icon: "🍅", name: "Deep Focus", desc: "Complete 3 Pomodoro sessions", cond: d => d.pomodoroCount >= 3 },
   { id: "xp100", icon: "⚡", name: "Centurion", desc: "Reach 100 total XP", cond: d => d.xp >= 100 },
   { id: "xp500", icon: "👑", name: "Honor Scholar", desc: "Reach 500 total XP", cond: d => d.xp >= 500 }
 ];
@@ -1720,13 +1943,11 @@ function renderAchievements() {
   let newly = 0;
   ACHS.filter(a => a.cond(d)).forEach(a => {
     if (!d.achievedAchs.includes(a.id)) {
-      d.achievedAchs.push(a.id);
-      newly++;
+      d.achievedAchs.push(a.id); newly++;
     }
   });
   if (newly > 0) {
-    Store.set(d);
-    showToast(`🏆 ${newly} new achievement${newly > 1 ? "s" : ""} unlocked!`);
+    Store.set(d); showToast(`🏆 ${newly} new achievement${newly > 1 ? "s" : ""} unlocked!`);
   }
 
   box.innerHTML = ACHS.map(a => {
@@ -1737,21 +1958,22 @@ function renderAchievements() {
 
 function renderTracker() {
   const d = Store.get();
-  $("statTerms").textContent = d.terms.length;
+  const deck = Store.getActiveDeck();
+  $("statTerms").textContent = deck.terms.length;
   $("statQuiz").textContent = d.quizCount || 0;
-  $("statWeak").textContent = (d.quizHistory || []).length;
+  $("statWeak").textContent = (deck.quizHistory || []).length;
   $("statStreak").textContent = d.streak || 0;
   $("statXp").textContent = d.xp || 0;
 
-  if (d.examDate) {
-    const examDt = new Date(d.examDate + "T23:59:59");
+  if (deck.examDate) {
+    const examDt = new Date(deck.examDate + "T23:59:59");
     const days = Math.round((examDt - new Date()) / 86400000);
     $("statDays").textContent = Math.max(0, days);
   } else {
     $("statDays").textContent = "—";
   }
 
-  const pct = Math.min(100, Math.round(((d.bestQuizScore || 0) * 0.5 + (d.quizCount || 0) * 5 + (d.terms.length * 2))));
+  const pct = Math.min(100, Math.round(((d.bestQuizScore || 0) * 0.5 + (d.quizCount || 0) * 5 + (deck.terms.length * 2))));
   $("masteryBar").style.width = pct + "%";
   $("masteryText").textContent = pct >= 100
     ? "🏆 Summa Cum Laude Tier reached — ready to ace your exam!"
@@ -1760,7 +1982,9 @@ function renderTracker() {
   renderAchievements();
 }
 
-renderTracker();
+// Initial Boot
+renderDeckSelector();
+renderActiveDeckUI();
 </script>
 </body>
 </html>
