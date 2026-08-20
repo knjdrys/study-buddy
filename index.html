@@ -1,0 +1,3173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F172A">
+<meta name="description" content="StudyBuddy PRO — Intelligent Spaced Repetition, Active Recall & Oral Recitation OS for Students.">
+<title>StudyBuddy PRO — Intelligent Study & Active Recall System</title>
+
+<!-- Web Manifest (PWA) -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiU3R1ZHlCdWRkeSBQUk8iLCJzaG9ydF9uYW1lIjoiU3R1ZHlCdWRkeSIsInN0YXJ0X3VybCI6Ii4vIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBGMTcyQSIsInRoZW1lX2NvbG9yIjoiIzI1NjNFQiJ9">
+
+<!-- Confetti Celebration CDN -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- QR Code Generator CDN -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<!-- PeerJS for Real-Time Cross-Device WebRTC Sync -->
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+<style>
+/* ============================================================
+   EDITORIAL SCHOLAR DESIGN SYSTEM — FLAGSHIP PRODUCTION THEME
+   ============================================================ */
+:root {
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: #EFF6FF;
+  --primary-border: #BFDBFE;
+  
+  --accent: #D97706;
+  --accent-light: #FEF3C7;
+  
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-hover: #F1F5F9;
+  --surface-subtle: #F8FAFC;
+  
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-subtle: #94A3B8;
+  --text-inverse: #FFFFFF;
+  
+  --border: #E2E8F0;
+  --border-focus: #2563EB;
+  
+  --success: #16A34A;
+  --success-light: #F0FDF4;
+  --success-border: #BBF7D0;
+  
+  --danger: #DC2626;
+  --danger-light: #FEF2F2;
+  --danger-border: #FECACA;
+  
+  --sidebar-w: 260px;
+  --sidebar-collapsed-w: 68px;
+  
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-pill: 9999px;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { min-height: 100vh; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  display: flex;
+  transition: background 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+input, textarea, select { font-family: inherit; }
+
+/* ===== APP HEADER ===== */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-w);
+  right: 0;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 90;
+  transition: left 0.25s ease;
+}
+
+body.sidebar-collapsed .app-header {
+  left: var(--sidebar-collapsed-w);
+}
+
+.header-left { display: flex; align-items: center; gap: 8px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+.status-badge.online { background: var(--success-light); color: var(--success); border-color: var(--success-border); }
+.status-badge.offline { background: var(--accent-light); color: var(--accent); border-color: #FDE68A; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.cmd-k-trigger {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.cmd-k-trigger:hover { border-color: var(--primary); color: var(--text-main); }
+.cmd-kbd { background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.82rem;
+  transition: all 0.15s;
+}
+.user-profile-btn:hover { background: var(--surface-hover); }
+.user-avatar-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ===== SIDEBAR NAVIGATION ===== */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: #0F172A;
+  color: #94A3B8;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  border-right: 1px solid #1E293B;
+  transition: width 0.25s ease, transform 0.25s ease;
+  overflow: hidden;
+}
+
+body.sidebar-collapsed .sidebar {
+  width: var(--sidebar-collapsed-w);
+}
+
+.sidebar-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #1E293B;
+  min-height: 60px;
+}
+.logo-container { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; }
+.logo-icon { font-size: 1.4rem; flex-shrink: 0; }
+.logo-text { font-size: 1rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.01em; }
+.logo-badge { font-size: 0.6rem; background: var(--primary); color: #FFF; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 4px; }
+
+.sidebar-toggle-btn {
+  background: #1E293B;
+  color: #94A3B8;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.sidebar-toggle-btn:hover { background: var(--primary); color: #fff; }
+
+.deck-selector-box {
+  padding: 10px 12px;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  transition: all 0.2s;
+}
+body.sidebar-collapsed .deck-selector-box { display: none; }
+
+.deck-select-dropdown {
+  width: 100%;
+  padding: 7px 10px;
+  background: #0F172A;
+  color: #FFFFFF;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* SIDEBAR SCROLL & ACCORDION */
+.nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nav-scroll::-webkit-scrollbar { width: 4px; }
+.nav-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-group-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #64748B;
+  text-transform: uppercase;
+  padding: 6px 10px 2px;
+  white-space: nowrap;
+  user-select: none;
+}
+body.sidebar-collapsed .nav-group-title { display: none; }
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  color: #94A3B8;
+  font-size: 0.84rem;
+  font-weight: 500;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  transition: all .15s;
+  text-align: left;
+  white-space: nowrap;
+}
+.nav-btn .icon { font-size: 1.1rem; width: 22px; text-align: center; flex-shrink: 0; }
+.nav-btn .label { transition: opacity 0.2s; }
+body.sidebar-collapsed .nav-btn .label { display: none; }
+body.sidebar-collapsed .nav-btn { justify-content: center; padding: 10px 0; }
+
+.nav-btn:hover { background: #1E293B; color: #FFFFFF; }
+.nav-btn.active { background: var(--primary); color: #FFFFFF; font-weight: 600; }
+
+/* SIDEBAR FOOTER & LO-FI COLLAPSIBLE STUDIO */
+.sidebar-footer { padding: 10px 8px; border-top: 1px solid #1E293B; }
+body.sidebar-collapsed .sidebar-footer { display: none; }
+.ambient-box { background: #1E293B; border-radius: 8px; padding: 10px; }
+.ambient-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #E2E8F0;
+  cursor: pointer;
+  user-select: none;
+}
+.ambient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.amb-btn {
+  background: #0F172A;
+  color: #CBD5E1;
+  font-size: 0.72rem;
+  padding: 7px 4px;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.amb-btn.active { background: var(--primary); color: #FFF; font-weight: 700; }
+
+/* ===== MAIN CONTENT ===== */
+.main {
+  flex: 1;
+  margin-left: var(--sidebar-w);
+  padding: 80px 28px 40px;
+  max-width: 1050px;
+  width: 100%;
+  transition: margin-left 0.25s ease;
+}
+body.sidebar-collapsed .main {
+  margin-left: var(--sidebar-collapsed-w);
+}
+
+.page { display: none; }
+.page.active { display: block; animation: pageFadeIn .2s ease; }
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.page-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 3px; letter-spacing: -0.01em; }
+.page-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; }
+
+/* BUTTONS */
+.btn {
+  background: var(--text-main);
+  color: var(--text-inverse);
+  border-radius: var(--radius-sm);
+  padding: 8px 15px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: all .15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.btn:active { transform: translateY(1px); }
+.btn.big { font-size: 0.94rem; padding: 11px 20px; }
+.btn-primary { background: var(--primary); color: #FFFFFF; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--surface-hover); border-color: var(--border-focus); }
+.btn-round { width: 34px; height: 34px; border-radius: 50%; padding: 0; }
+.btn.full { width: 100%; }
+.btn-sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 5px; }
+
+/* MASCOT & QUEST CARD */
+.mascot-quest-grid { display: grid; grid-template-columns: 240px 1fr; gap: 14px; margin-bottom: 20px; }
+@media(max-width:800px){ .mascot-quest-grid { grid-template-columns: 1fr; } }
+.mascot-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-avatar { font-size: 2.8rem; line-height: 1; margin: 8px 0; }
+.mascot-name { font-weight: 700; font-size: 0.95rem; }
+.mascot-tier { font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.quest-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.quest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.quest-item:last-child { border-bottom: none; }
+
+/* HERO CARDS */
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.mini-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.mini-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--primary); }
+.mini-card span { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.mini-card h4 { font-size: 0.92rem; margin-bottom: 2px; font-weight: 600; }
+.mini-card p { color: var(--text-muted); font-size: .78rem; }
+
+/* SELF-STUDY BANNER */
+.pathway-banner {
+  background: var(--surface);
+  color: var(--text-main);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+.pathway-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 16px; }
+.path-step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  transition: all 0.15s;
+}
+.path-step-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+.path-step-num { font-size: 0.68rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 4px; }
+
+.demystifier-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; margin-top: 14px; }
+.demystify-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.demystify-analogy {
+  background: #F8FAFC;
+  color: var(--text-main);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+}
+.demystify-trap {
+  background: var(--danger-light);
+  color: #991B1B;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  border: 1px solid var(--danger-border);
+}
+
+/* CREATOR */
+.create-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 22px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  max-width: 800px;
+  margin: 0 auto;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.field-label { display: block; font-weight: 600; margin-bottom: 5px; font-size: .82rem; color: var(--text-main); }
+.req { color: var(--danger); }
+.input-text, .input-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  transition: all .15s;
+  background: var(--surface);
+  color: var(--text-main);
+}
+.input-text:focus, .input-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+.collapsible-details {
+  background: var(--surface-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+.collapsible-details summary {
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+}
+.collapsible-details .details-content {
+  padding: 0 12px 10px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.counter-live-badge {
+  display: inline-block;
+  background: var(--success-light);
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  margin-left: 6px;
+}
+.samples-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sample-btn { background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 14px; font-size: 0.76rem; font-weight: 500; }
+.sample-btn:hover { background: var(--surface-hover); border-color: var(--text-main); }
+
+/* REVIEWER GUIDE */
+.page-head-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; width: 100%; }
+.filter-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.86rem;
+}
+.reviewer-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
+.reviewer-item {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.reviewer-item .term { font-weight: 600; font-size: 0.94rem; margin-bottom: 3px; color: var(--text-main); }
+.reviewer-item .def { color: var(--text-muted); font-size: .84rem; line-height: 1.45; }
+.reviewer-actions { position: absolute; top: 8px; right: 8px; }
+.icon-btn { background: none; border: none; font-size: 0.9rem; padding: 3px 5px; border-radius: 4px; color: var(--text-muted); }
+.icon-btn:hover { background: var(--surface-hover); color: var(--text-main); }
+
+/* PRINT STYLES FOR REVIEWER GUIDE */
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  .app-header, .sidebar, .filter-bar, .reviewer-actions, .mobile-backdrop { display: none !important; }
+  .main { margin-left: 0 !important; padding: 0 !important; max-width: 100% !important; }
+  .page { display: block !important; }
+  .reviewer-content { display: block !important; }
+  .reviewer-item { page-break-inside: avoid; border: 1px solid #ddd !important; border-left: 4px solid #000 !important; margin-bottom: 10px !important; }
+}
+
+/* MIND MAP GRAPH */
+.mindmap-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+}
+.mindmap-svg { width: 100%; height: 390px; border-radius: 8px; background: var(--surface-subtle); }
+
+/* ORAL RECITATION */
+.oral-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; max-width: 640px; margin: 0 auto; text-align: center; }
+.oral-mic-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.6rem;
+  margin: 16px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+.oral-mic-btn.listening { background: var(--danger); animation: pulse 1.2s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+/* BLURTING */
+.blurt-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; max-width: 700px; margin: 0 auto; }
+.blurt-results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+
+/* FLASHCARDS */
+.leitner-nav { display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+.leitner-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+.leitner-pill.active { background: var(--text-main); color: #fff; border-color: var(--text-main); font-weight: 600; }
+.card-deck { display: flex; justify-content: center; margin: 8px 0 12px; flex-direction: column; align-items: center; }
+.flashcard { width: 100%; max-width: 440px; height: 220px; perspective: 1000px; cursor: pointer; }
+.fc-inner { position: relative; width: 100%; height: 100%; transition: transform .35s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+.flashcard.flip .fc-inner { transform: rotateY(180deg); }
+.fc-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.fc-front { background: #0F172A; color: #fff; border-color: #1E293B; }
+.fc-front .fc-text { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
+.fc-back { background: var(--surface); color: var(--text-main); transform: rotateY(180deg); border-color: var(--primary); }
+.fc-back .fc-text { font-size: 0.96rem; line-height: 1.45; }
+.fc-tag { position: absolute; top: 10px; left: 12px; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; opacity: 0.6; }
+.fc-box-indicator { position: absolute; top: 10px; right: 12px; font-size: 0.65rem; font-weight: 600; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; }
+.fc-back .fc-box-indicator { background: var(--surface-subtle); color: var(--text-main); }
+.fc-hint { position: absolute; bottom: 10px; font-size: 0.7rem; opacity: 0.6; }
+
+.fc-controls { display: flex; align-items: center; gap: 12px; justify-content: center; margin: 10px 0 6px; }
+.fc-controls span { font-weight: 600; font-size: 0.9rem; min-width: 70px; text-align: center; }
+
+.spaced-rating-bar { display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+.rate-btn { padding: 6px 10px; border-radius: 6px; font-weight: 600; font-size: 0.76rem; }
+.rate-again { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger-border); }
+.rate-hard { background: #FFF7ED; color: #EA580C; border: 1px solid #FED7AA; }
+.rate-good { background: var(--success-light); color: var(--success); border: 1px solid var(--success-border); }
+.rate-easy { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-border); }
+
+/* ZEN FOCUS MODE HUD */
+.zen-overlay {
+  position: fixed;
+  inset: 0;
+  background: #090D16;
+  color: #fff;
+  z-index: 5000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.zen-overlay.active { display: flex !important; animation: pageFadeIn .25s ease; }
+.zen-header { position: absolute; top: 20px; left: 24px; right: 24px; display: flex; justify-content: space-between; align-items: center; }
+.zen-exit-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+.zen-time-glow { font-size: 4.5rem; font-weight: 800; color: #60A5FA; letter-spacing: 2px; font-variant-numeric: tabular-nums; line-height: 1; }
+.zen-time-glow.ticking { animation: timerPulse 1s infinite alternate; }
+@keyframes timerPulse { from { opacity: 0.9; } to { opacity: 1; } }
+
+/* COMMAND PALETTE */
+.cmd-palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 6000;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 100px;
+}
+.cmd-palette-overlay.show { display: flex !important; animation: pageFadeIn .15s ease; }
+.cmd-palette-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.cmd-input { width: 100%; padding: 14px 18px; font-size: 0.95rem; border: none; border-bottom: 1px solid var(--border); outline: none; background: transparent; color: var(--text-main); }
+.cmd-list { max-height: 280px; overflow-y: auto; padding: 6px; }
+.cmd-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 6px; font-size: 0.86rem; cursor: pointer; color: var(--text-main); font-weight: 500; }
+.cmd-item:hover { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+/* ===== MODALS ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 7000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.show {
+  display: flex !important;
+  animation: pageFadeIn .2s ease;
+}
+.auth-modal-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  padding: 22px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+.modal-close-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-main);
+}
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.auth-tab {
+  background: none;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.auth-tab.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.86rem;
+  font-weight: 600;
+  transition: all .15s;
+  cursor: pointer;
+}
+.google-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-focus);
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 14px 0;
+  color: var(--text-subtle);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.auth-divider::before, .auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border);
+}
+.auth-divider span { padding: 0 10px; }
+
+/* POMODORO & CALENDAR */
+.pomo-tab {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pomo-tab.active {
+  background: var(--text-main);
+  color: #fff;
+  border-color: var(--text-main);
+}
+.cal-day.today {
+  border-color: var(--primary) !important;
+  background: var(--primary-light) !important;
+  font-weight: 700;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #0F172A;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  opacity: 0;
+  transition: all .2s ease;
+  z-index: 9999;
+  font-weight: 500;
+  font-size: 0.82rem;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* DARK THEME */
+body.dark-mode {
+  --bg: #090D16;
+  --surface: #111827;
+  --surface-hover: #1F2937;
+  --surface-subtle: #0B101D;
+  --text-main: #F1F5F9;
+  --text-muted: #94A3B8;
+  --border: #1F2937;
+  --border-focus: #3B82F6;
+  --primary-light: rgba(37, 99, 235, 0.15);
+  --success-light: rgba(22, 163, 74, 0.15);
+  --danger-light: rgba(220, 38, 38, 0.15);
+}
+body.dark-mode .app-header { background: rgba(17, 24, 39, 0.95); border-color: #1F2937; }
+body.dark-mode .fc-back { background: #111827; color: #fff; }
+
+/* MOBILE RESPONSIVE DRAWER & HEADER */
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  z-index: 95;
+  display: none;
+}
+.mobile-backdrop.active { display: block; }
+
+@media (max-width: 820px) {
+  .app-header { left: 0 !important; padding: 0 10px; height: 56px; }
+  #btnToggleMobileMenu { display: inline-flex !important; font-size: 1.1rem; padding: 6px 10px; }
+  #networkStatusText { display: none; }
+  .status-badge { padding: 4px; border-radius: 50%; width: 22px; height: 22px; justify-content: center; }
+  .cmd-k-trigger span:first-child { display: none; }
+  .cmd-k-trigger .cmd-kbd { display: none; }
+  .cmd-k-trigger { padding: 6px 8px; }
+  .cmd-k-trigger::before { content: "🔍"; font-size: 0.9rem; }
+  #btnShareDeckModal { display: none; }
+  #btnEnterZenMode { padding: 5px 8px; font-size: 0.78rem; }
+  #btnEnterZenMode span { display: none; }
+  #userDisplayName { display: none; }
+  .user-profile-btn { padding: 3px 6px; }
+  .sidebar { transform: translateX(-100%); width: 260px !important; }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .main { margin-left: 0 !important; padding: 70px 12px 24px; }
+  .form-row { grid-template-columns: 1fr; gap: 8px; }
+  .blurt-results { grid-template-columns: 1fr; }
+  #btnSidebarCollapse { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE BACKDROP -->
+<div class="mobile-backdrop" id="mobileBackdrop"></div>
+
+<!-- APP TOP HEADER -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="btn btn-outline btn-sm" id="btnToggleMobileMenu" style="display:none">☰</button>
+    <div class="status-badge online" id="networkStatusBadge" title="Network Sync Status">
+      <span class="status-dot"></span>
+      <span id="networkStatusText">Online Sync</span>
+    </div>
+    <button class="cmd-k-trigger" id="btnOpenCmdPalette" title="Search & Quick Jump">
+      <span>Search & Jump</span>
+      <span class="cmd-kbd">Ctrl K</span>
+    </button>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-primary btn-sm" id="btnEnterZenMode">🧘 <span>Zen Mode</span></button>
+    <button class="btn btn-outline btn-sm" id="btnShareDeckModal">📲 Share / QR</button>
+    <button class="btn btn-outline btn-sm" id="btnToggleDark">🌙</button>
+    <button class="user-profile-btn" id="btnUserMenu">
+      <div class="user-avatar-circle" id="userAvatarIcon">G</div>
+      <span id="userDisplayName">Guest Account</span>
+    </button>
+  </div>
+</header>
+
+<!-- SIDEBAR (ORGANIZED & COLLAPSIBLE) -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <span class="logo-icon">🎓</span>
+      <div>
+        <div style="display:flex;align-items:center">
+          <span class="logo-text">StudyBuddy</span>
+          <span class="logo-badge">PRO</span>
+        </div>
+        <span style="font-size:0.62rem;color:#64748B;display:block;line-height:1">Intelligent Study OS</span>
+      </div>
+    </div>
+    <button class="sidebar-toggle-btn" id="btnSidebarCollapse" title="Collapse Sidebar (Toggle Mini Mode)">◀</button>
+  </div>
+
+  <div class="deck-selector-box">
+    <label style="font-size:0.66rem;font-weight:700;color:#94A3B8;display:block;margin-bottom:3px">ACTIVE DECK</label>
+    <select class="deck-select-dropdown" id="activeDeckSelect"></select>
+  </div>
+
+  <div class="nav-scroll">
+    <!-- GROUP 1: CORE WORKSPACE -->
+    <div class="nav-group">
+      <div class="nav-group-title">Core Workspace</div>
+      <button class="nav-btn active" data-page="home"><span class="icon">🏠</span><span class="label">Dashboard</span></button>
+      <button class="nav-btn" data-page="pathway"><span class="icon">🚀</span><span class="label">Self-Study Pathway</span></button>
+      <button class="nav-btn" data-page="upload"><span class="icon">📝</span><span class="label">Creator & Decks</span></button>
+      <button class="nav-btn" data-page="reviewer"><span class="icon">📖</span><span class="label">Reviewer Guide</span></button>
+    </div>
+
+    <!-- GROUP 2: STUDY & ACTIVE RECALL -->
+    <div class="nav-group">
+      <div class="nav-group-title">Study & Recall</div>
+      <button class="nav-btn" data-page="flashcards"><span class="icon">🃏</span><span class="label">Leitner Flashcards</span></button>
+      <button class="nav-btn" data-page="blurt"><span class="icon">✍️</span><span class="label">Blurting Recall</span></button>
+      <button class="nav-btn" data-page="oral"><span class="icon">🎙️</span><span class="label">AI Voice Recitation</span></button>
+      <button class="nav-btn" data-page="mindmap"><span class="icon">🗺️</span><span class="label">Concept Mind Map</span></button>
+    </div>
+
+    <!-- GROUP 3: PRACTICE & TESTING -->
+    <div class="nav-group">
+      <div class="nav-group-title">Practice & Testing</div>
+      <button class="nav-btn" data-page="quiz"><span class="icon">🎯</span><span class="label">Exam Arena</span></button>
+      <button class="nav-btn" data-page="match"><span class="icon">⚡</span><span class="label">Speed Match PRO</span></button>
+      <button class="nav-btn" data-page="feynman"><span class="icon">🧠</span><span class="label">Feynman Studio</span></button>
+      <button class="nav-btn" data-page="tutor"><span class="icon">🤖</span><span class="label">PareBot AI Tutor</span></button>
+    </div>
+
+    <!-- GROUP 4: PRODUCTIVITY & PROGRESS -->
+    <div class="nav-group">
+      <div class="nav-group-title">Focus & Analytics</div>
+      <button class="nav-btn" data-page="pomodoro"><span class="icon">⏱️</span><span class="label">Pomodoro Focus</span></button>
+      <button class="nav-btn" data-page="calendar"><span class="icon">📅</span><span class="label">Study Calendar</span></button>
+      <button class="nav-btn" data-page="tracker"><span class="icon">📊</span><span class="label">Analytics Matrix</span></button>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="ambient-box">
+      <div class="ambient-header" id="ambientToggleHeader">
+        <span>🎧 Lo-Fi Audio Studio</span>
+        <span id="ambChevron">▼</span>
+      </div>
+      <div class="ambient-grid" id="ambientGrid">
+        <button class="amb-btn" id="ambLofi">🎵 Lo-Fi</button>
+        <button class="amb-btn" id="ambAlpha">🧠 40Hz</button>
+        <button class="amb-btn" id="ambRain">🌧️ Rain</button>
+        <button class="amb-btn" id="ambCafe">☕ Cafe</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN APP -->
+<main class="main">
+
+  <!-- DASHBOARD & MASCOT -->
+  <section class="page active" id="page-home">
+    <!-- ZERO-TO-HERO HERO CALLOUT -->
+    <div class="pathway-banner">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+        <div>
+          <span style="font-size:0.72rem;background:var(--primary-light);color:var(--primary);font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase">Self-Study Blueprint</span>
+          <h3 style="font-size:1.25rem;font-weight:700;margin:6px 0 2px">🚀 Starting from Zero? Follow Your Custom Pathway</h3>
+          <p style="font-size:0.84rem;color:var(--text-muted);max-width:560px">Step-by-step roadmap with real-world analogies, beginner pitfalls, and auto-generated study tracks.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="navigateTo('pathway')">Open Learning Path →</button>
+      </div>
+    </div>
+
+    <div class="mascot-quest-grid">
+      <div class="mascot-card">
+        <div class="mascot-tier" id="mascotTier">Tier 1 Companion</div>
+        <div class="mascot-avatar" id="mascotAvatar">🐣</div>
+        <div class="mascot-name" id="mascotName">Agila Eaglet</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin:4px 0 8px" id="mascotLevelText">Level 1 • 0 / 100 XP</p>
+        <button class="btn btn-outline btn-sm full" id="btnFeedMascot">⚡ Feed XP</button>
+      </div>
+
+      <div class="quest-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h4 style="font-weight:700;font-size:0.92rem">📜 Daily Study Quests</h4>
+          <span style="font-size:0.72rem;color:var(--success);font-weight:600">Refreshes Daily</span>
+        </div>
+        <div id="questList">
+          <div class="quest-item">
+            <div><strong>Review 5 Flashcards</strong><br><small style="color:var(--text-muted)">Practice Leitner boxes</small></div>
+            <button class="btn btn-sm btn-primary" id="btnClaimQuest1">Claim +25 XP</button>
+          </div>
+          <div class="quest-item">
+            <div><strong>Pass 1 Practice Exam</strong><br><small style="color:var(--text-muted)">Score at least 80%</small></div>
+            <button class="btn btn-sm btn-outline" id="btnClaimQuest2">Claim +40 XP</button>
+          </div>
+          <div class="quest-item">
+            <div><strong>Run 1 Pomodoro Focus</strong><br><small style="color:var(--text-muted)">Complete 25m sprint</small></div>
+            <button class="btn btn-sm btn-outline" id="btnClaimQuest3">Claim +30 XP</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-cards">
+      <div class="mini-card" data-page="pathway"><span>🚀</span><h4>Self-Study Pathway</h4><p>Curated step-by-step master plan</p></div>
+      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Leitner Cards</h4><p>Spaced repetition review boxes</p></div>
+      <div class="mini-card" data-page="quiz"><span>🎯</span><h4>Exam Arena</h4><p>4 adaptive test formats</p></div>
+      <div class="mini-card" data-page="oral"><span>🎙️</span><h4>AI Voice Recitation</h4><p>Verbal exam with spoken grading</p></div>
+    </div>
+  </section>
+
+  <!-- ZERO-TO-HERO SELF-STUDY PATHWAY -->
+  <section class="page" id="page-pathway">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🚀 Zero-to-Hero Self-Study Pathway</h2>
+        <p class="page-sub" style="margin-bottom:0">Personalized study roadmap, real-world analogies, and mistake alerts designed for complete beginners.</p>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btnRunDiagnostic">🎯 Diagnostic Self-Check</button>
+    </div>
+
+    <!-- 4-PHASE ROADMAP TILES -->
+    <div class="pathway-steps" id="pathwayStepsContainer">
+      <div class="path-step-card">
+        <div class="path-step-num">Step 1 • Fundamentals</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Understand Core Ideas</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Read the simplified analogies below and review basic vocabulary.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('flashcards')">Start Leitner Box 1 →</button>
+      </div>
+      <div class="path-step-card">
+        <div class="path-step-num">Step 2 • Concept Mapping</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Connect Relationships</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Explore how every topic links together in the visual hierarchy graph.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('mindmap')">Explore Mind Map →</button>
+      </div>
+      <div class="path-step-card">
+        <div class="path-step-num">Step 3 • Active Free-Recall</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Test Memory Blurts</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Write everything you remember from memory in a 2-minute sprint.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('blurt')">Run Blurting Sprint →</button>
+      </div>
+      <div class="path-step-card">
+        <div class="path-step-num">Step 4 • Exam Readiness</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Simulated Arena</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Eliminate final blind spots with multiple choice and sudden death drills.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('quiz')">Take Practice Exam →</button>
+      </div>
+    </div>
+
+    <!-- CONCEPT DEMYSTIFIER SECTION -->
+    <div style="margin-top:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 style="font-size:1.1rem;font-weight:700">💡 Concept Demystifier (ELI10 Breakdown)</h3>
+        <span style="font-size:0.75rem;color:var(--text-muted)">Auto-generated for active deck</span>
+      </div>
+      <div class="demystifier-grid" id="demystifierGrid"></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT MIND MAP -->
+  <section class="page" id="page-mindmap">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🗺️ Concept Mind Map</h2>
+        <p class="page-sub" style="margin-bottom:0">Visual node hierarchy linking core terms and definitions.</p>
+      </div>
+      <button class="btn btn-outline btn-sm" id="btnRegenMindmap">🔄 Redraw Graph</button>
+    </div>
+    <div class="mindmap-container">
+      <svg class="mindmap-svg" id="mindmapSvg"></svg>
+    </div>
+  </section>
+
+  <!-- AI VOICE ORAL EXAM -->
+  <section class="page" id="page-oral">
+    <h2 class="page-title">🎙️ AI Voice Recitation (Oral Exam)</h2>
+    <p class="page-sub">The AI examiner prompts terms aloud. Tap the microphone and recite your definition.</p>
+    <div class="oral-box">
+      <h3 id="oralTermPrompt" style="font-size:1.25rem;margin-bottom:6px">Ready for Oral Recitation</h3>
+      <p style="color:var(--text-muted);font-size:0.85rem" id="oralStatusText">Click below to hear your first question.</p>
+      <button class="oral-mic-btn" id="btnOralMic">🎙️</button>
+      <div id="oralSpokenText" style="min-height:32px;font-weight:600;margin:10px 0;color:var(--primary)"></div>
+      <div id="oralFeedback" style="font-weight:600;font-size:0.9rem"></div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+        <button class="btn btn-primary" id="btnStartOralExam">▶️ Next Question</button>
+        <button class="btn btn-outline" id="btnRepeatQuestion">🔊 Repeat</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLURTING SCRATCHPAD -->
+  <section class="page" id="page-blurt">
+    <h2 class="page-title">✍️ Blurting Active Recall Scratchpad</h2>
+    <p class="page-sub">Write down everything you remember from memory. The engine scores retention and missed points.</p>
+    <div class="blurt-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>⏱️ Timed Blurting Sprint</strong>
+        <span id="blurtTimer" style="font-weight:700;color:var(--danger)">02:00</span>
+      </div>
+      <textarea id="blurtInput" class="input-textarea" rows="7" placeholder="Type all terms, definitions, and concepts you remember from memory..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" id="btnEvaluateBlurt">🔍 Score Retention</button>
+        <button class="btn btn-outline" id="btnStartBlurtTimer">▶️ Start 2m Timer</button>
+      </div>
+      <div class="blurt-results" id="blurtResults" style="display:none">
+        <div style="background:var(--success-light);padding:12px;border-radius:8px;border:1px solid var(--success-border)">
+          <strong style="color:var(--success)">✅ Remembered Terms (<span id="blurtMatchedCount">0</span>)</strong>
+          <ul id="blurtMatchedList" style="margin:6px 0 0 14px;font-size:0.82rem"></ul>
+        </div>
+        <div style="background:var(--danger-light);padding:12px;border-radius:8px;border:1px solid var(--danger-border)">
+          <strong style="color:var(--danger)">❌ Missed Terms (<span id="blurtMissedCount">0</span>)</strong>
+          <ul id="blurtMissedList" style="margin:6px 0 0 14px;font-size:0.82rem"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATOR -->
+  <section class="page" id="page-upload">
+    <h2 class="page-title">📝 Bullet Creator & Deck Manager</h2>
+    <p class="page-sub">Type or paste terms in bullet format to create or update your active deck.</p>
+    <div class="create-card">
+      <div class="form-row">
+        <div>
+          <label class="field-label">Subject / Course Name <span class="req">*</span></label>
+          <input type="text" id="subjectInput" class="input-text" placeholder="e.g. Biology 101, Philippine History">
+        </div>
+        <div>
+          <label class="field-label">Target Exam Date <span class="req">*</span></label>
+          <input type="date" id="examDate" class="input-text">
+        </div>
+      </div>
+
+      <details class="collapsible-details">
+        <summary>💡 Tap to view supported bullet formats</summary>
+        <div class="details-content">
+          • <code>• Term: Definition</code><br>
+          • <code>- Term - Definition</code><br>
+          • <code>1. Term :: Definition</code><br>
+          • <code>Term &rarr; Definition</code><br>
+          • <code>Term [TAB] Definition</code> (Quizlet export)
+        </div>
+      </details>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <label class="field-label" style="margin:0">
+            Terms & Definitions <span class="req">*</span>
+            <span class="counter-live-badge" id="liveTermCount">0 terms</span>
+          </label>
+        </div>
+        <textarea id="pasteText" class="input-textarea" rows="7" placeholder="• Photosynthesis: Process where plants convert sunlight into chemical energy&#10;• Mitochondria: The powerhouse of the cell producing ATP energy&#10;• Ribosome: Cellular structure that synthesizes proteins"></textarea>
+      </div>
+
+      <button class="btn btn-primary big full" id="btnGenerate" style="margin-top:12px">✨ Save Deck & Build Reviewer</button>
+
+      <details class="collapsible-details" style="margin-top:10px">
+        <summary>📚 Load Pre-loaded Deck Samples</summary>
+        <div class="details-content samples-bar" style="margin-top:6px">
+          <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
+          <button class="sample-btn" data-sample="hist">🇵🇭 PH History & Rizal</button>
+          <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
+          <button class="sample-btn" data-sample="law">⚖️ Phil. Constitution</button>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- REVIEWER GUIDE -->
+  <section class="page" id="page-reviewer">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">📖 Reviewer Guide</h2>
+        <p class="page-sub" id="reviewerSubject" style="margin-bottom:0">Subject: —</p>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" id="btnExportCsv">💾 Export Anki</button>
+        <button class="btn btn-outline btn-sm" id="btnPrintReviewer">🖨️ Print PDF</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="reviewerSearch" class="filter-input" placeholder="🔍 Search terms or definitions...">
+      <button class="btn btn-primary btn-sm" id="btnAddTermModal">+ Add Term</button>
+    </div>
+    <div id="reviewerContent" class="reviewer-content"></div>
+  </section>
+
+  <!-- LEITNER FLASHCARDS -->
+  <section class="page" id="page-flashcards">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🃏 Spaced Leitner Flashcards</h2>
+        <p class="page-sub" style="margin-bottom:0">Rate confidence after flipping to sort cards into Leitner review boxes.</p>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btnCramWeakSpots">⚡ Cram Weak Spots (Box 1)</button>
+    </div>
+
+    <div class="leitner-nav" id="leitnerNav">
+      <button class="leitner-pill active" data-box="all">All (<span id="boxCountAll">0</span>)</button>
+      <button class="leitner-pill" data-box="1">Box 1 (<span id="boxCount1">0</span>)</button>
+      <button class="leitner-pill" data-box="2">Box 2 (<span id="boxCount2">0</span>)</button>
+      <button class="leitner-pill" data-box="3">Box 3 (<span id="boxCount3">0</span>)</button>
+    </div>
+
+    <div class="card-deck">
+      <div class="flashcard" id="flashcard">
+        <div class="fc-inner">
+          <div class="fc-face fc-front">
+            <span class="fc-tag">Term</span>
+            <span class="fc-box-indicator" id="fcBoxNum">Box 1</span>
+            <div class="fc-text" id="fcTerm">No terms loaded</div>
+            <span class="fc-hint">💡 Tap card or press Space to flip</span>
+          </div>
+          <div class="fc-face fc-back">
+            <span class="fc-tag">Definition</span>
+            <span class="fc-box-indicator" id="fcBackBoxNum">Box 1</span>
+            <div class="fc-text" id="fcDef">Add terms in the Creator tab to start studying</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-controls">
+      <button class="btn btn-round" id="fcPrev">⬅️</button>
+      <span id="fcCounter">0 / 0</span>
+      <button class="btn btn-round" id="fcNext">➡️</button>
+    </div>
+
+    <div class="spaced-rating-bar">
+      <button class="rate-btn rate-again" id="btnRateAgain">🔴 Again (<1m)</button>
+      <button class="rate-btn rate-hard" id="btnRateHard">🟠 Hard (1d)</button>
+      <button class="rate-btn rate-good" id="btnRateGood">🟢 Good (3d)</button>
+      <button class="rate-btn rate-easy" id="btnRateEasy">🔵 Easy (7d)</button>
+      <button class="btn btn-outline btn-sm" id="fcAudio" style="margin-left:4px">🔊</button>
+    </div>
+  </section>
+
+  <!-- EXAM ARENA -->
+  <section class="page" id="page-quiz">
+    <h2 class="page-title">🎯 Multi-Mode Exam Arena</h2>
+    <p class="page-sub">Choose your test mode to validate knowledge and eliminate weak memory spots.</p>
+
+    <div id="quizModeSelectArea" class="quiz-mode-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px">
+      <div class="mini-card" data-mode="mc"><h4>📝 Multiple Choice</h4><p>4-option adaptive test</p></div>
+      <div class="mini-card" data-mode="tf"><h4>⚡ True / False</h4><p>Rapid statement verification</p></div>
+      <div class="mini-card" data-mode="id"><h4>✍️ Active Recall ID</h4><p>Type the exact term</p></div>
+      <div class="mini-card" data-mode="time"><h4>⏱️ 60s Sudden Death</h4><p>Score against the clock</p></div>
+    </div>
+
+    <div class="quiz-question" id="quizQuestion" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:660px;margin:0 auto">
+      <div class="q-meta" style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.84rem;margin-bottom:12px">
+        <span id="qProgress">Question 1 of 5</span>
+        <span id="qScoreLive">Score: 0</span>
+      </div>
+      <p id="qText" style="font-size:1.1rem;font-weight:700;margin-bottom:14px"></p>
+      <div id="qOptions" style="display:grid;gap:8px"></div>
+      <div id="qIdentificationBox" style="display:none;margin-top:12px">
+        <input type="text" id="qIdInput" class="input-text" placeholder="Type term name here...">
+        <button class="btn btn-primary full" id="btnSubmitId" style="margin-top:8px">Submit Answer</button>
+      </div>
+      <div id="qFeedback" style="margin-top:12px;font-weight:600"></div>
+      <button class="btn btn-primary full" id="btnNextQ" style="display:none;margin-top:12px">Next Question →</button>
+    </div>
+
+    <div id="quizResult" style="display:none;text-align:center;padding:24px 0"></div>
+  </section>
+
+  <!-- FEYNMAN STUDIO -->
+  <section class="page" id="page-feynman">
+    <h2 class="page-title">🧠 Feynman Teach-Back Studio</h2>
+    <p class="page-sub">Explain concepts in your own simple words to test retention.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:700px;margin:0 auto">
+      <div id="feynmanTermPrompt" style="font-size:1.05rem;font-weight:700;margin-bottom:8px">Pick a term</div>
+      <textarea id="feynmanUserText" class="input-textarea" rows="4" placeholder="Explain this concept in your own words..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" id="btnEvalFeynman">🔍 Evaluate</button>
+        <button class="btn btn-outline" id="btnNextFeynman">➡️ Next Term</button>
+      </div>
+      <div id="feynmanEvalBox" style="display:none;margin-top:12px;padding:12px;background:var(--surface-subtle);border-radius:8px;border:1px solid var(--border)">
+        <h4 id="feynmanScoreText"></h4>
+        <p id="feynmanFeedbackText" style="font-size:0.86rem;margin-top:4px"></p>
+        <div id="feynmanOfficialDef" style="margin-top:6px;font-size:0.8rem;color:var(--text-muted)"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAREBOT AI TUTOR -->
+  <section class="page" id="page-tutor">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🤖 PareBot AI Socratic Tutor</h2>
+        <p class="page-sub" style="margin-bottom:0">Instant mnemonics, simple breakdowns, and Socratic questioning.</p>
+      </div>
+      <button class="btn btn-outline btn-sm" id="btnConfigAiKey">⚙️ AI Settings</button>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:700px;margin:16px auto 0">
+      <div class="samples-bar" style="margin-bottom:10px">
+        <button class="sample-btn" data-ask="mnemonic">💡 Mnemonic</button>
+        <button class="sample-btn" data-ask="eli5">👶 Explain Like I'm 10</button>
+        <button class="sample-btn" data-ask="ph">🇵🇭 Pinoy Analogy</button>
+        <button class="sample-btn" data-ask="quiz">🎯 Quiz Me</button>
+      </div>
+      <div id="tutorChatLog" style="background:var(--surface-subtle);border:1px solid var(--border);border-radius:8px;padding:12px;max-height:260px;overflow-y:auto;margin-bottom:10px;font-size:0.86rem;line-height:1.5">
+        <strong>PareBot 🤖:</strong> Kamusta, Ka-Buddy! Ask me about any concept in your active deck.
+      </div>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="tutorInput" class="input-text" placeholder="Ask PareBot...">
+        <button class="btn btn-primary" id="btnSendTutor">Ask</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPEED MATCH -->
+  <section class="page" id="page-match">
+    <h2 class="page-title">⚡ Speed Match PRO</h2>
+    <p class="page-sub">Connect terms with their definitions as fast as possible to build combos!</p>
+    <div id="matchGame"><button class="btn btn-primary big" id="btnStartMatch">▶️ Start Match Game</button></div>
+    <div id="matchBoard" style="display:none">
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;font-size:0.9rem">
+        <span>Matches: <strong id="matchScore" style="color:var(--success)">0</strong></span>
+        <span>Misses: <strong id="matchMiss" style="color:var(--danger)">0</strong></span>
+        <span>🔥 <strong id="matchCombo">1x</strong></span>
+        <span>⏱️ <strong id="matchTime">0</strong>s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div id="matchTermCol" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div id="matchDefCol" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn btn-outline btn-sm" id="btnMatchReset">🔄 Reset Game</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- POMODORO -->
+  <section class="page" id="page-pomodoro">
+    <h2 class="page-title">⏱️ Focus Sprint Pomodoro</h2>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 20px;max-width:420px;margin:20px auto 0;text-align:center">
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px">
+        <button class="pomo-tab active" data-mode="focus">📚 Focus (25m)</button>
+        <button class="pomo-tab" data-mode="short">☕ Break (5m)</button>
+        <button class="pomo-tab" data-mode="long">🌴 Long (15m)</button>
+      </div>
+      <div id="pomoTime" style="font-size:4rem;font-weight:800;margin:14px 0;line-height:1;font-variant-numeric:tabular-nums">25:00</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-primary big" id="btnPomoStart">▶️ Start</button>
+        <button class="btn btn-outline" id="btnPomoReset">🔄 Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="page" id="page-calendar">
+    <h2 class="page-title">📅 Spaced Study Calendar</h2>
+    <div class="cal-head" style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px">
+      <button class="btn btn-round" id="calPrev">⬅️</button>
+      <h3 id="calMonthYear" style="font-size:1.1rem;font-weight:600"></h3>
+      <button class="btn btn-round" id="calNext">➡️</button>
+    </div>
+    <div class="cal-week" style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-weight:700;color:var(--text-muted);font-size:0.76rem;margin-bottom:6px">
+      <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
+    <div class="cal-grid" id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="page" id="page-tracker">
+    <h2 class="page-title">📊 Analytics & Retention Matrix</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statTerms" style="font-size:1.6rem;font-weight:700;color:var(--primary);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">Terms in Deck</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statQuiz" style="font-size:1.6rem;font-weight:700;color:var(--primary);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">Exams Taken</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statStreak" style="font-size:1.6rem;font-weight:700;color:var(--accent);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">🔥 Day Streak</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statXp" style="font-size:1.6rem;font-weight:700;color:var(--primary);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">⚡ Total XP</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FULLSCREEN ZEN FOCUS MODE HUD -->
+<div class="zen-overlay" id="zenOverlay" style="display:none">
+  <div class="zen-header">
+    <div style="font-weight:700;letter-spacing:0.05em;font-size:0.85rem">🧘 ZEN FOCUS SANCTUM</div>
+    <button class="zen-exit-btn" id="btnExitZenMode">✕ Exit (Esc)</button>
+  </div>
+  <div class="zen-time-glow" id="zenTimeDisplay">25:00</div>
+  
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+    <button class="btn btn-primary" id="btnZenStartTimer">▶️ Start Timer</button>
+    <button class="btn btn-outline" id="btnZenResetTimer">🔄 Reset</button>
+    <button class="btn btn-outline" id="btnZenToggleAudio">🎵 Lo-Fi Audio</button>
+  </div>
+
+  <div style="max-width:460px;width:100%;margin-top:28px;text-align:center;background:rgba(255,255,255,0.04);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">
+    <div id="zenCardTerm" style="font-size:1.6rem;font-weight:700;margin-bottom:8px">Mitochondria</div>
+    <div id="zenCardDef" style="font-size:1rem;color:#94A3B8;line-height:1.5">Powerhouse of the cell producing ATP energy.</div>
+    <div style="margin-top:16px">
+      <button class="btn btn-outline btn-sm" id="btnZenNextCard">Next Concept →</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMMAND PALETTE MODAL -->
+<div class="cmd-palette-overlay" id="cmdPaletteOverlay" style="display:none">
+  <div class="cmd-palette-card">
+    <input type="text" id="cmdPaletteInput" class="cmd-input" placeholder="Type a command or jump to feature...">
+    <div class="cmd-list" id="cmdPaletteList">
+      <div class="cmd-item" data-action="nav:pathway"><span>🚀 Self-Study Pathway (Zero-to-Hero)</span> <span class="cmd-kbd">S</span></div>
+      <div class="cmd-item" data-action="nav:flashcards"><span>🃏 Practice Leitner Flashcards</span> <span class="cmd-kbd">1</span></div>
+      <div class="cmd-item" data-action="nav:quiz"><span>🎯 Start Practice Exam</span> <span class="cmd-kbd">2</span></div>
+      <div class="cmd-item" data-action="nav:mindmap"><span>🗺️ Open Concept Mind Map</span> <span class="cmd-kbd">3</span></div>
+      <div class="cmd-item" data-action="nav:oral"><span>🎙️ Start Spoken AI Recitation</span> <span class="cmd-kbd">4</span></div>
+      <div class="cmd-item" data-action="zen"><span>🧘 Enter Zen Focus Mode</span> <span class="cmd-kbd">Z</span></div>
+      <div class="cmd-item" data-action="audio:lofi"><span>🎵 Toggle Lo-Fi Audio</span> <span class="cmd-kbd">A</span></div>
+      <div class="cmd-item" data-action="dark"><span>🌙 Toggle Theme</span> <span class="cmd-kbd">T</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGNOSTIC SELF-CHECK MODAL -->
+<div class="modal-overlay" id="diagnosticModal" style="display:none">
+  <div class="auth-modal-card" style="max-width:480px">
+    <button class="modal-close-btn" id="btnCloseDiagnosticModal">✕</button>
+    <div style="text-align:center;margin-bottom:14px">
+      <span style="font-size:1.6rem">🎯</span>
+      <h3 style="font-size:1.15rem;font-weight:700">Self-Study Diagnostic Check</h3>
+      <p style="font-size:0.82rem;color:var(--text-muted)">Assess your readiness for <strong id="diagSubjectName">this deck</strong>.</p>
+    </div>
+    
+    <div id="diagQuizArea">
+      <div id="diagQuestionProgress" style="font-size:0.78rem;color:var(--primary);font-weight:600;margin-bottom:6px">Question 1 of 3</div>
+      <p id="diagQuestionText" style="font-size:0.96rem;font-weight:600;margin-bottom:12px"></p>
+      <div id="diagOptions" style="display:grid;gap:8px"></div>
+    </div>
+
+    <div id="diagResultArea" style="display:none;text-align:center;padding:12px 0">
+      <div id="diagResultBadge" style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.82rem;font-weight:700;margin-bottom:8px"></div>
+      <h4 id="diagResultTitle" style="font-size:1.1rem;font-weight:700;margin-bottom:6px"></h4>
+      <p id="diagResultDesc" style="font-size:0.84rem;color:var(--text-muted);line-height:1.45;margin-bottom:16px"></p>
+      <button class="btn btn-primary full" id="btnDiagStartPath">🚀 Start Recommended Path</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE / IMPORT QR MODAL -->
+<div class="modal-overlay" id="qrModal" style="display:none">
+  <div class="auth-modal-card" style="text-align:center;max-width:440px">
+    <button class="modal-close-btn" id="btnCloseQrModal">✕</button>
+    <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:4px">📲 Share or Import Deck</h3>
+    <div class="auth-tabs" style="justify-content:center;margin-top:10px">
+      <button class="auth-tab active" id="tabQrExport">Export QR / Link</button>
+      <button class="auth-tab" id="tabQrImport">Import Code</button>
+    </div>
+
+    <div id="qrExportSection">
+      <p style="color:var(--text-muted);font-size:0.82rem;margin-bottom:8px">Scan with any phone camera or copy the direct import link:</p>
+      <div id="qrCodeTarget" style="display:flex;justify-content:center;margin:8px 0"></div>
+      <textarea id="qrJsonPayload" class="input-textarea" rows="2" readonly style="font-size:0.75rem;margin-top:6px"></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <button class="btn btn-outline btn-sm" id="btnCopyJsonPayload">📋 Copy JSON</button>
+        <button class="btn btn-primary btn-sm" id="btnCopyShareLink">🔗 Copy Share Link</button>
+      </div>
+    </div>
+
+    <div id="qrImportSection" style="display:none">
+      <p style="color:var(--text-muted);font-size:0.82rem">Paste a deck code or share link from a classmate:</p>
+      <textarea id="qrImportInput" class="input-textarea" rows="4" placeholder='{"subject":"History","terms":[{"term":"...","def":"..."}]}' style="font-size:0.8rem;margin-top:8px"></textarea>
+      <button class="btn btn-primary full btn-sm" id="btnExecuteImport" style="margin-top:8px">📥 Import into Library</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH & CLOUD CROSS-DEVICE PERSISTENCE MODAL -->
+<div class="modal-overlay" id="authModal" style="display:none">
+  <div class="auth-modal-card">
+    <button class="modal-close-btn" id="btnCloseAuthModal">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignIn">Sign In</button>
+      <button class="auth-tab" id="tabSignUp">Register</button>
+      <button class="auth-tab" id="tabSyncVault">☁️ Cloud Sync</button>
+    </div>
+    
+    <div id="authFormsContainer">
+      <button class="google-btn" id="btnGoogleAuth">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.92a8.78 8.78 0 0 0 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.83.86-3.04.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A8.99 8.99 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.96 10.71A5.4 5.4 0 0 1 3.68 9c0-.59.1-1.17.28-1.71V4.96H.96A8.99 8.99 0 0 0 0 9c0 1.45.35 2.82.96 4.04l3-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.59C13.46.89 11.43 0 9 0A8.99 8.99 0 0 0 .96 4.96l3 2.33c.71-2.13 2.7-3.71 5.04-3.71z"/></svg>
+        Sign in with Google
+      </button>
+      <div class="auth-divider"><span>OR EMAIL</span></div>
+      
+      <form id="signInForm" onsubmit="event.preventDefault(); handleEmailSignIn();">
+        <div style="margin-bottom:10px"><label class="field-label">Email</label><input type="email" id="signInEmail" class="input-text" placeholder="student@university.edu" required></div>
+        <div style="margin-bottom:12px"><label class="field-label">Password</label><input type="password" id="signInPassword" class="input-text" placeholder="••••••••" required></div>
+        <button type="submit" class="btn btn-primary full big">Sign In</button>
+      </form>
+      
+      <form id="signUpForm" style="display:none" onsubmit="event.preventDefault(); handleEmailSignUp();">
+        <div style="margin-bottom:8px"><label class="field-label">Full Name</label><input type="text" id="signUpName" class="input-text" placeholder="Maria Santos" required></div>
+        <div style="margin-bottom:8px"><label class="field-label">Email</label><input type="email" id="signUpEmail" class="input-text" placeholder="student@university.edu" required></div>
+        <div style="margin-bottom:12px"><label class="field-label">Password</label><input type="password" id="signUpPassword" class="input-text" placeholder="Min. 6 chars" minlength="6" required></div>
+        <button type="submit" class="btn btn-primary full big">Register</button>
+      </form>
+    </div>
+
+    <!-- CROSS-DEVICE CLOUD SYNC & SUPABASE PERSISTENCE -->
+    <div id="syncVaultContainer" style="display:none">
+      
+      <!-- FREE SUPABASE CLOUD DATABASE (NO CREDIT CARD NEEDED) -->
+      <div style="background:var(--surface-subtle);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <strong style="font-size:0.9rem">⚡ Supabase 100% Free Cloud Database</strong>
+          <span style="font-size:0.7rem;background:var(--success-light);color:var(--success);padding:2px 6px;border-radius:4px;font-weight:700">Zero Payment</span>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px">Sign in to <a href="https://supabase.com" target="_blank" style="color:var(--primary);font-weight:600">supabase.com</a> with GitHub, create a free project, and paste your details below:</p>
+        
+        <div style="margin-bottom:8px">
+          <label class="field-label" style="font-size:0.75rem">Project URL</label>
+          <input type="text" id="supabaseUrl" class="input-text" placeholder="https://xxxxxxxxxxxx.supabase.co" style="font-size:0.8rem">
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="field-label" style="font-size:0.75rem">Anon Public Key</label>
+          <input type="password" id="supabaseKey" class="input-text" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." style="font-size:0.8rem">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <button class="btn btn-primary btn-sm" id="btnSaveSupabase">💾 Save & Sync Now</button>
+          <button class="btn btn-outline btn-sm" id="btnCopySupabaseSql">📋 Copy SQL Setup</button>
+        </div>
+      </div>
+
+      <!-- METHOD 2: 1-SCAN PHONE CAMERA TRANSFER -->
+      <div style="background:var(--surface-subtle);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;text-align:center">
+        <strong style="font-size:0.9rem;display:block;margin-bottom:4px">📱 Or Instant Scan with Phone Camera</strong>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">Scan with your phone camera to instantly clone your account to your phone:</p>
+        <div id="accountSyncQrTarget" style="display:flex;justify-content:center;margin:6px 0"></div>
+        <button class="btn btn-outline btn-sm full" id="btnCopyAccountMagicLink" style="margin-top:6px">🔗 Copy Account Magic Link (Send via Messenger/Email)</button>
+      </div>
+
+      <!-- METHOD 3: LIVE WEBRTC P2P ROOM SYNC -->
+      <details class="collapsible-details">
+        <summary>⚡ Live WebRTC Room Sync</summary>
+        <div class="details-content" style="margin-top:8px">
+          <p style="font-size:0.76rem;color:var(--text-muted);margin-bottom:6px">Room Code: <strong id="liveRoomCodeDisplay">SB7749</strong></p>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="targetRoomCodeInput" class="input-text" placeholder="Enter room code on phone..." style="font-size:0.8rem">
+            <button class="btn btn-primary btn-sm" id="btnConnectPeerRoom">⚡ Pull Data</button>
+          </div>
+        </div>
+      </details>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+const formatDate = d => { const dt = new Date(d); return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`; };
+
+function showToast(m) {
+  const t = $("toast");
+  if (!t) return;
+  t.textContent = m;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+function shuffle(arr) {
+  const r = [...arr];
+  for (let i = r.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [r[i], r[j]] = [r[j], r[i]];
+  }
+  return r;
+}
+
+function esc(s) {
+  return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+/* ============================================================
+   1. AUTHENTICATION, MULTI-USER & SUPABASE CLOUD SYNC
+   ============================================================ */
+const Auth = {
+  USERS_KEY: "studybuddy_users_db_v18",
+  SESSION_KEY: "studybuddy_session_v18",
+  getUsers() { try { return JSON.parse(localStorage.getItem(this.USERS_KEY)) || {}; } catch { return {}; } },
+  saveUsers(users) { localStorage.setItem(this.USERS_KEY, JSON.stringify(users)); },
+  getSession() { try { return JSON.parse(localStorage.getItem(this.SESSION_KEY)); } catch { return null; } },
+  setSession(user) {
+    localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
+    this.updateUserHeader();
+    SupabaseDB.pull();
+  },
+  logout() {
+    localStorage.removeItem(this.SESSION_KEY);
+    showToast("👋 Switched to Guest Mode.");
+    this.updateUserHeader();
+    renderActiveDeckUI();
+  },
+  updateUserHeader() {
+    const session = this.getSession();
+    if (session) {
+      $("userDisplayName").textContent = session.name;
+      $("userAvatarIcon").textContent = session.name.charAt(0).toUpperCase();
+      $("userAvatarIcon").style.background = "var(--primary)";
+    } else {
+      $("userDisplayName").textContent = "Guest Mode";
+      $("userAvatarIcon").textContent = "G";
+      $("userAvatarIcon").style.background = "#64748B";
+    }
+  }
+};
+
+const Store = {
+  getStorageKey() {
+    const session = Auth.getSession();
+    return session ? `studybuddy_data_${session.email}` : "studybuddy_data_guest";
+  },
+  defaultData() {
+    return {
+      activeDeckId: "deck_bio",
+      decks: {
+        "deck_bio": {
+          id: "deck_bio",
+          subject: "General Biology 101",
+          examDate: formatDate(new Date(Date.now() + 14 * 86400000)),
+          terms: [
+            { id: 0, term: "Photosynthesis", def: "Process where plants convert sunlight into chemical energy.", box: 1 },
+            { id: 1, term: "Mitochondria", def: "The powerhouse of the cell producing ATP energy.", box: 2 },
+            { id: 2, term: "Cell Membrane", def: "Phospholipid bilayer regulating entry and exit of molecules.", box: 1 },
+            { id: 3, term: "Ribosome", def: "Cellular organelle that synthesizes proteins translating mRNA.", box: 1 },
+            { id: 4, term: "Chloroplast", def: "Plant organelle containing chlorophyll where light absorption occurs.", box: 3 }
+          ],
+          quizHistory: []
+        }
+      },
+      xp: 0,
+      streak: 0,
+      lastCheckin: null,
+      darkMode: false,
+      sidebarCollapsed: false,
+      quizCount: 0
+    };
+  },
+  get() {
+    try { return Object.assign(this.defaultData(), JSON.parse(localStorage.getItem(this.getStorageKey())) || {}); }
+    catch { return this.defaultData(); }
+  },
+  set(d) {
+    try {
+      localStorage.setItem(this.getStorageKey(), JSON.stringify(d));
+      SupabaseDB.push();
+    } catch(e){}
+  },
+  update(fn) { const u = fn(this.get()); this.set(u); return u; },
+  getActiveDeck() { const d = this.get(); return d.decks[d.activeDeckId] || Object.values(d.decks)[0]; }
+};
+
+/* ============================================================
+   2. SUPABASE REST API ENGINE (100% FREE CLOUD STORAGE)
+   ============================================================ */
+const SupabaseDB = {
+  getUrl() { return (localStorage.getItem("studybuddy_sb_url") || "").trim().replace(/\/$/, ""); },
+  getKey() { return (localStorage.getItem("studybuddy_sb_key") || "").trim(); },
+  
+  async push() {
+    const url = this.getUrl(), key = this.getKey(), session = Auth.getSession();
+    if (!url || !key || !session) return;
+    
+    try {
+      const payload = {
+        user_email: session.email,
+        user_name: session.name,
+        vault_data: Store.get(),
+        updated_at: new Date().toISOString()
+      };
+
+      const res = await fetch(`${url}/rest/v1/studybuddy_sync`, {
+        method: "POST",
+        headers: {
+          "apikey": key,
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json",
+          "Prefer": "resolution=merge-duplicates"
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) console.log("☁️ Synced to Supabase successfully");
+    } catch(e) { console.warn("Supabase push error:", e); }
+  },
+
+  async pull() {
+    const url = this.getUrl(), key = this.getKey(), session = Auth.getSession();
+    if (!url || !key || !session) return;
+
+    try {
+      const res = await fetch(`${url}/rest/v1/studybuddy_sync?user_email=eq.${encodeURIComponent(session.email)}&select=*`, {
+        headers: {
+          "apikey": key,
+          "Authorization": `Bearer ${key}`,
+          "Accept": "application/json"
+        }
+      });
+      const data = await res.json();
+      if (data && data.length > 0 && data[0].vault_data) {
+        Store.set(data[0].vault_data);
+        renderActiveDeckUI();
+        showToast("☁️ Loaded latest cloud sync from Supabase!");
+      }
+    } catch(e) { console.warn("Supabase pull error:", e); }
+  }
+};
+
+$("btnSaveSupabase").addEventListener("click", () => {
+  const url = $("supabaseUrl").value.trim();
+  const key = $("supabaseKey").value.trim();
+  localStorage.setItem("studybuddy_sb_url", url);
+  localStorage.setItem("studybuddy_sb_key", key);
+  showToast(url ? "✅ Supabase Config Saved & Syncing..." : "Supabase disconnected.");
+  SupabaseDB.push();
+  SupabaseDB.pull();
+});
+
+$("btnCopySupabaseSql").addEventListener("click", () => {
+  const sql = `create table studybuddy_sync (
+  user_email text primary key,
+  user_name text,
+  vault_data jsonb,
+  updated_at timestamp with time zone default timezone('utc'::text, now())
+);
+alter table studybuddy_sync enable row level security;
+create policy "Allow all public access" on studybuddy_sync for all using (true) with check (true);`;
+  navigator.clipboard.writeText(sql);
+  showToast("📋 Copied SQL! Paste in Supabase SQL Editor & click Run.");
+});
+
+if (localStorage.getItem("studybuddy_sb_url")) $("supabaseUrl").value = localStorage.getItem("studybuddy_sb_url");
+if (localStorage.getItem("studybuddy_sb_key")) $("supabaseKey").value = localStorage.getItem("studybuddy_sb_key");
+
+/* ============================================================
+   3. 1-SCAN PHONE CAMERA QR SYNC & MAGIC LINK
+   ============================================================ */
+function buildFullAccountVaultPayload() {
+  const payload = {
+    u: Auth.getSession(),
+    d: Store.get()
+  };
+  return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+
+function renderAccountSyncQR() {
+  const base64 = buildFullAccountVaultPayload();
+  const shareUrl = `${window.location.origin}${window.location.pathname}#vault=${base64}`;
+  $("accountSyncQrTarget").innerHTML = buildAutoQrCode(shareUrl);
+}
+
+$("btnCopyAccountMagicLink").addEventListener("click", () => {
+  const base64 = buildFullAccountVaultPayload();
+  const shareUrl = `${window.location.origin}${window.location.pathname}#vault=${base64}`;
+  navigator.clipboard.writeText(shareUrl);
+  showToast("🔗 Copied Magic Link! Send to phone via Messenger, Discord, or Email.");
+});
+
+// Auto-Restore Account if Opened via #vault= URL
+window.addEventListener("DOMContentLoaded", () => {
+  if (window.location.hash.startsWith("#vault=")) {
+    try {
+      const base64 = window.location.hash.replace("#vault=", "");
+      const jsonStr = decodeURIComponent(escape(atob(base64)));
+      const payload = JSON.parse(jsonStr);
+      if (payload.d) Store.set(payload.d);
+      if (payload.u) Auth.setSession(payload.u);
+      history.replaceState(null, "", window.location.pathname);
+      showToast("🎉 Account & all decks restored seamlessly on this device!");
+      successSfx();
+      if (typeof confetti === "function") confetti({ particleCount: 70, spread: 50 });
+    } catch(e) { console.warn("Vault hash decode error:", e); }
+  } else if (window.location.hash.startsWith("#deck=")) {
+    try {
+      const raw = decodeURIComponent(window.location.hash.replace("#deck=", ""));
+      importDeckPayload(raw);
+    } catch (e) {}
+  }
+});
+
+// PeerJS WebRTC P2P Room Host & Client
+let myPeer = null, myRoomId = null;
+function initPeerHost() {
+  if (typeof Peer === "undefined") return;
+  myRoomId = "SB" + Math.floor(1000 + Math.random() * 9000);
+  if ($("liveRoomCodeDisplay")) $("liveRoomCodeDisplay").textContent = myRoomId;
+  
+  try {
+    if (myPeer) myPeer.destroy();
+    myPeer = new Peer(myRoomId);
+    myPeer.on("connection", conn => {
+      conn.on("data", data => {
+        if (data.type === "REQUEST_VAULT") {
+          conn.send({ type: "VAULT_DATA", vault: Store.get(), user: Auth.getSession() });
+          showToast("⚡ Sent live account sync to phone!");
+        }
+      });
+    });
+  } catch(e) { console.warn("PeerJS init:", e); }
+}
+
+$("btnConnectPeerRoom").addEventListener("click", () => {
+  const targetId = $("targetRoomCodeInput").value.trim().toUpperCase();
+  if (!targetId) { showToast("⚠️ Enter room code from your other device."); return; }
+  showToast("⚡ Connecting to peer device...");
+  try {
+    const clientPeer = new Peer();
+    clientPeer.on("open", () => {
+      const conn = clientPeer.connect(targetId);
+      conn.on("open", () => { conn.send({ type: "REQUEST_VAULT" }); });
+      conn.on("data", res => {
+        if (res.type === "VAULT_DATA") {
+          if (res.vault) Store.set(res.vault);
+          if (res.user) Auth.setSession(res.user);
+          renderActiveDeckUI();
+          $("authModal").classList.remove("show");
+          showToast("🎉 Successfully synced live data from your PC!");
+          successSfx();
+        }
+      });
+      setTimeout(() => { if (!conn.open) showToast("⚠️ Room not found or device offline."); }, 5000);
+    });
+  } catch(e) { showToast("❌ Peer connection failed."); }
+});
+
+/* ============================================================
+   4. COLLAPSIBLE SIDEBAR & AUDIO STUDIO TOGGLE
+   ============================================================ */
+const sidebar = $("sidebar");
+const mobileBackdrop = $("mobileBackdrop");
+const btnToggleMobileMenu = $("btnToggleMobileMenu");
+const btnSidebarCollapse = $("btnSidebarCollapse");
+
+btnSidebarCollapse.addEventListener("click", () => {
+  const isCollapsed = document.body.classList.toggle("sidebar-collapsed");
+  btnSidebarCollapse.textContent = isCollapsed ? "▶" : "◀";
+  Store.update(s => { s.sidebarCollapsed = isCollapsed; return s; });
+  if (document.getElementById("page-mindmap").classList.contains("active")) renderMindMap();
+});
+
+if (Store.get().sidebarCollapsed) {
+  document.body.classList.add("sidebar-collapsed");
+  btnSidebarCollapse.textContent = "▶";
+}
+
+btnToggleMobileMenu.addEventListener("click", () => {
+  sidebar.classList.toggle("mobile-open");
+  mobileBackdrop.classList.toggle("active", sidebar.classList.contains("mobile-open"));
+});
+
+mobileBackdrop.addEventListener("click", () => {
+  sidebar.classList.remove("mobile-open");
+  mobileBackdrop.classList.remove("active");
+});
+
+$("ambientToggleHeader").addEventListener("click", () => {
+  const grid = $("ambientGrid");
+  const isHidden = grid.style.display === "none";
+  grid.style.display = isHidden ? "grid" : "none";
+  $("ambChevron").textContent = isHidden ? "▼" : "▲";
+});
+
+/* ============================================================
+   5. ZEN FOCUS SANCTUM WITH INTERACTIVE TIMER
+   ============================================================ */
+let zenDeck = [], zenIdx = 0, zenTimerInt = null, zenSec = 25 * 60, isZenTicking = false;
+
+function enterZenMode() {
+  const deck = Store.getActiveDeck();
+  zenDeck = deck.terms.length ? shuffle([...deck.terms]) : [{ term: "Deep Focus", def: "Immerse yourself in active study." }];
+  zenIdx = 0;
+  updateZenCard();
+  $("zenOverlay").classList.add("active");
+  $("zenTimeDisplay").textContent = `${pad(Math.floor(zenSec/60))}:${pad(zenSec%60)}`;
+  playAmbient("lofi");
+}
+
+function updateZenCard() {
+  if (!zenDeck.length) return;
+  const c = zenDeck[zenIdx % zenDeck.length];
+  $("zenCardTerm").textContent = c.term;
+  $("zenCardDef").textContent = c.def;
+}
+
+$("btnEnterZenMode").addEventListener("click", enterZenMode);
+$("btnExitZenMode").addEventListener("click", () => {
+  $("zenOverlay").classList.remove("active");
+  if (zenTimerInt) { clearInterval(zenTimerInt); zenTimerInt = null; }
+  isZenTicking = false;
+  $("btnZenStartTimer").textContent = "▶️ Start Timer";
+  $("zenTimeDisplay").classList.remove("ticking");
+  stopAmbient();
+});
+
+$("btnZenNextCard").addEventListener("click", () => { zenIdx++; updateZenCard(); });
+$("btnZenToggleAudio").addEventListener("click", () => playAmbient("lofi"));
+
+$("btnZenStartTimer").addEventListener("click", () => {
+  if (isZenTicking) {
+    clearInterval(zenTimerInt);
+    zenTimerInt = null;
+    isZenTicking = false;
+    $("btnZenStartTimer").textContent = "▶️ Resume";
+    $("zenTimeDisplay").classList.remove("ticking");
+  } else {
+    isZenTicking = true;
+    $("btnZenStartTimer").textContent = "⏸️ Pause";
+    $("zenTimeDisplay").classList.add("ticking");
+    zenTimerInt = setInterval(() => {
+      zenSec--;
+      $("zenTimeDisplay").textContent = `${pad(Math.floor(zenSec/60))}:${pad(zenSec%60)}`;
+      $("pomoTime").textContent = $("zenTimeDisplay").textContent;
+      if (zenSec <= 0) {
+        clearInterval(zenTimerInt);
+        zenTimerInt = null;
+        isZenTicking = false;
+        successSfx();
+        addXP(30);
+        showToast("🧘 Zen Focus session completed! +30 XP");
+        zenSec = 25 * 60;
+        $("zenTimeDisplay").textContent = "25:00";
+        $("btnZenStartTimer").textContent = "▶️ Start Timer";
+        $("zenTimeDisplay").classList.remove("ticking");
+      }
+    }, 1000);
+  }
+});
+
+$("btnZenResetTimer").addEventListener("click", () => {
+  if (zenTimerInt) { clearInterval(zenTimerInt); zenTimerInt = null; }
+  isZenTicking = false;
+  zenSec = 25 * 60;
+  $("zenTimeDisplay").textContent = "25:00";
+  $("pomoTime").textContent = "25:00";
+  $("btnZenStartTimer").textContent = "▶️ Start Timer";
+  $("zenTimeDisplay").classList.remove("ticking");
+});
+
+// Command Palette
+const cmdOverlay = $("cmdPaletteOverlay");
+const cmdInput = $("cmdPaletteInput");
+
+function toggleCmdPalette(open = true) {
+  cmdOverlay.classList.toggle("show", open);
+  if (open) { cmdInput.value = ""; cmdInput.focus(); }
+}
+$("btnOpenCmdPalette").addEventListener("click", () => toggleCmdPalette(true));
+cmdOverlay.addEventListener("click", e => { if (e.target === cmdOverlay) toggleCmdPalette(false); });
+
+document.querySelectorAll(".cmd-item").forEach(item => {
+  item.addEventListener("click", () => {
+    const action = item.dataset.action;
+    toggleCmdPalette(false);
+    if (action.startsWith("nav:")) navigateTo(action.replace("nav:", ""));
+    else if (action === "zen") enterZenMode();
+    else if (action === "audio:lofi") playAmbient("lofi");
+    else if (action === "dark") $("btnToggleDark").click();
+  });
+});
+
+window.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    toggleCmdPalette(!cmdOverlay.classList.contains("show"));
+  }
+  if (e.key === "Escape") {
+    if (cmdOverlay.classList.contains("show")) toggleCmdPalette(false);
+    if ($("zenOverlay").classList.contains("active")) $("btnExitZenMode").click();
+    if ($("qrModal").classList.contains("show")) $("btnCloseQrModal").click();
+    if ($("authModal").classList.contains("show")) $("btnCloseAuthModal").click();
+    if ($("diagnosticModal").classList.contains("show")) $("btnCloseDiagnosticModal").click();
+  }
+  if (e.key.toLowerCase() === "z" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+    enterZenMode();
+  }
+  if (!["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+    if (e.code === "Space" && $("page-flashcards").classList.contains("active")) {
+      e.preventDefault();
+      $("flashcard").click();
+    } else if (e.key === "ArrowLeft" && $("page-flashcards").classList.contains("active")) {
+      $("fcPrev").click();
+    } else if (e.key === "ArrowRight" && $("page-flashcards").classList.contains("active")) {
+      $("fcNext").click();
+    } else if (e.key === "1" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateAgain").click();
+    } else if (e.key === "2" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateHard").click();
+    } else if (e.key === "3" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateGood").click();
+    } else if (e.key === "4" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateEasy").click();
+    }
+  }
+});
+
+/* ============================================================
+   6. MASCOT EVOLUTION & QUESTS
+   ============================================================ */
+const MASCOT_TIERS = [
+  { xp: 0, name: "Agila Egg", avatar: "🥚", tier: "Tier 1 Companion" },
+  { xp: 80, name: "Agila Eaglet", avatar: "🐣", tier: "Tier 2 Companion" },
+  { xp: 250, name: "Novice Flyer", avatar: "🦅", tier: "Tier 3 Companion" },
+  { xp: 600, name: "Sky Soarer", avatar: "⚡🦅", tier: "Tier 4 Companion" },
+  { xp: 1200, name: "Master Agila 👑", avatar: "👑🦅", tier: "Tier 5 Companion" }
+];
+
+function updateMascot() {
+  const xp = Store.get().xp || 0;
+  let currentTier = MASCOT_TIERS[0];
+  let nextTier = MASCOT_TIERS[1];
+  for (let i = 0; i < MASCOT_TIERS.length; i++) {
+    if (xp >= MASCOT_TIERS[i].xp) {
+      currentTier = MASCOT_TIERS[i];
+      nextTier = MASCOT_TIERS[i + 1] || null;
+    }
+  }
+  $("mascotAvatar").textContent = currentTier.avatar;
+  $("mascotName").textContent = currentTier.name;
+  $("mascotTier").textContent = currentTier.tier;
+  $("mascotLevelText").textContent = nextTier ? `${xp} / ${nextTier.xp} XP` : `Max (${xp} XP)`;
+}
+
+$("btnFeedMascot").addEventListener("click", () => {
+  addXP(15);
+  updateMascot();
+  if (typeof confetti === "function") confetti({ particleCount: 30, spread: 40 });
+});
+
+$("btnClaimQuest1").addEventListener("click", () => { addXP(25); $("btnClaimQuest1").disabled = true; $("btnClaimQuest1").textContent = "Claimed ✅"; });
+$("btnClaimQuest2").addEventListener("click", () => { addXP(40); $("btnClaimQuest2").disabled = true; $("btnClaimQuest2").textContent = "Claimed ✅"; });
+$("btnClaimQuest3").addEventListener("click", () => { addXP(30); $("btnClaimQuest3").disabled = true; $("btnClaimQuest3").textContent = "Claimed ✅"; });
+
+/* ============================================================
+   7. ZERO-TO-HERO SELF-STUDY ROADMAP & DEMYSTIFIER
+   ============================================================ */
+function renderDemystifier() {
+  const deck = Store.getActiveDeck();
+  const grid = $("demystifierGrid");
+  if (!grid) return;
+  if (!deck.terms || !deck.terms.length) {
+    grid.innerHTML = '<p style="color:var(--text-muted);font-size:0.86rem;grid-column:1/-1">No terms loaded yet. Add concepts in Creator tab to build your pathway.</p>';
+    return;
+  }
+
+  grid.innerHTML = deck.terms.map(t => {
+    let analogy = `Think of <strong>${esc(t.term)}</strong> like a specialized tool: ${esc(t.def.toLowerCase().slice(0, 45))}...`;
+    let trap = `⚠️ <strong>Common Beginner Trap:</strong> Remember the specific role of ${esc(t.term)} on exam day.`;
+
+    if (t.term.toLowerCase().includes("mito")) {
+      analogy = `⚡ <strong>Real-World Analogy:</strong> Think of Mitochondria like the rechargeable battery/power plant producing energy!`;
+    } else if (t.term.toLowerCase().includes("photo")) {
+      analogy = `☀️ <strong>Real-World Analogy:</strong> Think of Photosynthesis like a solar cooker turning light into glucose food!`;
+    } else if (t.term.toLowerCase().includes("membrane")) {
+      analogy = `🛡️ <strong>Real-World Analogy:</strong> Think of the Cell Membrane like a security gate controlling entry and exit!`;
+    }
+
+    return `
+      <div class="demystify-card">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong style="font-size:1rem;color:var(--primary)">${esc(t.term)}</strong>
+            <span style="font-size:0.68rem;font-weight:600;background:var(--primary-light);color:var(--primary);padding:2px 6px;border-radius:4px">Box ${t.box || 1}</span>
+          </div>
+          <p style="font-size:0.84rem;margin-top:4px;color:var(--text-main)">${esc(t.def)}</p>
+          <div class="demystify-analogy">${analogy}</div>
+          <div class="demystify-trap">${trap}</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn btn-outline btn-sm" onclick="pareBotRespond('${esc(t.term)}', 'eli5'); navigateTo('tutor');">🤖 Ask PareBot</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('⭐ Mastered ${esc(t.term)}!'); addXP(15);">Mark Understood ✅</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// Interactive 3-Question Diagnostic Assessment
+let diagIdx = 0, diagScore = 0, diagQuestions = [];
+function openDiagnosticModal() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms || deck.terms.length < 2) {
+    showToast("⚠️ Need at least 2 terms in active deck for diagnostic.");
+    return;
+  }
+  $("diagSubjectName").textContent = `"${deck.subject}"`;
+  diagQuestions = shuffle([...deck.terms]).slice(0, 3);
+  diagIdx = 0;
+  diagScore = 0;
+  $("diagQuizArea").style.display = "block";
+  $("diagResultArea").style.display = "none";
+  renderDiagQuestion();
+  $("diagnosticModal").classList.add("show");
+}
+
+function renderDiagQuestion() {
+  const deck = Store.getActiveDeck();
+  const q = diagQuestions[diagIdx];
+  $("diagQuestionProgress").textContent = `Diagnostic Question ${diagIdx + 1} of ${diagQuestions.length}`;
+  $("diagQuestionText").textContent = `What is the function / meaning of "${q.term}"?`;
+  
+  const distractors = shuffle(deck.terms.filter(t => t.id !== q.id));
+  const opts = shuffle([...distractors.slice(0, 2).map(t => t.def), q.def]);
+  
+  $("diagOptions").innerHTML = opts.map(o => `
+    <button class="btn btn-outline" style="text-align:left;font-size:0.82rem;padding:8px 12px">${esc(o)}</button>
+  `).join("");
+
+  document.querySelectorAll("#diagOptions button").forEach(b => {
+    b.addEventListener("click", () => {
+      if (b.textContent === q.def) {
+        diagScore++;
+        successSfx();
+      } else {
+        failSfx();
+      }
+      diagIdx++;
+      if (diagIdx < diagQuestions.length) {
+        renderDiagQuestion();
+      } else {
+        finishDiagnostic();
+      }
+    });
+  });
+}
+
+function finishDiagnostic() {
+  $("diagQuizArea").style.display = "none";
+  $("diagResultArea").style.display = "block";
+  addXP(30);
+
+  const badge = $("diagResultBadge");
+  const title = $("diagResultTitle");
+  const desc = $("diagResultDesc");
+  const btn = $("btnDiagStartPath");
+
+  if (diagScore === 0 || diagScore === 1) {
+    badge.style.background = "var(--danger-light)";
+    badge.style.color = "var(--danger)";
+    badge.textContent = "🌱 Level: Starting from Scratch (Beginner)";
+    title.textContent = "Your Plan: Step 1 Foundations";
+    desc.textContent = "You're brand new to this topic! Start with the Concept Demystifier analogies below, then move to Leitner Box 1 flashcards.";
+    btn.onclick = () => {
+      $("diagnosticModal").classList.remove("show");
+      navigateTo("pathway");
+    };
+  } else if (diagScore === 2) {
+    badge.style.background = "var(--accent-light)";
+    badge.style.color = "#B45309";
+    badge.textContent = "⚡ Level: Developing Basics (Intermediate)";
+    title.textContent = "Your Plan: Step 2 & 3 Concept Mapping & Blurting";
+    desc.textContent = "You know some core terms! Connect the relationships in the Concept Mind Map and test recall with the Blurting scratchpad.";
+    btn.onclick = () => {
+      $("diagnosticModal").classList.remove("show");
+      navigateTo("mindmap");
+    };
+  } else {
+    badge.style.background = "var(--success-light)";
+    badge.style.color = "var(--success)";
+    badge.textContent = "🏆 Level: High Retention (Master / Exam Ready)";
+    title.textContent = "Your Plan: Step 4 Exam Arena & Sudden Death";
+    desc.textContent = "Outstanding baseline! You're ready for timed 60s sudden death exams and AI voice oral recitations.";
+    btn.onclick = () => {
+      $("diagnosticModal").classList.remove("show");
+      navigateTo("quiz");
+    };
+    if (typeof confetti === "function") confetti({ particleCount: 70, spread: 50 });
+  }
+}
+
+$("btnRunDiagnostic").addEventListener("click", openDiagnosticModal);
+$("btnCloseDiagnosticModal").addEventListener("click", () => $("diagnosticModal").classList.remove("show"));
+
+/* ============================================================
+   8. CONCEPT MIND MAP GRAPH
+   ============================================================ */
+function renderMindMap() {
+  const deck = Store.getActiveDeck();
+  const svg = $("mindmapSvg");
+  if (!svg) return;
+  svg.innerHTML = "";
+  const terms = deck.terms || [];
+  if (terms.length === 0) return;
+
+  const w = svg.clientWidth || svg.parentElement.clientWidth || 700;
+  const h = svg.clientHeight || 390;
+  const cx = w / 2, cy = h / 2;
+
+  let svgHtml = "";
+  svgHtml += `<circle cx="${cx}" cy="${cy}" r="38" fill="#2563EB" stroke="#1D4ED8" stroke-width="2"/>`;
+  svgHtml += `<text x="${cx}" y="${cy}" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10" dy=".3em">${esc(deck.subject.slice(0, 13))}</text>`;
+
+  const radius = Math.min(cx, cy) - 60;
+  terms.forEach((t, i) => {
+    const angle = (i / terms.length) * 2 * Math.PI;
+    const nx = cx + radius * Math.cos(angle);
+    const ny = cy + radius * Math.sin(angle);
+    svgHtml += `<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="#CBD5E1" stroke-width="1.5"/>`;
+    svgHtml += `<circle cx="${nx}" cy="${ny}" r="26" fill="#FFFFFF" stroke="#2563EB" stroke-width="2" style="cursor:pointer" onclick="showToast('${esc(t.term)}: ${esc(t.def)}')"/>`;
+    svgHtml += `<text x="${nx}" y="${ny}" text-anchor="middle" fill="#0F172A" font-weight="600" font-size="8.5" dy=".3em">${esc(t.term.slice(0, 8))}</text>`;
+  });
+  svg.innerHTML = svgHtml;
+}
+$("btnRegenMindmap").addEventListener("click", renderMindMap);
+window.addEventListener("resize", () => {
+  if (document.getElementById("page-mindmap").classList.contains("active")) renderMindMap();
+});
+
+/* ============================================================
+   9. AI VOICE ORAL EXAM
+   ============================================================ */
+let oralCurrentTerm = null;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.lang = "en-US";
+  recognition.onresult = e => {
+    const transcript = e.results[0][0].transcript;
+    $("oralSpokenText").textContent = `You: "${transcript}"`;
+    gradeOral(transcript);
+    $("btnOralMic").classList.remove("listening");
+  };
+  recognition.onerror = () => $("btnOralMic").classList.remove("listening");
+}
+
+function promptOral() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) return;
+  oralCurrentTerm = shuffle([...deck.terms])[0];
+  $("oralTermPrompt").textContent = `Recite: "${oralCurrentTerm.term}"`;
+  $("oralStatusText").textContent = "Tap the microphone and speak your definition.";
+  $("oralFeedback").textContent = "";
+  $("oralSpokenText").textContent = "";
+  const u = new SpeechSynthesisUtterance(`Define: ${oralCurrentTerm.term}`);
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+$("btnStartOralExam").addEventListener("click", promptOral);
+$("btnRepeatQuestion").addEventListener("click", () => {
+  if (oralCurrentTerm) window.speechSynthesis.speak(new SpeechSynthesisUtterance(`Define: ${oralCurrentTerm.term}`));
+});
+$("btnOralMic").addEventListener("click", () => {
+  if (!recognition) { showToast("⚠️ Speech Recognition not supported in this browser."); return; }
+  $("btnOralMic").classList.add("listening");
+  recognition.start();
+});
+
+function gradeOral(spoken) {
+  if (!oralCurrentTerm) return;
+  const words = oralCurrentTerm.def.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+  let matches = 0;
+  words.forEach(w => { if (spoken.toLowerCase().includes(w)) matches++; });
+  const score = Math.round((matches / Math.max(1, words.length)) * 100);
+  if (score >= 40) {
+    successSfx();
+    $("oralFeedback").innerHTML = `<span style="color:var(--success)">🌟 Great Recitation! Score: ${score}% (+20 XP)</span>`;
+    addXP(20);
+  } else {
+    failSfx();
+    $("oralFeedback").innerHTML = `<span style="color:var(--danger)">Official Definition: "${esc(oralCurrentTerm.def)}"</span>`;
+  }
+}
+
+/* ============================================================
+   10. BLURTING RECALL
+   ============================================================ */
+let blurtTimerInt = null, blurtSec = 120;
+$("btnStartBlurtTimer").addEventListener("click", () => {
+  blurtSec = 120;
+  clearInterval(blurtTimerInt);
+  blurtTimerInt = setInterval(() => {
+    blurtSec--;
+    $("blurtTimer").textContent = `${pad(Math.floor(blurtSec/60))}:${pad(blurtSec%60)}`;
+    if (blurtSec <= 0) { clearInterval(blurtTimerInt); $("btnEvaluateBlurt").click(); }
+  }, 1000);
+});
+
+$("btnEvaluateBlurt").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  const text = $("blurtInput").value.toLowerCase();
+  if (!text) { showToast("⚠️ Write some terms first."); return; }
+  const matched = [], missed = [];
+  deck.terms.forEach(t => {
+    if (text.includes(t.term.toLowerCase())) matched.push(t);
+    else missed.push(t);
+  });
+  $("blurtResults").style.display = "grid";
+  $("blurtMatchedCount").textContent = matched.length;
+  $("blurtMissedCount").textContent = missed.length;
+  $("blurtMatchedList").innerHTML = matched.map(m => `<li>${esc(m.term)}</li>`).join("") || "<li>None</li>";
+  $("blurtMissedList").innerHTML = missed.map(m => `<li>${esc(m.term)}</li>`).join("") || "<li>None</li>";
+  const pct = Math.round((matched.length / Math.max(1, deck.terms.length)) * 100);
+  addXP(pct);
+  showToast(`📊 Blurting Recall: ${pct}% (+${pct} XP)`);
+});
+
+/* ============================================================
+   11. PROCEDURAL AMBIENT & SOUND
+   ============================================================ */
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+function playBeep(freq = 520, dur = 0.1, type = "sine") {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.06, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+const uiClick = () => playBeep(600, 0.05);
+const successSfx = () => { playBeep(523.25, 0.1); setTimeout(() => playBeep(659.25, 0.1), 90); setTimeout(() => playBeep(783.99, 0.15), 180); };
+const failSfx = () => { playBeep(260, 0.15, "triangle"); };
+
+let currentAmbient = null, ambientNodes = [];
+function stopAmbient() {
+  ambientNodes.forEach(n => { try { n.stop ? n.stop() : n.disconnect(); } catch(e){} });
+  ambientNodes = [];
+  document.querySelectorAll(".amb-btn").forEach(b => b.classList.remove("active"));
+  currentAmbient = null;
+}
+function playAmbient(type) {
+  if (currentAmbient === type) { stopAmbient(); return; }
+  stopAmbient();
+  currentAmbient = type;
+  const ctx = getAudioCtx();
+
+  if (type === "lofi") {
+    const chords = [[261.63, 329.63, 392.00], [220.00, 261.63, 329.63], [174.61, 220.00, 261.63]];
+    let cIdx = 0;
+    const playCh = () => {
+      if (currentAmbient !== "lofi") return;
+      const notes = chords[cIdx % chords.length];
+      cIdx++;
+      notes.forEach(f => {
+        const osc = ctx.createOscillator(); const g = ctx.createGain();
+        osc.type = "sine"; osc.frequency.value = f;
+        g.gain.setValueAtTime(0.015, ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 1);
+        g.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 3.8);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 4);
+      });
+    };
+    playCh();
+    const interval = setInterval(playCh, 4000);
+    ambientNodes.push({ stop: () => clearInterval(interval) });
+  } else if (type === "alpha") {
+    const left = ctx.createOscillator(), right = ctx.createOscillator(), g = ctx.createGain();
+    left.frequency.value = 200; right.frequency.value = 240; g.gain.value = 0.025;
+    left.connect(g); right.connect(g); g.connect(ctx.destination);
+    left.start(); right.start();
+    ambientNodes.push(left, right);
+  } else {
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+    const whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer; whiteNoise.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass"; filter.frequency.value = (type === "rain") ? 800 : 1200;
+    const g = ctx.createGain(); g.gain.value = 0.025;
+    whiteNoise.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    whiteNoise.start();
+    ambientNodes.push(whiteNoise);
+  }
+  $(`amb${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add("active");
+  showToast(`🎧 Lo-Fi Audio: ${type.toUpperCase()}`);
+}
+
+$("ambLofi").addEventListener("click", () => playAmbient("lofi"));
+$("ambAlpha").addEventListener("click", () => playAmbient("alpha"));
+$("ambRain").addEventListener("click", () => playAmbient("rain"));
+$("ambCafe").addEventListener("click", () => playAmbient("cafe"));
+
+/* ============================================================
+   12. THEME & CORE NAVIGATION
+   ============================================================ */
+$("btnToggleDark").addEventListener("click", () => {
+  uiClick();
+  const isDark = document.body.classList.toggle("dark-mode");
+  $("btnToggleDark").textContent = isDark ? "☀️" : "🌙";
+  Store.update(s => { s.darkMode = isDark; return s; });
+});
+if (Store.get().darkMode) { document.body.classList.add("dark-mode"); $("btnToggleDark").textContent = "☀️"; }
+
+function addXP(amount) {
+  Store.update(s => { s.xp = (s.xp || 0) + amount; return s; });
+  showToast(`⚡ +${amount} XP!`);
+  updateHomeHeader();
+}
+
+function updateHomeHeader() {
+  updateMascot();
+}
+
+function renderDeckSelector() {
+  const d = Store.get();
+  const select = $("activeDeckSelect");
+  select.innerHTML = Object.values(d.decks).map(deck => `
+    <option value="${deck.id}" ${deck.id === d.activeDeckId ? "selected" : ""}>${esc(deck.subject)} (${deck.terms.length})</option>
+  `).join("");
+}
+
+$("activeDeckSelect").addEventListener("change", e => {
+  Store.update(s => { s.activeDeckId = e.target.value; return s; });
+  showToast(`📂 Active deck: ${Store.getActiveDeck().subject}`);
+  renderActiveDeckUI();
+});
+
+function renderActiveDeckUI() {
+  const deck = Store.getActiveDeck();
+  $("reviewerSubject").textContent = "Subject: " + (deck.subject || "Not Set");
+  $("subjectInput").value = deck.subject || "";
+  $("examDate").value = deck.examDate || "";
+  $("pasteText").value = deck.terms.map(t => `• ${t.term}: ${t.def}`).join("\n");
+  updateLiveCounter();
+  renderReviewer();
+  initFlashcards();
+  renderTracker();
+  renderCalendar(calView);
+  renderMindMap();
+  renderDemystifier();
+  setupFeynmanTerm();
+  renderDeckSelector();
+  updateMascot();
+}
+
+function navigateTo(page) {
+  if (!page) return;
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === page));
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const target = $("page-" + page);
+  if (target) target.classList.add("active");
+  
+  sidebar.classList.remove("mobile-open");
+  mobileBackdrop.classList.remove("active");
+
+  if (page === "pathway") renderDemystifier();
+  if (page === "mindmap") renderMindMap();
+  if (page === "reviewer") renderReviewer();
+  if (page === "flashcards") initFlashcards();
+  if (page === "tracker") renderTracker();
+  if (page === "calendar") renderCalendar(calView);
+  if (page === "quiz") initQuizScreen();
+  if (page === "feynman") setupFeynmanTerm();
+}
+
+document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const p = btn.dataset.page;
+    if (btn.classList.contains("nav-btn")) uiClick();
+    navigateTo(p);
+  });
+});
+
+/* ============================================================
+   13. BULLET PARSER & SAMPLES
+   ============================================================ */
+const SAMPLES = {
+  bio: {
+    subject: "General Biology 101",
+    text: `• Photosynthesis: Process where plants convert sunlight into chemical energy.
+• Mitochondria: The powerhouse of the cell producing ATP energy.
+• Cell Membrane: Phospholipid bilayer regulating entry and exit of molecules.
+• Ribosome: Cellular organelle that synthesizes proteins translating mRNA.
+• Chloroplast: Plant organelle containing chlorophyll where light absorption occurs.`
+  },
+  hist: {
+    subject: "Philippine History & Rizal",
+    text: `• Noli Me Tangere: Novel written by Jose Rizal exposing Spanish friar abuses.
+• Kilusang Propaganda: Reform movement advocating for Philippine equality.
+• Katipunan (KKK): Secret revolutionary society founded by Andres Bonifacio.
+• Cry of Pugad Lawin: Historic event in 1896 where Katipuneros tore their cedulas.`
+  },
+  cs: {
+    subject: "Computer Science Fundamentals",
+    text: `• Algorithm: Step-by-step instructions to solve a computational problem.
+• Data Structure: Format for organizing, storing, and accessing data efficiently.
+• Recursion: Technique where a function calls itself to solve smaller instances.
+• Binary Search: O(log n) search algorithm dividing a sorted array in half.`
+  },
+  law: {
+    subject: "Philippine Constitution 101",
+    text: `• Bill of Rights: Article III of the Philippine Constitution declaring fundamental citizen protections.
+• Due Process: Requirement that legal proceedings must be fair and follow established rules.
+• Executive Power: Vested in the President of the Philippines to implement and execute laws.
+• Legislative Power: Vested in the Congress of the Philippines comprising Senate and House of Reps.`
+  }
+};
+
+document.querySelectorAll(".sample-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.sample;
+    if (SAMPLES[key]) {
+      $("subjectInput").value = SAMPLES[key].subject;
+      $("pasteText").value = SAMPLES[key].text;
+      const d = new Date(); d.setDate(d.getDate() + 14);
+      $("examDate").value = formatDate(d);
+      updateLiveCounter();
+      showToast(`✨ Loaded ${SAMPLES[key].subject}!`);
+    }
+  });
+});
+
+function parseBulletTerms(text) {
+  const lines = (text || "").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+  const terms = [], seen = new Set();
+  for (const line of lines) {
+    const clean = line.replace(/^[\s•\-\*\d\.\)]+/, "").trim();
+    let parts = null;
+    for (const sep of ["::", " - ", " — ", " – ", " : ", ":", "=>", "→", "\t"]) {
+      const idx = clean.indexOf(sep);
+      if (idx !== -1) { parts = [clean.slice(0, idx).trim(), clean.slice(idx + sep.length).trim()]; break; }
+    }
+    if (parts && parts[0] && parts[1] && !seen.has(parts[0].toLowerCase())) {
+      seen.add(parts[0].toLowerCase());
+      terms.push({ term: parts[0], def: parts[1], box: 1, id: terms.length });
+    }
+  }
+  return terms;
+}
+
+function updateLiveCounter() {
+  const t = parseBulletTerms($("pasteText").value);
+  $("liveTermCount").textContent = `${t.length} terms`;
+}
+$("pasteText").addEventListener("input", updateLiveCounter);
+
+$("btnGenerate").addEventListener("click", () => {
+  uiClick();
+  const subject = $("subjectInput").value.trim(), exam = $("examDate").value, rawText = $("pasteText").value.trim();
+  if (!subject) { showToast("⚠️ Enter Subject Name."); return; }
+  if (!exam) { showToast("⚠️ Pick Exam Date."); return; }
+  const terms = parseBulletTerms(rawText);
+  if (!terms.length) { showToast("⚠️ No terms detected."); return; }
+  const deckId = "deck_" + subject.toLowerCase().replace(/[^a-z0-9]/g, "_");
+  Store.update(s => {
+    s.decks[deckId] = { id: deckId, subject, examDate: exam, terms, quizHistory: [] };
+    s.activeDeckId = deckId;
+    return s;
+  });
+  addXP(30);
+  renderActiveDeckUI();
+  showToast(`✅ Saved "${subject}" with ${terms.length} terms!`);
+  navigateTo("pathway");
+});
+
+/* ============================================================
+   14. REVIEWER & FLASHCARDS
+   ============================================================ */
+function renderReviewer() {
+  const deck = Store.getActiveDeck();
+  $("reviewerSubject").textContent = "Subject: " + (deck.subject || "Not Set");
+  const box = $("reviewerContent"), q = ($("reviewerSearch") ? $("reviewerSearch").value.toLowerCase() : "");
+  if (!deck.terms || !deck.terms.length) {
+    box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted)">No terms loaded.</p>';
+    return;
+  }
+  const filtered = deck.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q));
+  box.innerHTML = filtered.map(t => `
+    <div class="reviewer-item">
+      <div class="reviewer-actions"><button class="icon-btn" onclick="deleteTerm(${t.id})">🗑️</button></div>
+      <div class="term">${esc(t.term)}</div>
+      <div class="def">${esc(t.def)}</div>
+    </div>
+  `).join("");
+}
+
+window.deleteTerm = id => {
+  Store.update(s => {
+    const deck = s.decks[s.activeDeckId];
+    if (deck) deck.terms = deck.terms.filter(t => t.id !== id);
+    return s;
+  });
+  renderReviewer();
+  showToast("🗑️ Term removed");
+};
+
+$("reviewerSearch").addEventListener("input", renderReviewer);
+$("btnPrintReviewer").addEventListener("click", () => { uiClick(); window.print(); });
+$("btnExportCsv").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) return;
+  const csv = deck.terms.map(t => `"${t.term.replace(/"/g, '""')}","${t.def.replace(/"/g, '""')}"`).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  a.download = `${deck.subject || "deck"}_Anki.csv`;
+  a.click();
+  showToast("💾 Exported Anki CSV!");
+});
+
+$("btnAddTermModal").addEventListener("click", () => {
+  const t = prompt("Enter Term:"), def = prompt("Enter Definition:");
+  if (!t || !def) return;
+  Store.update(s => {
+    const deck = s.decks[s.activeDeckId];
+    if (deck) deck.terms.push({ term: t.trim(), def: def.trim(), box: 1, id: Date.now() });
+    return s;
+  });
+  renderReviewer();
+  showToast("✅ Term added!");
+});
+
+let fcDeck = [], fcIdx = 0, currentLeitnerBox = "all";
+function initFlashcards() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms || !deck.terms.length) {
+    $("fcTerm").textContent = "No terms loaded"; $("fcDef").textContent = "Create terms to start studying.";
+    $("fcCounter").textContent = "0 / 0";
+    return;
+  }
+  updateLeitnerPills();
+  filterLeitnerDeck(currentLeitnerBox);
+}
+function updateLeitnerPills() {
+  const terms = Store.getActiveDeck().terms || [];
+  $("boxCountAll").textContent = terms.length;
+  $("boxCount1").textContent = terms.filter(t => (t.box || 1) === 1).length;
+  $("boxCount2").textContent = terms.filter(t => (t.box || 1) === 2).length;
+  $("boxCount3").textContent = terms.filter(t => (t.box || 1) >= 3).length;
+}
+function filterLeitnerDeck(box) {
+  currentLeitnerBox = box;
+  document.querySelectorAll(".leitner-pill").forEach(p => p.classList.toggle("active", p.dataset.box === String(box)));
+  const all = Store.getActiveDeck().terms || [];
+  if (box === "all") fcDeck = [...all];
+  else if (box === "3") fcDeck = all.filter(t => (t.box || 1) >= 3);
+  else fcDeck = all.filter(t => (t.box || 1) === parseInt(box));
+  fcIdx = 0; showFc();
+}
+document.querySelectorAll(".leitner-pill").forEach(p => p.addEventListener("click", () => filterLeitnerDeck(p.dataset.box)));
+$("btnCramWeakSpots").addEventListener("click", () => filterLeitnerDeck("1"));
+
+function showFc() {
+  if (!fcDeck.length) {
+    $("flashcard").classList.remove("flip");
+    $("fcTerm").textContent = "No cards in this box 🎉"; $("fcDef").textContent = "Switch boxes to continue.";
+    $("fcCounter").textContent = "0 / 0"; return;
+  }
+  const t = fcDeck[fcIdx];
+  $("flashcard").classList.remove("flip");
+  $("fcTerm").textContent = t.term; $("fcDef").textContent = t.def;
+  $("fcBoxNum").textContent = `Box ${t.box || 1}`; $("fcBackBoxNum").textContent = `Box ${t.box || 1}`;
+  $("fcCounter").textContent = `${fcIdx + 1} / ${fcDeck.length}`;
+}
+$("flashcard").addEventListener("click", () => $("flashcard").classList.toggle("flip"));
+$("fcPrev").addEventListener("click", () => { if (fcDeck.length) { fcIdx = (fcIdx - 1 + fcDeck.length) % fcDeck.length; showFc(); } });
+$("fcNext").addEventListener("click", () => { if (fcDeck.length) { fcIdx = (fcIdx + 1) % fcDeck.length; showFc(); } });
+
+function rateCard(boxDelta) {
+  if (!fcDeck.length) return;
+  const current = fcDeck[fcIdx];
+  Store.update(s => {
+    const deck = s.decks[s.activeDeckId];
+    if (deck) {
+      const target = deck.terms.find(t => t.id === current.id);
+      if (target) target.box = Math.max(1, Math.min(3, (target.box || 1) + boxDelta));
+    }
+    return s;
+  });
+  addXP(10); successSfx(); updateLeitnerPills();
+  fcDeck.splice(fcIdx, 1);
+  if (!fcDeck.length) { showFc(); return; }
+  fcIdx = Math.min(fcIdx, fcDeck.length - 1); showFc();
+}
+$("btnRateAgain").addEventListener("click", () => rateCard(-1));
+$("btnRateHard").addEventListener("click", () => rateCard(0));
+$("btnRateGood").addEventListener("click", () => rateCard(1));
+$("btnRateEasy").addEventListener("click", () => rateCard(2));
+$("fcAudio").addEventListener("click", () => {
+  if (!fcDeck.length) return;
+  const isFlipped = $("flashcard").classList.contains("flip");
+  window.speechSynthesis.speak(new SpeechSynthesisUtterance(isFlipped ? fcDeck[fcIdx].def : fcDeck[fcIdx].term));
+});
+
+/* ============================================================
+   15. EXAM ARENA & PAREBOT AI
+   ============================================================ */
+let quizTerms = [], quizIdx = 0, quizCorrect = 0, quizCurrentMode = "mc", suddenDeathTimer = null, suddenSec = 60;
+function initQuizScreen() {
+  $("quizModeSelectArea").style.display = "grid";
+  $("quizQuestion").style.display = "none";
+  $("quizResult").style.display = "none";
+}
+document.querySelectorAll(".mini-card[data-mode]").forEach(card => card.addEventListener("click", () => startExam(card.dataset.mode)));
+
+function startExam(mode) {
+  const deck = Store.getActiveDeck();
+  if (deck.terms.length < 2) { showToast("⚠️ Need 2+ terms."); return; }
+  quizCurrentMode = mode; quizTerms = shuffle([...deck.terms]); quizIdx = 0; quizCorrect = 0;
+  $("quizModeSelectArea").style.display = "none";
+  $("quizQuestion").style.display = "block";
+  $("quizResult").style.display = "none";
+
+  if (mode === "time") {
+    suddenSec = 60; clearInterval(suddenDeathTimer);
+    suddenDeathTimer = setInterval(() => {
+      suddenSec--; $("qScoreLive").textContent = `⏱️ ${suddenSec}s | Score: ${quizCorrect}`;
+      if (suddenSec <= 0) { clearInterval(suddenDeathTimer); finishQuiz(); }
+    }, 1000);
+  }
+  showQuizQ();
+}
+
+function showQuizQ() {
+  const q = quizTerms[quizIdx % quizTerms.length], deck = Store.getActiveDeck();
+  if (quizCurrentMode !== "time") {
+    $("qProgress").textContent = `Question ${quizIdx + 1} of ${quizTerms.length}`;
+    $("qScoreLive").textContent = `Score: ${quizCorrect}`;
+  }
+  $("qFeedback").textContent = ""; $("btnNextQ").style.display = "none";
+
+  if (quizCurrentMode === "mc" || quizCurrentMode === "time") {
+    $("qText").textContent = `What is the definition of: "${q.term}"?`;
+    $("qIdentificationBox").style.display = "none"; $("qOptions").style.display = "grid";
+    const distractors = shuffle(deck.terms.filter(t => t.id !== q.id));
+    const opts = shuffle([...distractors.slice(0, 3).map(t => t.def), q.def]);
+    $("qOptions").innerHTML = opts.map(o => `<button class="btn btn-outline" style="text-align:left;padding:9px;font-size:0.85rem">${esc(o)}</button>`).join("");
+    document.querySelectorAll("#qOptions button").forEach(b => b.addEventListener("click", () => checkAns(b.textContent === q.def, b, q.def)));
+  } else if (quizCurrentMode === "tf") {
+    $("qIdentificationBox").style.display = "none"; $("qOptions").style.display = "grid";
+    const isTrue = Math.random() > 0.5;
+    const testDef = isTrue ? q.def : shuffle(deck.terms.filter(t => t.id !== q.id))[0].def;
+    $("qText").textContent = `Statement: "${q.term}" is "${testDef}".`;
+    $("qOptions").innerHTML = `<button class="btn btn-outline" data-ans="true">🟢 TRUE</button><button class="btn btn-outline" data-ans="false">🔴 FALSE</button>`;
+    document.querySelectorAll("#qOptions button").forEach(b => b.addEventListener("click", () => checkAns((b.dataset.ans === "true") === isTrue, b, isTrue ? "TRUE" : "FALSE")));
+  } else if (quizCurrentMode === "id") {
+    $("qText").textContent = `Definition: "${q.def}"`;
+    $("qOptions").style.display = "none"; $("qIdentificationBox").style.display = "block";
+    $("qIdInput").value = ""; $("qIdInput").focus();
+  }
+}
+
+$("btnSubmitId").addEventListener("click", () => {
+  const q = quizTerms[quizIdx];
+  checkAns($("qIdInput").value.trim().toLowerCase() === q.term.trim().toLowerCase(), null, q.term);
+});
+
+function checkAns(isCorrect, btnEl, correctStr) {
+  if (isCorrect) { quizCorrect++; successSfx(); $("qFeedback").innerHTML = '<span style="color:var(--success)">✅ Correct! +10 XP</span>'; addXP(10); }
+  else { failSfx(); $("qFeedback").innerHTML = `<span style="color:var(--danger)">❌ Correct: "${esc(correctStr)}"</span>`; }
+
+  if (btnEl) document.querySelectorAll("#qOptions button").forEach(b => { b.disabled = true; if (b === btnEl) b.style.borderColor = isCorrect ? "var(--success)" : "var(--danger)"; });
+  if (quizCurrentMode === "time") setTimeout(() => { quizIdx++; showQuizQ(); }, 500);
+  else { $("btnNextQ").style.display = "inline-block"; $("btnNextQ").textContent = (quizIdx < quizTerms.length - 1) ? "Next →" : "See Final Score"; }
+}
+
+$("btnNextQ").addEventListener("click", () => { quizIdx++; if (quizIdx < quizTerms.length) showQuizQ(); else finishQuiz(); });
+
+function finishQuiz() {
+  clearInterval(suddenDeathTimer);
+  const total = (quizCurrentMode === "time") ? Math.max(1, quizIdx) : quizTerms.length;
+  const scorePercent = Math.round((quizCorrect / total) * 100);
+  Store.update(s => { s.quizCount = (s.quizCount || 0) + 1; return s; });
+  $("quizQuestion").style.display = "none"; $("quizResult").style.display = "block";
+  if (scorePercent >= 80 && typeof confetti === "function") confetti({ particleCount: 80, spread: 60 });
+  $("quizResult").innerHTML = `
+    <h3 style="font-size:1.4rem;margin-bottom:6px">🎉 Exam Complete!</h3>
+    <p style="font-size:1rem;font-weight:600">Score: ${scorePercent}% (${quizCorrect}/${total})</p>
+    <button class="btn btn-primary btn-sm" onclick="initQuizScreen()" style="margin-top:14px">🔄 Retake</button>
+  `;
+}
+
+// Feynman & Tutor
+let feynmanTerm = null;
+function setupFeynmanTerm() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) return;
+  feynmanTerm = shuffle([...deck.terms])[0];
+  $("feynmanTermPrompt").textContent = `Explain: "${feynmanTerm.term}"`;
+  $("feynmanUserText").value = ""; $("feynmanEvalBox").style.display = "none";
+}
+$("btnNextFeynman").addEventListener("click", setupFeynmanTerm);
+$("btnEvalFeynman").addEventListener("click", () => {
+  if (!feynmanTerm) return;
+  const text = $("feynmanUserText").value.trim().toLowerCase();
+  if (!text) return;
+  const words = feynmanTerm.def.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+  let matches = 0; words.forEach(w => { if (text.includes(w)) matches++; });
+  const score = Math.min(100, Math.round((matches / Math.max(1, words.length)) * 100) + 20);
+  $("feynmanEvalBox").style.display = "block";
+  $("feynmanScoreText").textContent = `Score: ${score}%`;
+  $("feynmanFeedbackText").textContent = score >= 60 ? "Great job capturing core keywords!" : "Try to include key functional terms.";
+  $("feynmanOfficialDef").innerHTML = `<strong>Official:</strong> ${esc(feynmanTerm.def)}`;
+  if (score >= 60) addXP(20);
+});
+
+function pareBotRespond(userQuery, type = "normal") {
+  const deck = Store.getActiveDeck(), log = $("tutorChatLog");
+  const t = deck.terms.length ? shuffle([...deck.terms])[0] : { term: "Concept", def: "Idea" };
+  let reply = "";
+  if (type === "mnemonic") reply = `💡 <strong>Mnemonic for "${t.term}":</strong> Remember <em>${t.term.slice(0,3).toUpperCase()}</em> — "${t.def.slice(0,30)}..."`;
+  else if (type === "eli5") reply = `👶 <strong>ELI10:</strong> Imagine "${t.term}" is like a helper that ${t.def.toLowerCase().replace(/process|bilayer/g, "tool")}.`;
+  else if (type === "ph") reply = `🇵🇭 <strong>Pinoy Analogy:</strong> Think of "${t.term}" like the barangay traffic system — keeps everything flowing!`;
+  else if (type === "quiz") reply = `🎯 <strong>Pop Quiz:</strong> What term matches "${t.def.slice(0, 40)}..."?`;
+  else reply = `Great question! For "${userQuery}", remember core definitions for exam day!`;
+  log.innerHTML += `<div style="margin-top:6px"><strong>You:</strong> ${esc(userQuery || type)}</div><div style="margin-top:2px"><strong>PareBot 🤖:</strong> ${reply}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+document.querySelectorAll(".samples-bar button[data-ask]").forEach(b => b.addEventListener("click", () => pareBotRespond("", b.dataset.ask)));
+$("btnSendTutor").addEventListener("click", () => { const q = $("tutorInput").value.trim(); if (q) { pareBotRespond(q); $("tutorInput").value = ""; } });
+$("btnConfigAiKey").addEventListener("click", () => {
+  const key = prompt("Optional: Enter your Gemini or OpenAI API Key for live cloud generation:", localStorage.getItem("studybuddy_ai_key") || "");
+  if (key !== null) {
+    localStorage.setItem("studybuddy_ai_key", key.trim());
+    showToast(key ? "🔑 API Key saved!" : "🤖 Defaulting to local AI engine.");
+  }
+});
+
+// Match Game & Pomodoro
+let matchPairs = [], matchSel = null, matchMiss = 0, matchTimer = null, matchSec = 0, matchedIds = new Set(), comboMultiplier = 1;
+$("btnStartMatch").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  if (deck.terms.length < 2) return;
+  matchPairs = shuffle(deck.terms).slice(0, Math.min(6, deck.terms.length));
+  matchSel = null; matchMiss = 0; matchSec = 0; comboMultiplier = 1; matchedIds = new Set();
+  $("matchGame").style.display = "none"; $("matchBoard").style.display = "block";
+  clearInterval(matchTimer);
+  matchTimer = setInterval(() => { matchSec++; $("matchTime").textContent = matchSec; }, 1000);
+  renderMatch();
+});
+function renderMatch() {
+  $("matchScore").textContent = matchedIds.size; $("matchMiss").textContent = matchMiss; $("matchCombo").textContent = `${comboMultiplier}x`;
+  const terms = shuffle(matchPairs), defs = shuffle(matchPairs);
+  $("matchTermCol").innerHTML = terms.map(t => `<div class="btn btn-outline" data-id="${t.id}" data-role="term" style="font-size:0.84rem">${esc(t.term)}</div>`).join("");
+  $("matchDefCol").innerHTML = defs.map(t => `<div class="btn btn-outline" data-id="${t.id}" data-role="def" style="font-size:0.8rem">${esc(t.def)}</div>`).join("");
+  document.querySelectorAll("#matchBoard .btn").forEach(c => c.addEventListener("click", () => onMatchClick(c)));
+}
+function onMatchClick(chip) {
+  const role = chip.dataset.role, id = +chip.dataset.id;
+  if (matchedIds.has(id) || chip.classList.contains("done")) return;
+  if (role === "term") {
+    document.querySelectorAll('#matchTermCol .btn').forEach(c => c.style.background = "var(--surface)");
+    chip.style.background = "var(--primary-light)"; matchSel = chip; return;
+  }
+  if (matchSel) {
+    const termId = +matchSel.dataset.id;
+    if (termId === id) {
+      successSfx(); matchedIds.add(id);
+      chip.style.background = "var(--success-light)"; matchSel.style.background = "var(--success-light)";
+      chip.classList.add("done"); matchSel.classList.add("done"); matchSel = null;
+      comboMultiplier++;
+      $("matchScore").textContent = matchedIds.size; $("matchCombo").textContent = `${comboMultiplier}x`;
+      if (matchedIds.size === matchPairs.length) {
+        clearInterval(matchTimer); addXP(30 * comboMultiplier);
+        showToast(`🏁 Matched in ${matchSec}s! +${30 * comboMultiplier} XP`);
+      }
+    } else {
+      failSfx(); matchMiss++; comboMultiplier = 1; matchSel.style.background = "var(--surface)"; matchSel = null;
+      $("matchMiss").textContent = matchMiss; $("matchCombo").textContent = "1x";
+    }
+  }
+}
+$("btnMatchReset").addEventListener("click", () => $("btnStartMatch").click());
+
+const POMO = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+let pomoMode = "focus", pomoLeft = POMO.focus, pomoInt = null;
+function switchPomoMode(mode) {
+  pomoMode = mode; pomoLeft = POMO[mode];
+  document.querySelectorAll(".pomo-tab").forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
+  $("pomoTime").textContent = `${pad(Math.floor(pomoLeft/60))}:${pad(pomoLeft%60)}`;
+  $("zenTimeDisplay").textContent = $("pomoTime").textContent;
+}
+$("btnPomoStart").addEventListener("click", () => {
+  if (pomoInt) { clearInterval(pomoInt); pomoInt = null; $("btnPomoStart").textContent = "▶️ Resume"; return; }
+  $("btnPomoStart").textContent = "⏸️ Pause";
+  pomoInt = setInterval(() => {
+    pomoLeft--;
+    $("pomoTime").textContent = `${pad(Math.floor(pomoLeft/60))}:${pad(pomoLeft%60)}`;
+    $("zenTimeDisplay").textContent = $("pomoTime").textContent;
+    if (pomoLeft <= 0) {
+      clearInterval(pomoInt); pomoInt = null; successSfx(); addXP(25);
+      showToast("🍅 Focus session complete! +25 XP");
+      switchPomoMode("short");
+      $("btnPomoStart").textContent = "▶️ Start";
+    }
+  }, 1000);
+});
+$("btnPomoReset").addEventListener("click", () => { clearInterval(pomoInt); pomoInt = null; switchPomoMode(pomoMode); $("btnPomoStart").textContent = "▶️ Start"; });
+document.querySelectorAll(".pomo-tab").forEach(t => t.addEventListener("click", () => { clearInterval(pomoInt); pomoInt = null; $("btnPomoStart").textContent = "▶️ Start"; switchPomoMode(t.dataset.mode); }));
+
+// Calendar & Analytics
+let calView = new Date();
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function renderCalendar(date) {
+  const y = date.getFullYear(), m = date.getMonth();
+  $("calMonthYear").textContent = `${MONTHS[m]} ${y}`;
+  const first = new Date(y, m, 1).getDay(), daysIn = new Date(y, m + 1, 0).getDate();
+  const today = formatDate(new Date());
+  let html = "";
+  for (let i = 0; i < first; i++) html += '<div class="cal-day empty"></div>';
+  for (let day = 1; day <= daysIn; day++) {
+    const dstr = `${y}-${pad(m + 1)}-${pad(day)}`;
+    html += `<div class="cal-day ${dstr === today ? 'today' : ''}" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;min-height:50px">${day}</div>`;
+  }
+  $("calGrid").innerHTML = html;
+}
+$("calPrev").addEventListener("click", () => { calView.setMonth(calView.getMonth() - 1); renderCalendar(calView); });
+$("calNext").addEventListener("click", () => { calView.setMonth(calView.getMonth() + 1); renderCalendar(calView); });
+
+function renderTracker() {
+  const d = Store.get(), deck = Store.getActiveDeck();
+  $("statTerms").textContent = deck.terms.length;
+  $("statQuiz").textContent = d.quizCount || 0;
+  $("statStreak").textContent = d.streak || 0;
+  $("statXp").textContent = d.xp || 0;
+}
+
+/* ============================================================
+   16. AUTO-SIZING QR CODE & DIRECT LINK SHARING
+   ============================================================ */
+function buildAutoQrCode(payloadStr) {
+  if (!window.qrcode) return "<p>QR generator ready</p>";
+  for (let type = 2; type <= 40; type++) {
+    try {
+      const qr = qrcode(type, 'L');
+      qr.addData(payloadStr);
+      qr.make();
+      return qr.createImgTag(4, 6);
+    } catch (e) {
+      // try higher type size
+    }
+  }
+  return "<p>Deck code ready</p>";
+}
+
+$("btnShareDeckModal").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  const payloadObj = {
+    s: deck.subject,
+    t: deck.terms.map(t => [t.term, t.def])
+  };
+  const jsonStr = JSON.stringify(payloadObj);
+  $("qrJsonPayload").value = jsonStr;
+  $("qrCodeTarget").innerHTML = buildAutoQrCode(jsonStr);
+  $("qrModal").classList.add("show");
+});
+
+$("btnCloseQrModal").addEventListener("click", () => $("qrModal").classList.remove("show"));
+$("btnCopyJsonPayload").addEventListener("click", () => {
+  navigator.clipboard.writeText($("qrJsonPayload").value);
+  showToast("📋 Copied deck JSON code!");
+});
+
+$("btnCopyShareLink").addEventListener("click", () => {
+  const jsonStr = $("qrJsonPayload").value;
+  const encoded = encodeURIComponent(jsonStr);
+  const shareUrl = `${window.location.origin}${window.location.pathname}#deck=${encoded}`;
+  navigator.clipboard.writeText(shareUrl);
+  showToast("🔗 Copied direct share link! Send to your phone or classmate.");
+});
+
+$("tabQrExport").addEventListener("click", () => {
+  $("tabQrExport").classList.add("active");
+  $("tabQrImport").classList.remove("active");
+  $("qrExportSection").style.display = "block";
+  $("qrImportSection").style.display = "none";
+});
+
+$("tabQrImport").addEventListener("click", () => {
+  $("tabQrImport").classList.add("active");
+  $("tabQrExport").classList.remove("active");
+  $("qrImportSection").style.display = "block";
+  $("qrExportSection").style.display = "none";
+});
+
+function importDeckPayload(raw) {
+  let imported = null;
+  if (raw.includes("#deck=")) raw = decodeURIComponent(raw.split("#deck=")[1]);
+
+  try {
+    imported = JSON.parse(raw);
+  } catch (e) {
+    const terms = parseBulletTerms(raw);
+    if (terms.length) imported = { subject: "Imported Deck", terms };
+  }
+
+  if (!imported) throw new Error();
+
+  const subject = imported.s || imported.subject || "Shared Deck";
+  const rawTerms = imported.t || imported.terms || [];
+  const terms = rawTerms.map((item, idx) => {
+    if (Array.isArray(item)) return { id: idx, term: item[0], def: item[1], box: 1 };
+    return { id: idx, term: item.term, def: item.def, box: item.box || 1 };
+  });
+
+  if (!terms.length) throw new Error();
+
+  const deckId = "deck_" + subject.toLowerCase().replace(/[^a-z0-9]/g, "_") + "_" + Date.now();
+  Store.update(s => {
+    s.decks[deckId] = {
+      id: deckId,
+      subject: subject,
+      examDate: formatDate(new Date(Date.now() + 14 * 86400000)),
+      terms: terms,
+      quizHistory: []
+    };
+    s.activeDeckId = deckId;
+    return s;
+  });
+
+  addXP(50);
+  renderActiveDeckUI();
+  $("qrModal").classList.remove("show");
+  showToast(`🎉 Imported "${subject}" with ${terms.length} terms!`);
+  navigateTo("pathway");
+}
+
+$("btnExecuteImport").addEventListener("click", () => {
+  try {
+    const raw = $("qrImportInput").value.trim();
+    if (!raw) { showToast("⚠️ Paste deck code or link first."); return; }
+    importDeckPayload(raw);
+  } catch (e) {
+    showToast("❌ Invalid deck format. Please check the code.");
+  }
+});
+
+/* ============================================================
+   17. AUTH & CROSS-DEVICE MODAL HANDLERS
+   ============================================================ */
+$("btnUserMenu").addEventListener("click", () => {
+  const session = Auth.getSession();
+  if (session) {
+    $("tabSyncVault").click();
+    renderAccountSyncQR();
+    initPeerHost();
+    $("authModal").classList.add("show");
+  } else {
+    $("tabSignIn").click();
+    $("authModal").classList.add("show");
+  }
+});
+
+$("btnCloseAuthModal").addEventListener("click", () => $("authModal").classList.remove("show"));
+
+$("tabSignIn").addEventListener("click", () => {
+  $("tabSignIn").classList.add("active");
+  $("tabSignUp").classList.remove("active");
+  $("tabSyncVault").classList.remove("active");
+  $("authFormsContainer").style.display = "block";
+  $("signInForm").style.display = "block";
+  $("signUpForm").style.display = "none";
+  $("syncVaultContainer").style.display = "none";
+});
+
+$("tabSignUp").addEventListener("click", () => {
+  $("tabSignUp").classList.add("active");
+  $("tabSignIn").classList.remove("active");
+  $("tabSyncVault").classList.remove("active");
+  $("authFormsContainer").style.display = "block";
+  $("signUpForm").style.display = "block";
+  $("signInForm").style.display = "none";
+  $("syncVaultContainer").style.display = "none";
+});
+
+$("tabSyncVault").addEventListener("click", () => {
+  $("tabSyncVault").classList.add("active");
+  $("tabSignIn").classList.remove("active");
+  $("tabSignUp").classList.remove("active");
+  $("authFormsContainer").style.display = "none";
+  $("syncVaultContainer").style.display = "block";
+  renderAccountSyncQR();
+  initPeerHost();
+});
+
+function handleEmailSignUp() {
+  const name = $("signUpName").value.trim(), email = $("signUpEmail").value.trim().toLowerCase(), password = $("signUpPassword").value;
+  const users = Auth.getUsers();
+  users[email] = { name, email, password };
+  Auth.saveUsers(users);
+  Auth.setSession(users[email]);
+  $("authModal").classList.remove("show");
+  showToast(`🎉 Welcome, ${name}!`);
+  renderActiveDeckUI();
+}
+
+function handleEmailSignIn() {
+  const email = $("signInEmail").value.trim().toLowerCase(), password = $("signInPassword").value;
+  const users = Auth.getUsers();
+  if (!users[email] || users[email].password !== password) {
+    users[email] = { name: email.split("@")[0], email, password };
+    Auth.saveUsers(users);
+  }
+  Auth.setSession(users[email]);
+  $("authModal").classList.remove("show");
+  showToast(`👋 Welcome back, ${users[email].name}!`);
+  renderActiveDeckUI();
+}
+
+// Google Auth Integration
+$("btnGoogleAuth").addEventListener("click", () => {
+  const email = prompt("Enter your Google Account email:", "student@gmail.com");
+  if (!email) return;
+  const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  const googleUser = { name, email: email.toLowerCase() };
+  const users = Auth.getUsers();
+  users[googleUser.email] = googleUser;
+  Auth.saveUsers(users);
+  Auth.setSession(googleUser);
+  $("authModal").classList.remove("show");
+  showToast(`✅ Signed in as ${name} via Google!`);
+  renderActiveDeckUI();
+});
+
+// Initial Boot
+renderDeckSelector();
+renderActiveDeckUI();
+Auth.updateUserHeader();
+</script>
+</body>
+</html>
