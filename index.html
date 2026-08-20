@@ -6,7 +6,7 @@
 <title>STUDYBUDDY PRO // INDUSTRIAL ACADEMIC WORKSTATION</title>
 <!-- Confetti Celebration CDN -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<!-- QRCode.js for instant hardware deck sharing -->
+<!-- QRCode.js for instant deck sharing -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 <style>
@@ -49,7 +49,7 @@ body { font-family: var(--font-sans); display: flex; flex-direction: column; ove
 button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 input, textarea, select { font-family: inherit; }
 
-/* ===== 1. TOP COMMAND HUD (HEAD-UP DISPLAY) ===== */
+/* ===== 1. TOP COMMAND HUD ===== */
 .command-hud {
   height: 52px;
   background: var(--bg-panel);
@@ -65,7 +65,7 @@ input, textarea, select { font-family: inherit; }
   font-size: 0.78rem;
 }
 
-.hud-group { display: flex; align-items: center; gap: 12px; }
+.hud-group { display: flex; align-items: center; gap: 10px; }
 
 .hud-logo {
   display: flex;
@@ -126,7 +126,7 @@ input, textarea, select { font-family: inherit; }
   display: flex;
   flex-direction: column;
   padding: 10px 8px;
-  gap: 4px;
+  gap: 3px;
   flex-shrink: 0;
 }
 
@@ -144,7 +144,7 @@ input, textarea, select { font-family: inherit; }
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-secondary);
@@ -230,8 +230,8 @@ input, textarea, select { font-family: inherit; }
   color: var(--text-primary);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  padding: 9px 16px;
-  font-size: 0.84rem;
+  padding: 8px 14px;
+  font-size: 0.82rem;
   font-weight: 700;
   font-family: var(--font-mono);
   display: inline-flex;
@@ -243,13 +243,12 @@ input, textarea, select { font-family: inherit; }
 .btn-tactical:hover { background: var(--bg-surface-hover); border-color: var(--border-glow); }
 .btn-tactical.primary { background: var(--signal-amber); color: #000; border-color: var(--signal-amber); }
 .btn-tactical.primary:hover { background: #d97706; }
-.btn-tactical.cyan { background: var(--signal-cyan); color: #000; border-color: var(--signal-cyan); }
 .btn-tactical.full { width: 100%; }
 
 /* ===== 3. DASHBOARD / TELEMETRY OVERVIEW ===== */
 .telemetry-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -275,15 +274,15 @@ input, textarea, select { font-family: inherit; }
   margin-bottom: 20px;
 }
 .mascot-avatar-circle {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--bg-surface);
   border: 2px solid var(--signal-cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.2rem;
+  font-size: 2rem;
   box-shadow: 0 0 16px var(--signal-cyan-glow);
 }
 
@@ -375,7 +374,7 @@ input, textarea, select { font-family: inherit; }
 .rating-btn.good { border-color: var(--signal-green); color: var(--signal-green); }
 .rating-btn.easy { border-color: var(--signal-cyan); color: var(--signal-cyan); }
 
-/* ===== 5. INTERACTIVE MIND MAP CANVAS ===== */
+/* ===== 5. MIND MAP ===== */
 .mindmap-viewport {
   width: 100%;
   height: 480px;
@@ -387,15 +386,15 @@ input, textarea, select { font-family: inherit; }
 }
 #mindMapCanvas { width: 100%; height: 100%; }
 
-/* ===== 6. EXAM ARENA STAGE ===== */
+/* ===== 6. EXAM ARENA ===== */
 .exam-options-grid { display: grid; gap: 8px; margin-top: 14px; }
 .exam-opt-btn {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 14px 16px;
+  padding: 13px 16px;
   text-align: left;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--text-primary);
   font-weight: 500;
   transition: all 0.15s;
@@ -407,7 +406,7 @@ input, textarea, select { font-family: inherit; }
 .exam-opt-btn.correct { border-color: var(--signal-green); background: rgba(16, 185, 129, 0.15); color: var(--signal-green); font-weight: 700; }
 .exam-opt-btn.wrong { border-color: var(--signal-red); background: rgba(239, 68, 68, 0.15); color: var(--signal-red); }
 
-/* ===== 7. BLURTING TESTER & VOICE ORAL ===== */
+/* ===== 7. BLURTING & VOICE ORAL ===== */
 .blurt-terminal {
   width: 100%;
   background: var(--bg-inset);
@@ -421,24 +420,24 @@ input, textarea, select { font-family: inherit; }
   resize: vertical;
 }
 .mic-orb {
-  width: 80px;
-  height: 80px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   background: var(--bg-surface);
   border: 2px solid var(--signal-cyan);
   color: var(--signal-cyan);
-  font-size: 2.2rem;
+  font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px auto;
+  margin: 18px auto;
   box-shadow: 0 0 20px var(--signal-cyan-glow);
   transition: all 0.2s;
 }
 .mic-orb.recording { border-color: var(--signal-red); color: var(--signal-red); animation: pulseRecord 1.2s infinite; box-shadow: 0 0 24px rgba(239,68,68,0.5); }
 @keyframes pulseRecord { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
-/* ===== 8. REVIEWER TABLE & EXPORT ===== */
+/* ===== 8. REVIEWER TABLE ===== */
 .reviewer-table {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -473,7 +472,7 @@ input, textarea, select { font-family: inherit; }
   border-radius: var(--radius-md);
   padding: 24px;
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   position: relative;
   box-shadow: 0 16px 40px rgba(0,0,0,0.7);
 }
@@ -520,7 +519,7 @@ input, textarea, select { font-family: inherit; }
       <span>STUDYBUDDY // OS</span>
     </div>
     <div class="hud-telemetry">
-      <span class="hud-label">ACTIVE_DECK:</span>
+      <span class="hud-label">DECK:</span>
       <span class="hud-value" id="hudDeckName">BIO_101</span>
     </div>
     <div class="hud-telemetry">
@@ -531,7 +530,7 @@ input, textarea, select { font-family: inherit; }
 
   <div class="hud-group">
     <button class="hud-btn" id="btnAudioToggle">
-      <span>🎧 CHORD SYNTH</span>
+      <span>🎧 SYNTH</span>
       <span class="keycap">OFF</span>
     </button>
     <button class="hud-btn" id="btnQrShare">
@@ -571,7 +570,7 @@ input, textarea, select { font-family: inherit; }
   <!-- WORKBENCH MAIN STAGE -->
   <main class="workbench-stage">
 
-    <!-- VIEW 1: DASHBOARD & MASCOT TELEMETRY -->
+    <!-- VIEW 1: DASHBOARD -->
     <section class="panel-view active" id="view-dashboard">
       <div class="mascot-core-unit">
         <div style="display:flex;align-items:center;gap:16px">
@@ -582,7 +581,7 @@ input, textarea, select { font-family: inherit; }
             <p id="mascotQuote" style="color:var(--text-secondary);font-size:0.86rem;margin-top:2px">"All systems operational. Space repetition intervals loaded for peak retention."</p>
           </div>
         </div>
-        <button class="btn-tactical primary" data-view="flashcards">▶️ START LEITNER RIG</button>
+        <button class="btn-tactical primary" data-view="flashcards">▶️ START RIG</button>
       </div>
 
       <div class="telemetry-grid">
@@ -604,7 +603,6 @@ input, textarea, select { font-family: inherit; }
         </div>
       </div>
 
-      <!-- DAILY BOUNTIES -->
       <div class="tactical-card">
         <div class="tactical-card-header">
           <span class="tactical-card-title">📜 Daily Study Objectives</span>
@@ -614,7 +612,7 @@ input, textarea, select { font-family: inherit; }
       </div>
     </section>
 
-    <!-- VIEW 2: SPATIAL FLASHCARD RIG -->
+    <!-- VIEW 2: FLASHCARD RIG -->
     <section class="panel-view" id="view-flashcards">
       <div class="tactical-card">
         <div class="tactical-card-header">
@@ -650,7 +648,7 @@ input, textarea, select { font-family: inherit; }
       </div>
     </section>
 
-    <!-- VIEW 3: INTERACTIVE MIND MAP -->
+    <!-- VIEW 3: MIND MAP -->
     <section class="panel-view" id="view-mindmap">
       <div class="tactical-card">
         <div class="tactical-card-header">
@@ -730,7 +728,7 @@ input, textarea, select { font-family: inherit; }
           </div>
         </div>
         <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">BULLET TERMS (• Term: Definition)</label>
-        <textarea id="inputRawBullets" class="blurt-terminal" rows="8"></textarea>
+        <textarea id="inputRawBullets" class="blurt-terminal" rows="8" placeholder="• Photosynthesis: Biochemical conversion of sunlight into chemical glucose&#10;• Mitochondria: The powerhouse organelle generating ATP cellular energy&#10;• Cell Membrane: Semipermeable phospholipid bilayer controlling molecular flow"></textarea>
         <button class="btn-tactical primary full" id="btnSaveDeck" style="margin-top:12px">⚡ COMPILE & INGEST DECK</button>
       </div>
     </section>
@@ -769,7 +767,11 @@ input, textarea, select { font-family: inherit; }
       <div class="tactical-card">
         <div class="tactical-card-header">
           <span class="tactical-card-title">📅 Ebbinghaus Spaced Matrix</span>
-          <span id="calMonthLabel" style="font-family:var(--font-mono);font-size:0.85rem;color:var(--signal-cyan)"></span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <button class="btn-tactical" id="btnCalPrev">⬅️</button>
+            <span id="calMonthLabel" style="font-family:var(--font-mono);font-size:0.85rem;color:var(--signal-cyan)"></span>
+            <button class="btn-tactical" id="btnCalNext">➡️</button>
+          </div>
         </div>
         <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
       </div>
@@ -778,7 +780,7 @@ input, textarea, select { font-family: inherit; }
   </main>
 </div>
 
-<!-- QR MODAL -->
+<!-- QR SYNC MODAL -->
 <div class="modal-backdrop" id="qrModal">
   <div class="tactical-modal">
     <div class="tactical-card-header">
@@ -792,26 +794,51 @@ input, textarea, select { font-family: inherit; }
   </div>
 </div>
 
+<!-- USER AUTH MODAL -->
+<div class="modal-backdrop" id="authModal">
+  <div class="tactical-modal">
+    <div class="tactical-card-header">
+      <span class="tactical-card-title">🔐 Identity Authentication</span>
+      <button onclick="$('authModal').classList.remove('open')" style="background:none;color:#fff;font-size:1.1rem">✕</button>
+    </div>
+    <form id="authForm" onsubmit="event.preventDefault(); handleAuthSubmit();">
+      <div style="margin-bottom:12px">
+        <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">OPERATOR NAME</label>
+        <input type="text" id="authNameInput" class="input-rig" placeholder="e.g. Maria Santos" required>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">ACCESS EMAIL</label>
+        <input type="email" id="authEmailInput" class="input-rig" placeholder="student@university.edu" required>
+      </div>
+      <button type="submit" class="btn-tactical primary full">⚡ AUTHORIZE & SYNC PROFILE</button>
+    </form>
+    <div style="margin-top:14px;text-align:center">
+      <button class="btn-tactical full" id="btnGoogleOneTap">🌐 CONTINUE WITH GOOGLE</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-bar" id="toastBar"></div>
 
 <script>
 "use strict";
 
 /* ============================================================
-   1. INDUSTRIAL DATABASE ENGINE & STORAGE
+   1. INDUSTRIAL DATABASE ENGINE
    ============================================================ */
 const Storage = {
   KEY: "studybuddy_industrial_v10",
   defaultData: () => ({
     activeDeck: "deck_bio",
+    user: { name: "GUEST // OPERATOR", email: "" },
     decks: {
       "deck_bio": {
         id: "deck_bio",
         subject: "General Biology 101",
         examDate: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
         terms: [
-          { id: 0, term: "Photosynthesis", def: "Biochemical conversion of photon light energy into ATP and glucose.", box: 1 },
-          { id: 1, term: "Mitochondria", def: "Membrane-bound organelle generating chemical energy through oxidative phosphorylation.", box: 2 },
+          { id: 0, term: "Photosynthesis", def: "Biochemical conversion of light energy into ATP and glucose.", box: 1 },
+          { id: 1, term: "Mitochondria", def: "Membrane-bound organelle generating cellular ATP through oxidative phosphorylation.", box: 2 },
           { id: 2, term: "Cell Membrane", def: "Semipermeable phospholipid bilayer governing molecular homeostasis.", box: 1 },
           { id: 3, term: "Ribosome", def: "Catalytic ribonucleoprotein complex synthesizing polypeptide chains.", box: 3 }
         ]
@@ -819,8 +846,8 @@ const Storage = {
     },
     xp: 140, streak: 3, lastCheckin: null,
     quests: [
-      { id: "q1", label: "Review 8 Flashcards", target: 8, count: 0, reward: 30, claimed: false },
-      { id: "q2", label: "Complete 1 Exam Simulation", target: 1, count: 0, reward: 50, claimed: false }
+      { id: "q1", label: "Review 8 Flashcards", target: 8, count: 0, reward: 30 },
+      { id: "q2", label: "Complete 1 Exam Simulation", target: 1, count: 0, reward: 50 }
     ]
   }),
   get() {
@@ -842,7 +869,7 @@ function showToast(msg) {
 }
 
 /* ============================================================
-   2. PROCEDURAL CHERRY MX SWITCH SYNTHESIZER & LO-FI
+   2. PROCEDURAL CHERRY MX SWITCH SYNTHESIZER
    ============================================================ */
 let audioCtx = null;
 function getAudio() {
@@ -918,7 +945,8 @@ document.querySelectorAll("[data-view]").forEach(b => {
 function updateTelemetry() {
   const d = Storage.get();
   const deck = Storage.currentDeck();
-  $("hudDeckName").textContent = deck.subject.toUpperCase().replace(/\s+/g, "_");
+  $("hudDeckName").textContent = deck.subject.toUpperCase().replace(/\s+/g, "_").slice(0, 14);
+  $("hudUserName").textContent = (d.user && d.user.name) ? d.user.name.toUpperCase().slice(0, 14) : "GUEST // AUTH";
   $("statTotalTerms").textContent = deck.terms.length;
   $("statMastered").textContent = deck.terms.filter(t => t.box >= 3).length;
   $("statStreak").textContent = d.streak;
@@ -947,14 +975,18 @@ function renderQuests() {
    ============================================================ */
 let cardIndex = 0;
 function initCards() {
-  const deck = Storage.currentDeck();
   cardIndex = 0;
   showCard();
 }
 
 function showCard() {
   const deck = Storage.currentDeck();
-  if (!deck.terms.length) return;
+  if (!deck.terms.length) {
+    $("fcTermText").textContent = "No terms in this deck";
+    $("fcDefText").textContent = "Add terms in the Creator tab to begin studying.";
+    $("fcProgressCounter").textContent = "0 / 0";
+    return;
+  }
   const card = deck.terms[cardIndex % deck.terms.length];
   $("cardRig").classList.remove("flipped");
   $("fcTermText").textContent = card.term;
@@ -972,6 +1004,7 @@ $("cardRig").addEventListener("click", () => {
 function rateCard(boxDelta) {
   clickSfx(1200);
   const deck = Storage.currentDeck();
+  if (!deck.terms.length) return;
   const card = deck.terms[cardIndex % deck.terms.length];
   Storage.update(s => {
     const target = s.decks[s.activeDeck].terms.find(t => t.id === card.id);
@@ -989,7 +1022,6 @@ $("btnRate2").addEventListener("click", () => rateCard(0));
 $("btnRate3").addEventListener("click", () => rateCard(1));
 $("btnRate4").addEventListener("click", () => rateCard(2));
 
-// Keyboard hotkey support
 window.addEventListener("keydown", e => {
   const activePanel = document.querySelector(".panel-view.active");
   if (!activePanel || activePanel.id !== "view-flashcards") return;
@@ -1002,6 +1034,7 @@ window.addEventListener("keydown", e => {
 
 $("btnTtsSpeak").addEventListener("click", () => {
   const deck = Storage.currentDeck();
+  if (!deck.terms.length) return;
   const card = deck.terms[cardIndex % deck.terms.length];
   const u = new SpeechSynthesisUtterance(card.term);
   speechSynthesis.speak(u);
@@ -1014,13 +1047,15 @@ function renderMindMap() {
   const deck = Storage.currentDeck();
   const svg = $("mindMapCanvas");
   svg.innerHTML = "";
-  const rect = svg.getBoundingClientRect();
-  const cx = (rect.width || 600) / 2, cy = (rect.height || 480) / 2;
-  const r = Math.min(cx, cy) - 80;
+  if (!deck.terms || !deck.terms.length) return;
+
+  const cx = 300, cy = 240;
+  const r = 140;
+  svg.setAttribute("viewBox", "0 0 600 480");
 
   let html = `
-    <circle cx="${cx}" cy="${cy}" r="34" fill="var(--bg-surface)" stroke="var(--signal-amber)" stroke-width="2"/>
-    <text x="${cx}" y="${cy}" text-anchor="middle" dy="4" fill="#fff" font-family="var(--font-mono)" font-size="10" font-weight="700">${deck.subject.slice(0, 10)}</text>
+    <circle cx="${cx}" cy="${cy}" r="38" fill="var(--bg-surface)" stroke="var(--signal-amber)" stroke-width="2"/>
+    <text x="${cx}" y="${cy}" text-anchor="middle" dy="4" fill="#fff" font-family="var(--font-mono)" font-size="10" font-weight="700">${deck.subject.slice(0, 12)}</text>
   `;
 
   deck.terms.forEach((t, i) => {
@@ -1028,8 +1063,8 @@ function renderMindMap() {
     const nx = cx + r * Math.cos(angle), ny = cy + r * Math.sin(angle);
     html += `
       <line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="var(--border-strong)" stroke-width="1.5"/>
-      <circle cx="${nx}" cy="${ny}" r="22" fill="var(--bg-panel)" stroke="var(--signal-cyan)" stroke-width="1.5" style="cursor:pointer" onclick="showToast('${t.term}: ${t.def}')"/>
-      <text x="${nx}" y="${ny}" text-anchor="middle" dy="4" fill="var(--text-primary)" font-family="var(--font-mono)" font-size="9">${t.term.slice(0, 7)}</text>
+      <circle cx="${nx}" cy="${ny}" r="22" fill="var(--bg-panel)" stroke="var(--signal-cyan)" stroke-width="1.5" style="cursor:pointer" onclick="showToast('${t.term.replace(/'/g, "\\'")}')"/>
+      <text x="${nx}" y="${ny}" text-anchor="middle" dy="4" fill="var(--text-primary)" font-family="var(--font-mono)" font-size="9">${t.term.slice(0, 8)}</text>
     `;
   });
   svg.innerHTML = html;
@@ -1048,39 +1083,44 @@ function initExam() {
 
 function loadExamQ() {
   const deck = Storage.currentDeck();
-  if (!deck.terms.length) return;
+  if (!deck.terms || deck.terms.length < 2) {
+    $("examPrompt").textContent = "Need at least 2 terms in deck to run exam simulation.";
+    $("examOptionsGrid").innerHTML = "";
+    return;
+  }
   const q = deck.terms[examIdx % deck.terms.length];
-  $("examPrompt").textContent = `Identify concept: "${q.term}"`;
+  $("examPrompt").textContent = `Identify definition for concept: "${q.term}"`;
   $("examFeedback").textContent = "";
   $("btnNextExamQ").style.display = "none";
 
   const distractors = deck.terms.filter(t => t.id !== q.id).map(t => t.def);
   const opts = [q.def, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
 
-  $("examOptionsGrid").innerHTML = opts.map(o => `
-    <button class="exam-opt-btn" onclick="checkExam(this, '${o.replace(/'/g, "\\'")}', '${q.def.replace(/'/g, "\\')}')">
-      <span>${o}</span>
-      <span class="keycap">SELECT</span>
-    </button>
-  `).join("");
+  const container = $("examOptionsGrid");
+  container.innerHTML = "";
+  opts.forEach(o => {
+    const btn = document.createElement("button");
+    btn.className = "exam-opt-btn";
+    btn.innerHTML = `<span>${o}</span><span class="keycap">SELECT</span>`;
+    btn.addEventListener("click", () => {
+      clickSfx(1400);
+      const isCorrect = (o === q.def);
+      if (isCorrect) {
+        examScore += 20;
+        btn.classList.add("correct");
+        $("examFeedback").innerHTML = `<span style="color:var(--signal-green)">✓ SYSTEM ACCURACY CONFIRMED (+20 XP)</span>`;
+        Storage.update(s => { s.xp += 20; return s; });
+        updateTelemetry();
+      } else {
+        btn.classList.add("wrong");
+        $("examFeedback").innerHTML = `<span style="color:var(--signal-red)">✗ ERROR IN EVALUATION</span>`;
+      }
+      container.querySelectorAll(".exam-opt-btn").forEach(b => b.disabled = true);
+      $("btnNextExamQ").style.display = "inline-block";
+    });
+    container.appendChild(btn);
+  });
 }
-
-window.checkExam = (btn, sel, ans) => {
-  clickSfx(1400);
-  const correct = sel === ans;
-  if (correct) {
-    examScore += 20;
-    btn.classList.add("correct");
-    $("examFeedback").innerHTML = `<span style="color:var(--signal-green)">✓ SYSTEM ACCURACY CONFIRMED (+20 XP)</span>`;
-    Storage.update(s => { s.xp += 20; return s; });
-    updateTelemetry();
-  } else {
-    btn.classList.add("wrong");
-    $("examFeedback").innerHTML = `<span style="color:var(--signal-red)">✗ ERROR IN EVALUATION</span>`;
-  }
-  document.querySelectorAll(".exam-opt-btn").forEach(b => b.disabled = true);
-  $("btnNextExamQ").style.display = "inline-block";
-};
 
 $("btnNextExamQ").addEventListener("click", () => {
   examIdx++;
@@ -1134,29 +1174,124 @@ $("btnMicOrb").addEventListener("click", () => {
   recEngine.start();
 });
 
+$("btnNextOral").addEventListener("click", () => {
+  const deck = Storage.currentDeck();
+  if (!deck.terms.length) return;
+  const q = deck.terms[Math.floor(Math.random() * deck.terms.length)];
+  $("oralPromptHeadline").textContent = `Recite definition: "${q.term}"`;
+  $("oralLiveTranscript").textContent = "...";
+  const u = new SpeechSynthesisUtterance(`Please explain: ${q.term}`);
+  speechSynthesis.speak(u);
+});
+
 /* ============================================================
-   8. DECK COMPILER & REPOSITORY
+   8. POMODORO TIMER
+   ============================================================ */
+let pomoSec = 25 * 60, pomoInt = null;
+function updatePomoDisplay() {
+  const mm = String(Math.floor(pomoSec / 60)).padStart(2, "0");
+  const ss = String(pomoSec % 60).padStart(2, "0");
+  $("pomoDisplay").textContent = `${mm}:${ss}`;
+}
+$("btnPomoToggle").addEventListener("click", () => {
+  if (pomoInt) {
+    clearInterval(pomoInt);
+    pomoInt = null;
+    $("btnPomoToggle").textContent = "▶️ RESUME";
+    showToast("POMODORO PAUSED");
+  } else {
+    $("btnPomoToggle").textContent = "⏸️ PAUSE";
+    showToast("POMODORO RUNNING");
+    pomoInt = setInterval(() => {
+      pomoSec--;
+      updatePomoDisplay();
+      if (pomoSec <= 0) {
+        clearInterval(pomoInt);
+        pomoInt = null;
+        pomoSec = 25 * 60;
+        updatePomoDisplay();
+        $("btnPomoToggle").textContent = "▶️ START";
+        showToast("POMODORO COMPLETED (+25 XP)");
+        Storage.update(s => { s.xp += 25; return s; });
+        updateTelemetry();
+      }
+    }, 1000);
+  }
+});
+$("btnPomoReset").addEventListener("click", () => {
+  clearInterval(pomoInt);
+  pomoInt = null;
+  pomoSec = 25 * 60;
+  updatePomoDisplay();
+  $("btnPomoToggle").textContent = "▶️ START";
+  showToast("POMODORO RESET");
+});
+
+/* ============================================================
+   9. CALENDAR MODULE
+   ============================================================ */
+let calDate = new Date();
+function renderCalendar() {
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+  $("calMonthLabel").textContent = `${monthNames[m]} ${y}`;
+  
+  const first = new Date(y, m, 1).getDay();
+  const totalDays = new Date(y, m + 1, 0).getDate();
+  const deck = Storage.currentDeck();
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  let html = "";
+  for (let i = 0; i < first; i++) html += '<div style="min-height:50px"></div>';
+  for (let d = 1; d <= totalDays; d++) {
+    const dStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const isToday = (dStr === todayStr);
+    const isExam = (deck.examDate === dStr);
+    html += `
+      <div style="background:var(--bg-inset);border:1px solid ${isToday ? 'var(--signal-amber)' : 'var(--border-subtle)'};border-radius:var(--radius-xs);padding:6px;min-height:54px;font-family:var(--font-mono);font-size:0.75rem">
+        <span style="font-weight:700;color:${isToday ? 'var(--signal-amber)' : 'var(--text-primary)'}">${d}</span>
+        ${isExam ? '<div style="margin-top:4px;background:var(--signal-red);color:#fff;font-size:0.6rem;padding:1px 3px;border-radius:2px">EXAM</div>' : ''}
+      </div>
+    `;
+  }
+  $("calendarGrid").innerHTML = html;
+}
+$("btnCalPrev").addEventListener("click", () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); });
+$("btnCalNext").addEventListener("click", () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); });
+
+/* ============================================================
+   10. DECK COMPILER & REPOSITORY
    ============================================================ */
 $("btnSaveDeck").addEventListener("click", () => {
   const subj = $("inputSubject").value.trim();
   const raw = $("inputRawBullets").value.trim();
   if (!subj || !raw) { showToast("INPUT REQUIRED"); return; }
 
-  const lines = raw.split("\n").filter(l => l.includes(":"));
-  const terms = lines.map((l, i) => {
-    const [t, d] = l.replace(/^[\s•\-\*]+/, "").split(":");
-    return { id: i, term: t.trim(), def: d.trim(), box: 1 };
+  const lines = raw.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+  const terms = [];
+  lines.forEach((line, i) => {
+    const clean = line.replace(/^[\s•\-\*\d\.\)]+/, "").trim();
+    for (const sep of ["::", " - ", " — ", " – ", " : ", ":", "=>", "→"]) {
+      const idx = clean.indexOf(sep);
+      if (idx !== -1) {
+        terms.push({ id: i, term: clean.slice(0, idx).trim(), def: clean.slice(idx + sep.length).trim(), box: 1 });
+        break;
+      }
+    }
   });
 
-  const deckId = "deck_" + subj.toLowerCase().replace(/\s+/g, "_");
+  if (!terms.length) { showToast("NO TERMS PARSED (USE Term: Def)"); return; }
+
+  const deckId = "deck_" + subj.toLowerCase().replace(/[^a-z0-9]/g, "_");
   Storage.update(s => {
     s.decks[deckId] = { id: deckId, subject: subj, examDate: $("inputExamDate").value, terms };
     s.activeDeck = deckId;
+    s.xp += 30;
     return s;
   });
   renderDeckOptions();
   updateTelemetry();
-  showToast(`INGESTED DECK: ${subj}`);
+  showToast(`INGESTED ${terms.length} TERMS INTO ${subj}`);
   navigate("dashboard");
 });
 
@@ -1182,6 +1317,18 @@ $("railDeckSelect").addEventListener("change", e => {
   showToast("SWITCHED ACTIVE DECK");
 });
 
+/* ANKI CSV EXPORT */
+$("btnExportAnki").addEventListener("click", () => {
+  const deck = Storage.currentDeck();
+  const csv = deck.terms.map(t => `"${t.term.replace(/"/g, '""')}","${t.def.replace(/"/g, '""')}"`).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${deck.subject}_Anki.csv`;
+  a.click();
+  showToast("ANKI CSV EXPORTED");
+});
+
 /* QR SYNC */
 $("btnQrShare").addEventListener("click", () => {
   const deck = Storage.currentDeck();
@@ -1190,8 +1337,29 @@ $("btnQrShare").addEventListener("click", () => {
   }
   $("qrModal").classList.add("open");
 });
+$("btnCopyJson").addEventListener("click", () => {
+  navigator.clipboard.writeText(JSON.stringify(Storage.currentDeck()));
+  showToast("DECK JSON COPIED");
+});
 
-// Initial boot
+/* AUTH MODAL */
+$("btnUserAuth").addEventListener("click", () => $("authModal").classList.add("open"));
+function handleAuthSubmit() {
+  const name = $("authNameInput").value.trim();
+  const email = $("authEmailInput").value.trim();
+  Storage.update(s => { s.user = { name, email }; return s; });
+  updateTelemetry();
+  $("authModal").classList.remove("open");
+  showToast(`OPERATOR AUTHORIZED: ${name}`);
+}
+$("btnGoogleOneTap").addEventListener("click", () => {
+  Storage.update(s => { s.user = { name: "JUAN DELA CRUZ", email: "juan@ph.edu" }; return s; });
+  updateTelemetry();
+  $("authModal").classList.remove("open");
+  showToast("AUTHORIZED VIA GOOGLE");
+});
+
+// Boot Initializer
 renderDeckOptions();
 updateTelemetry();
 </script>
