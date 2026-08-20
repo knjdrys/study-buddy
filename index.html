@@ -4,264 +4,580 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StudyBuddy PH 🇵🇭 — Study Smart, Review Easy</title>
+<!-- External Libraries for PDF, DOCX, and Confetti -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-:root{--cream:#FAF6EF;--yellow:#FFC93C;--yellow-dark:#E0A800;--navy:#0D1B2A;--navy-light:#3A6B8C;--green:#2E8B57;--red:#D94F4F;--gray:#7A8699;--radius:16px;--shadow:0 8px 24px rgba(13,27,42,.10)}
-*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
-body{font-family:'Segoe UI','Trebuchet MS','Helvetica Neue',Arial,sans-serif;background:var(--cream);color:var(--navy);display:flex;min-height:100vh}
-button{font-family:inherit;cursor:pointer}input,textarea{font-family:inherit}
+:root {
+  --cream: #FAF6EF;
+  --cream-card: #FFFFFF;
+  --yellow: #FFC93C;
+  --yellow-dark: #E0A800;
+  --navy: #0D1B2A;
+  --navy-light: #3A6B8C;
+  --navy-dark: #070e17;
+  --green: #2E8B57;
+  --green-light: #E6F7ED;
+  --red: #D94F4F;
+  --red-light: #FDEAEA;
+  --gray: #7A8699;
+  --gray-light: #F0EDE6;
+  --border: #E5E0D5;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(13,27,42,.08);
+  --shadow-hover: 0 12px 30px rgba(13,27,42,.15);
+}
 
-.sidebar{width:250px;min-height:100vh;background:linear-gradient(180deg,#0b1117,#12202e);color:#cfd8e3;display:flex;flex-direction:column;position:sticky;top:0;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:10px;padding:24px 20px;font-size:1.2rem;font-weight:700;color:#fff}
-.logo-icon{font-size:1.6rem}.logo em{color:var(--yellow);font-style:normal}
-.nav{display:flex;flex-direction:column;padding:10px;flex:1}
-.nav-btn{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;color:#a9b7c6;font-size:1rem;font-weight:500;padding:12px 16px;border-radius:12px;transition:all .2s;text-align:left;margin-bottom:2px}
-.nav-btn:hover{background:rgba(255,201,60,.12);color:#fff}.nav-btn.active{background:var(--yellow);color:var(--navy);font-weight:700}
-.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.08)}
-.lofi-box{background:rgba(255,255,255,.05);border-radius:12px;padding:12px;margin-bottom:12px}
-.lofi-header{display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:#dfe7ee;margin-bottom:10px}
-.lofi-bars{display:flex;align-items:flex-end;gap:2px;height:12px}
-.lofi-bars i{width:3px;background:var(--yellow);border-radius:2px;animation:eq 1s ease-in-out infinite}
-.lofi-bars i:nth-child(2){animation-delay:.2s}.lofi-bars i:nth-child(3){animation-delay:.4s}
-@keyframes eq{0%,100%{height:4px}50%{height:12px}}
-.lofi-controls{display:flex;gap:8px;justify-content:center}
-.sound-btn{background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1.2rem;padding:8px 10px;border-radius:10px;transition:background .2s;min-width:42px}
-.sound-btn:hover{background:var(--yellow);color:var(--navy)}
-.credit{font-size:.75rem;color:#718092;text-align:center;margin-top:6px}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { min-height: 100vh; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+  display: flex;
+  transition: background 0.3s, color 0.3s;
+}
 
-.main{flex:1;padding:32px 36px;max-width:980px}
-.page{display:none}.page.active{display:block;animation:fadeSlide .35s ease}
-@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.page-title{font-size:1.8rem;margin-bottom:6px}.page-sub{color:var(--gray);margin-bottom:20px}
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
 
-.hero{padding:20px 0 30px}.hero h1{font-size:2.4rem;margin-bottom:10px}
-.hero .highlight{color:var(--yellow-dark)}.hero p{color:var(--gray);font-size:1.1rem;margin-bottom:22px;max-width:520px}
-.hero-stats{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap}
-.streak-badge,.xp-badge{background:#fff;border-radius:30px;padding:8px 16px;font-weight:700;box-shadow:var(--shadow);font-size:.95rem}
-.streak-badge{color:#E8590C;border:2px solid #FFD8A8}.xp-badge{color:var(--navy);border:2px solid var(--yellow)}
-.hero-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
-.mini-card{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);text-align:center}
-.mini-card span{font-size:1.8rem;display:block;margin-bottom:8px}.mini-card h4{margin-bottom:4px}.mini-card p{color:var(--gray);font-size:.85rem}
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #09131d 0%, #112233 100%);
+  color: #cfd8e3;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  z-index: 100;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+}
+.sidebar-header {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.logo-icon { font-size: 1.8rem; }
+.logo-text { font-size: 1.25rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.logo-text em { color: var(--yellow); font-style: normal; }
+.logo-sub { font-size: 0.72rem; color: #7f93a8; display: block; font-weight: 400; }
 
-.btn{background:var(--navy);color:#fff;border:none;border-radius:12px;padding:11px 20px;font-size:1rem;font-weight:600;transition:transform .15s,box-shadow .2s;display:inline-block}
-.btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(13,27,42,.25)}.btn.big{font-size:1.15rem;padding:14px 28px}
-.btn-primary{background:var(--yellow);color:var(--navy)}.btn-primary:hover{background:var(--yellow-dark)}
-.btn-outline{background:transparent;color:var(--navy);border:2px solid var(--navy-light)}.btn-outline:hover{background:var(--navy);color:#fff}
-.btn-round{background:var(--navy);color:#fff;border:none;width:42px;height:42px;border-radius:50%;font-size:1.1rem}.btn.full{width:100%}.btn-round:hover{background:var(--yellow);color:var(--navy)}
+.nav { display: flex; flex-direction: column; padding: 12px 10px; flex: 1; gap: 4px; }
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #a9b7c6;
+  font-size: 0.96rem;
+  font-weight: 500;
+  padding: 11px 16px;
+  border-radius: 12px;
+  transition: all .2s ease;
+  text-align: left;
+}
+.nav-btn:hover { background: rgba(255,201,60,.12); color: #fff; transform: translateX(3px); }
+.nav-btn.active { background: var(--yellow); color: var(--navy); font-weight: 700; box-shadow: 0 4px 12px rgba(255,201,60,.3); }
 
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-@media(max-width:720px){.upload-grid{grid-template-columns:1fr}}
-.dropzone{border:3px dashed var(--navy-light);border-radius:var(--radius);padding:30px;text-align:center;transition:all .25s;cursor:pointer;background:#fff}
-.dropzone.hover{border-color:var(--yellow);background:#fff9e6}
-.dz-icon{font-size:2.6rem;margin-bottom:8px}.file-name{color:var(--gray);margin-top:10px;font-size:.9rem}
-.paste-hint{margin-top:14px;color:var(--gray);font-size:.85rem}
-.link{color:var(--yellow-dark);font-weight:700;cursor:pointer;text-decoration:underline}
-.field-label{display:block;font-weight:600;margin:12px 0 6px;font-size:.95rem}.req{color:var(--red)}
-.upload-form input,.upload-form textarea{width:100%;border:2px solid #ddd;border-radius:10px;padding:11px;font-size:1rem;transition:border .2s;background:#fff}
-.upload-form input:focus,.upload-form textarea:focus{outline:none;border-color:var(--yellow)}
-.paste-area{margin-top:16px;border-top:2px dashed #eee;padding-top:10px}
-.result-box{margin-top:24px;background:#fff;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border-left:5px solid var(--green)}
-.result-box h3{margin-bottom:8px}.result-box p{margin:6px 0;color:var(--gray)}
+.sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,.08); }
+.lofi-box { background: rgba(255,255,255,.05); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+.lofi-header { display: flex; align-items: center; justify-content: space-between; font-size: .88rem; font-weight: 600; color: #dfe7ee; margin-bottom: 8px; }
+.lofi-bars { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.lofi-bars i { width: 3px; background: var(--yellow); border-radius: 2px; height: 4px; }
+.lofi-bars.playing i { animation: eq 1s ease-in-out infinite; }
+.lofi-bars.playing i:nth-child(2) { animation-delay: .2s; }
+.lofi-bars.playing i:nth-child(3) { animation-delay: .4s; }
+@keyframes eq { 0%,100%{ height: 4px } 50%{ height: 12px } }
 
-.page-head-flex{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
-.page-head-flex .page-title{margin:0}
-.reviewer-content{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.reviewer-item{background:#fff;border-radius:12px;padding:14px 18px;box-shadow:var(--shadow);border-left:5px solid var(--yellow)}
-.reviewer-item .term{font-weight:700;font-size:1rem;margin-bottom:4px}.reviewer-item .def{color:var(--gray);font-size:.9rem}
-.empty-msg{color:var(--gray);text-align:center;grid-column:1/-1;padding:40px}
+.lofi-controls { display: flex; gap: 6px; justify-content: center; }
+.sound-btn {
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 8px 10px;
+  border-radius: 10px;
+  transition: all .2s;
+  flex: 1;
+}
+.sound-btn:hover, .sound-btn.active { background: var(--yellow); color: var(--navy); }
+.credit { font-size: .75rem; color: #718092; text-align: center; }
 
-.card-deck{display:flex;justify-content:center;margin:20px 0;flex-direction:column;align-items:center}
-.flashcard{width:340px;height:220px;perspective:1000px;cursor:pointer}
-.fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
-.flashcard.flip .fc-inner{transform:rotateY(180deg)}
-.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-size:1.2rem;box-shadow:var(--shadow)}
-.fc-front{background:var(--navy);color:#fff}.fc-back{background:#fff;color:var(--navy);transform:rotateY(180deg);border:2px solid var(--yellow)}
-.fc-controls{display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:16px}
-.fc-controls span{font-weight:700;font-size:1.1rem}.fc-actions{display:flex;gap:12px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+/* ===== MAIN CONTENT ===== */
+.main { flex: 1; padding: 32px 40px; max-width: 1040px; margin: 0 auto; width: 100%; }
+.page { display: none; }
+.page.active { display: block; animation: fadeSlide .3s ease; }
+@keyframes fadeSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-.quiz-question{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);max-width:640px;margin:0 auto}
-.q-text{font-size:1.3rem;font-weight:600;margin-bottom:18px}
-.q-options{display:grid;gap:10px}
-.q-opt{background:#f7f5f0;border:2px solid #e5e0d5;border-radius:10px;padding:12px 16px;text-align:left;font-size:.98rem;transition:all .2s;color:var(--navy)}
-.q-opt:hover{border-color:var(--yellow);transform:translateX(4px)}.q-opt:disabled{cursor:not-allowed}
-.q-opt.correct{background:#e6f7ed;border-color:var(--green);color:var(--green);font-weight:700}
-.q-opt.wrong{background:#fdeaea;border-color:var(--red);color:var(--red)}
-.q-feedback{margin-top:14px;font-weight:600;min-height:24px}#btnNextQ{margin-top:14px}
+.page-title { font-size: 1.85rem; font-weight: 800; margin-bottom: 4px; color: var(--navy); }
+.page-sub { color: var(--gray); font-size: 0.98rem; margin-bottom: 24px; }
 
-.match-stats{display:flex;gap:24px;justify-content:center;margin-bottom:18px;font-size:1rem;flex-wrap:wrap}
-.match-stats span{background:#fff;padding:8px 16px;border-radius:20px;box-shadow:var(--shadow);font-weight:500}
-.match-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:720px){.match-cols{grid-template-columns:1fr}}
-.match-col{display:flex;flex-direction:column;gap:10px}
-.match-chip{background:#fff;border:2px solid #e5e0d5;border-radius:12px;padding:12px 14px;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);font-size:.92rem}
-.match-chip:hover{border-color:var(--yellow)}.match-chip.selected{border-color:var(--yellow);background:#fff6e0}
-.match-chip.done{border-color:var(--green);background:#e6f7ed;color:var(--gray);cursor:default;text-decoration:line-through}
-.match-chip.def{background:#f0f4f8}
+/* BUTTONS */
+.btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all .2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(13,27,42,.2); }
+.btn.big { font-size: 1.1rem; padding: 14px 28px; border-radius: 14px; }
+.btn-primary { background: var(--yellow); color: var(--navy); }
+.btn-primary:hover { background: var(--yellow-dark); }
+.btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--border); }
+.btn-outline:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+.btn-round { width: 42px; height: 42px; border-radius: 50%; padding: 0; }
+.btn.full { width: 100%; }
+.btn-sm { padding: 7px 12px; font-size: 0.85rem; border-radius: 8px; }
 
-.pomodoro-box{background:#fff;border-radius:var(--radius);padding:36px;box-shadow:var(--shadow);max-width:440px;margin:20px auto 0;text-align:center}
-.pomo-mode-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:28px}
-.pomo-tab{background:#f0ede6;border:2px solid transparent;color:var(--gray);padding:8px 16px;border-radius:24px;font-family:inherit;font-weight:600;cursor:pointer;transition:all .25s}
-.pomo-tab.active{background:var(--yellow);color:var(--navy);border-color:var(--yellow-dark)}.pomo-tab:hover{border-color:var(--yellow)}
-.pomo-time{font-size:5rem;font-weight:700;color:var(--navy);line-height:1;margin:20px 0;letter-spacing:2px;font-variant-numeric:tabular-nums}
-.pomodoro-box.focus-mode .pomo-time{color:var(--green)}.pomodoro-box.break-mode .pomo-time{color:var(--yellow-dark)}
-.pomo-controls{display:flex;gap:12px;justify-content:center;margin-bottom:14px}.pomo-status{color:var(--gray);font-weight:500}
+/* HERO SECTION */
+.hero { padding: 10px 0 28px; }
+.hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
+.hero .highlight { color: var(--yellow-dark); }
+.hero p { color: var(--gray); font-size: 1.1rem; margin-bottom: 24px; max-width: 580px; line-height: 1.6; }
+.hero-badges { display: flex; gap: 12px; margin-bottom: 26px; flex-wrap: wrap; }
+.hero-badge {
+  background: var(--cream-card);
+  border-radius: 30px;
+  padding: 8px 18px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  font-size: .95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.streak-badge { color: #E8590C; border: 2px solid #FFD8A8; }
+.xp-badge { color: var(--navy); border: 2px solid var(--yellow); }
+.rank-badge { color: var(--navy-light); border: 2px solid var(--border); }
 
-.cal-head{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:16px}
-.cal-head h3{font-size:1.3rem}
-.cal-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-weight:600;color:var(--gray);margin-bottom:6px}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-day{background:#fff;border-radius:10px;min-height:72px;padding:6px;font-weight:500;position:relative;display:flex;align-items:flex-start;justify-content:flex-start;flex-direction:column;box-shadow:var(--shadow)}
-.cal-day.empty{background:transparent;box-shadow:none}.cal-day.today{border:2px solid var(--yellow)}
-.cal-day.study{background:#fdf3d0}.cal-day.exam{background:#fdeaea}
-.badge{margin-top:6px;font-size:.65rem;font-weight:600;background:var(--yellow);border-radius:6px;padding:2px 6px;color:var(--navy)}
-.cal-day.exam .badge{background:var(--red);color:#fff}
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+.mini-card {
+  background: var(--cream-card);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: all .2s;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.mini-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--yellow); }
+.mini-card span { font-size: 2.2rem; display: block; margin-bottom: 10px; }
+.mini-card h4 { font-size: 1.05rem; margin-bottom: 6px; }
+.mini-card p { color: var(--gray); font-size: .88rem; }
 
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:#fff;border-radius:var(--radius);padding:18px;text-align:center;box-shadow:var(--shadow)}
-.stat-num{font-size:2rem;font-weight:700;color:var(--yellow-dark);display:block}.stat-card p{color:var(--gray);font-size:.85rem;margin-top:4px}
-.progress-block{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
-.progress-block h4{margin-bottom:12px}
-.progress-bar{background:#f0ede6;border-radius:20px;height:14px;overflow:hidden}
-.progress-fill{background:linear-gradient(90deg,var(--yellow),var(--yellow-dark));height:100%;border-radius:20px;transition:width .4s}
-.achievements{display:flex;flex-wrap:wrap;gap:12px}
-.achievement-badge{background:#f7f5f0;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px;font-weight:600;border:2px solid #eee;color:var(--gray)}
-.achievement-badge.unlocked{border-color:var(--yellow);background:#FFF6E0;color:var(--navy)}
+/* UPLOAD SECTION */
+.upload-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
+@media(max-width:800px){ .upload-grid { grid-template-columns: 1fr; } }
+.dropzone {
+  border: 3px dashed var(--navy-light);
+  border-radius: var(--radius);
+  padding: 36px 24px;
+  text-align: center;
+  transition: all .25s;
+  cursor: pointer;
+  background: var(--cream-card);
+}
+.dropzone.hover { border-color: var(--yellow); background: #FFFDF5; }
+.dz-icon { font-size: 3rem; margin-bottom: 10px; }
+.file-name { color: var(--navy); margin-top: 12px; font-weight: 600; font-size: .95rem; }
+.samples-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.sample-btn { background: var(--gray-light); border: 1px solid var(--border); padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; }
+.sample-btn:hover { background: var(--yellow); border-color: var(--yellow-dark); }
 
-body.dark-mode{--cream:#12181f;--navy:#e8eef5;--navy-light:#9db4cc;--gray:#8aa0b8;background:#0f141b;color:#e8eef5}
-body.dark-mode .sidebar{background:linear-gradient(180deg,#0b1016,#0d141c)}
-body.dark-mode .mini-card,body.dark-mode .dropzone,body.dark-mode .reviewer-item,body.dark-mode .quiz-question,body.dark-mode .pomodoro-box,body.dark-mode .stat-card,body.dark-mode .progress-block,body.dark-mode .cal-day,body.dark-mode .match-chip:not(.done),body.dark-mode .match-stats span{background:#1c2632;color:#e8eef5;box-shadow:0 6px 20px rgba(0,0,0,.4)}
-body.dark-mode input,body.dark-mode textarea{background:#1c2632;color:#e8eef5;border-color:#32404f}
-body.dark-mode .q-opt{background:#1c2632;color:#e8eef5;border-color:#32404f}
-body.dark-mode .btn-outline{background:#1c2632;color:#e8eef5;border-color:#9db4cc}
-body.dark-mode .match-chip.def{background:#27303c}
-body.dark-mode .achievement-badge{background:#1c2632;border-color:#32404f;color:#8aa0b8}
-body.dark-mode .reviewer-item{border-left-color:var(--yellow)}
-body.dark-mode .fc-back{background:#0d141c}
-body.dark-mode .dropzone{border-color:#9db4cc}
-body.dark-mode .cal-day.today{border-color:var(--yellow)}
-body.dark-mode .toast{background:#e8eef5;color:#0f141b}
-body.dark-mode .btn:not(.btn-primary){background:#c8a41e;color:#0d1b2a}
-body.dark-mode .fc-front{background:#3a6b8c;color:#fff}
-body.dark-mode .btn-round{background:#3a6b8c;color:#fff}
-body.dark-mode .btn-round:hover{background:var(--yellow);color:#0d1b2a}
-body.dark-mode .sound-btn{background:rgba(255,255,255,.15);color:#fff}
+.upload-form { background: var(--cream-card); padding: 24px; border-radius: var(--radius); box-shadow: var(--shadow); }
+.field-label { display: block; font-weight: 700; margin: 12px 0 6px; font-size: .92rem; }
+.field-label:first-child { margin-top: 0; }
+.req { color: var(--red); }
+.upload-form input, .upload-form textarea {
+  width: 100%;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 1rem;
+  transition: border .2s;
+  background: var(--cream-card);
+  color: var(--navy);
+}
+.upload-form input:focus, .upload-form textarea:focus { outline: none; border-color: var(--yellow); }
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:30px;opacity:0;transition:all .3s;z-index:999;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:80%;text-align:center}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.result-box {
+  margin-top: 24px;
+  background: var(--cream-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border-left: 6px solid var(--green);
+}
+.result-box h3 { margin-bottom: 8px; color: var(--green); }
+.result-box p { margin: 6px 0; color: var(--navy); }
 
-@media print{
-.sidebar,.toast,.btn,.sound-btn{display:none!important}
-.main{margin-left:0;padding:0;max-width:100%}
-.page{display:block!important}
-body{background:#fff;color:#000}
-.reviewer-item{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+/* REVIEWER */
+.page-head-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; width: 100%; }
+.filter-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--cream-card);
+  color: var(--navy);
+}
+.reviewer-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.reviewer-item {
+  background: var(--cream-card);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  border-left: 5px solid var(--yellow);
+  position: relative;
+}
+.reviewer-item .term { font-weight: 700; font-size: 1.1rem; margin-bottom: 6px; color: var(--navy); }
+.reviewer-item .def { color: var(--gray); font-size: .94rem; line-height: 1.5; }
+.reviewer-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; }
+.icon-btn { background: none; border: none; font-size: 1rem; padding: 4px 6px; border-radius: 6px; color: var(--gray); }
+.icon-btn:hover { background: var(--gray-light); color: var(--navy); }
+.empty-msg { color: var(--gray); text-align: center; grid-column: 1/-1; padding: 60px 20px; font-size: 1.1rem; }
+
+/* FLASHCARDS */
+.card-deck { display: flex; justify-content: center; margin: 20px 0; flex-direction: column; align-items: center; }
+.flashcard { width: 100%; max-width: 440px; height: 260px; perspective: 1000px; cursor: pointer; }
+.fc-inner { position: relative; width: 100%; height: 100%; transition: transform .5s cubic-bezier(.4,.2,.2,1); transform-style: preserve-3d; }
+.flashcard.flip .fc-inner { transform: rotateY(180deg); }
+.fc-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  box-shadow: var(--shadow-hover);
+}
+.fc-front { background: var(--navy); color: #fff; }
+.fc-front .fc-text { font-size: 1.5rem; font-weight: 700; }
+.fc-back { background: var(--cream-card); color: var(--navy); transform: rotateY(180deg); border: 2px solid var(--yellow); }
+.fc-back .fc-text { font-size: 1.15rem; line-height: 1.5; }
+.fc-tag { position: absolute; top: 16px; left: 16px; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; opacity: 0.6; }
+.fc-hint { position: absolute; bottom: 14px; font-size: 0.8rem; opacity: 0.6; }
+.fc-controls { display: flex; align-items: center; gap: 18px; justify-content: center; margin: 18px 0 10px; }
+.fc-controls span { font-weight: 700; font-size: 1.15rem; min-width: 80px; text-align: center; }
+.fc-actions { display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+
+/* QUIZ */
+.quiz-question { background: var(--cream-card); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow); max-width: 680px; margin: 0 auto; }
+.q-meta { display: flex; justify-content: space-between; color: var(--gray); font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
+.q-text { font-size: 1.35rem; font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
+.q-options { display: grid; gap: 12px; }
+.q-opt {
+  background: var(--gray-light);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 1rem;
+  transition: all .2s;
+  color: var(--navy);
+  line-height: 1.4;
+}
+.q-opt:hover:not(:disabled) { border-color: var(--yellow); transform: translateX(4px); background: #FFF9E6; }
+.q-opt:disabled { cursor: default; }
+.q-opt.correct { background: var(--green-light); border-color: var(--green); color: var(--green); font-weight: 700; }
+.q-opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+.q-feedback { margin-top: 16px; font-weight: 600; min-height: 24px; font-size: 1.05rem; }
+
+/* MATCH GAME */
+.match-stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; font-size: 1rem; flex-wrap: wrap; }
+.match-stats span { background: var(--cream-card); padding: 8px 18px; border-radius: 24px; box-shadow: var(--shadow); font-weight: 600; }
+.match-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media(max-width:720px){ .match-cols { grid-template-columns: 1fr; } }
+.match-col { display: flex; flex-direction: column; gap: 12px; }
+.match-chip {
+  background: var(--cream-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: var(--shadow);
+  font-size: .95rem;
+  line-height: 1.4;
+}
+.match-chip:hover { border-color: var(--yellow); transform: scale(1.01); }
+.match-chip.selected { border-color: var(--yellow-dark); background: #FFF3CD; transform: scale(1.02); }
+.match-chip.done { border-color: var(--green); background: var(--green-light); color: var(--gray); cursor: default; text-decoration: line-through; opacity: 0.6; }
+
+/* POMODORO */
+.pomodoro-box { background: var(--cream-card); border-radius: var(--radius); padding: 40px 30px; box-shadow: var(--shadow); max-width: 480px; margin: 20px auto 0; text-align: center; }
+.pomo-mode-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+.pomo-tab { background: var(--gray-light); border: 2px solid transparent; color: var(--gray); padding: 9px 18px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.pomo-tab.active { background: var(--yellow); color: var(--navy); border-color: var(--yellow-dark); }
+.pomo-time { font-size: 5.5rem; font-weight: 800; color: var(--navy); line-height: 1; margin: 24px 0; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+.pomodoro-box.focus-mode .pomo-time { color: var(--green); }
+.pomodoro-box.break-mode .pomo-time { color: var(--yellow-dark); }
+.pomo-controls { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+.pomo-status { color: var(--gray); font-weight: 600; font-size: 1rem; }
+
+/* CALENDAR */
+.cal-head { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
+.cal-head h3 { font-size: 1.4rem; font-weight: 700; }
+.cal-week { display: grid; grid-template-columns: repeat(7,1fr); text-align: center; font-weight: 700; color: var(--gray); margin-bottom: 8px; font-size: 0.9rem; }
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; }
+.cal-day {
+  background: var(--cream-card);
+  border-radius: 12px;
+  min-height: 80px;
+  padding: 8px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.cal-day.empty { background: transparent; box-shadow: none; }
+.cal-day.today { border: 2px solid var(--yellow); }
+.cal-day.study { background: #FFF9E6; }
+.cal-day.exam { background: var(--red-light); }
+.badge { margin-top: 6px; font-size: .7rem; font-weight: 700; background: var(--yellow); border-radius: 6px; padding: 3px 6px; color: var(--navy); }
+.cal-day.exam .badge { background: var(--red); color: #fff; }
+
+/* TRACKER */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: var(--cream-card); border-radius: var(--radius); padding: 20px 16px; text-align: center; box-shadow: var(--shadow); }
+.stat-num { font-size: 2.2rem; font-weight: 800; color: var(--yellow-dark); display: block; }
+.stat-card p { color: var(--gray); font-size: .88rem; margin-top: 4px; font-weight: 600; }
+.progress-block { background: var(--cream-card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+.progress-bar { background: var(--gray-light); border-radius: 20px; height: 16px; overflow: hidden; margin-top: 10px; }
+.progress-fill { background: linear-gradient(90deg, var(--yellow), var(--yellow-dark)); height: 100%; border-radius: 20px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+.achievements { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.achievement-badge {
+  background: var(--gray-light);
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  border: 2px solid transparent;
+  color: var(--gray);
+  opacity: 0.6;
+}
+.achievement-badge.unlocked { border-color: var(--yellow); background: #FFF9E6; color: var(--navy); opacity: 1; }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--navy);
+  color: #fff;
+  padding: 13px 28px;
+  border-radius: 30px;
+  opacity: 0;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  z-index: 9999;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  max-width: 90%;
+  text-align: center;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* DARK MODE */
+body.dark-mode {
+  --cream: #0B1017;
+  --cream-card: #151F2D;
+  --navy: #E8EEF5;
+  --navy-light: #9DB4CC;
+  --gray: #8AA0B8;
+  --gray-light: #1D2B3D;
+  --border: #26384D;
+  background: #0B1017;
+  color: #E8EEF5;
+}
+body.dark-mode .sidebar { background: #070B10; border-right: 1px solid rgba(255,255,255,.05); }
+body.dark-mode .fc-front { background: #1F3044; }
+body.dark-mode .fc-back { background: #151F2D; color: #fff; }
+body.dark-mode .q-opt:hover:not(:disabled) { background: #26384D; }
+body.dark-mode .match-chip.selected { background: #35475e; }
+body.dark-mode .achievement-badge.unlocked { background: #26384D; }
+
+@media print {
+  .sidebar, .toast, .btn, .sound-btn, .filter-bar { display: none !important; }
+  .main { margin: 0; padding: 0; max-width: 100%; }
+  .page { display: block !important; }
+  #page-reviewer { display: block !important; }
+  .reviewer-item { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; margin-bottom: 12px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ===== SIDEBAR ===== -->
+<!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="logo"><span class="logo-icon">🎓</span><span class="logo-text">StudyBuddy <em>PH</em></span></div>
+  <div class="sidebar-header">
+    <span class="logo-icon">🎓</span>
+    <div>
+      <span class="logo-text">StudyBuddy <em>PH</em></span>
+      <span class="logo-sub">Smart Pinoy Reviewer</span>
+    </div>
+  </div>
   <nav class="nav">
     <button class="nav-btn active" data-page="home"><span>🏠</span> Home</button>
-    <button class="nav-btn" data-page="upload"><span>📤</span> Upload File</button>
+    <button class="nav-btn" data-page="upload"><span>📤</span> Upload Lesson</button>
     <button class="nav-btn" data-page="reviewer"><span>📖</span> Reviewer</button>
     <button class="nav-btn" data-page="flashcards"><span>🃏</span> Flashcards</button>
     <button class="nav-btn" data-page="quiz"><span>📝</span> Practice Quiz</button>
     <button class="nav-btn" data-page="match"><span>🧩</span> Match Game</button>
-    <button class="nav-btn" data-page="pomodoro"><span>⏱️</span> Timer</button>
-    <button class="nav-btn" data-page="calendar"><span>📅</span> Calendar</button>
-    <button class="nav-btn" data-page="tracker"><span>📊</span> Tracker</button>
+    <button class="nav-btn" data-page="pomodoro"><span>⏱️</span> Pomodoro</button>
+    <button class="nav-btn" data-page="calendar"><span>📅</span> Study Calendar</button>
+    <button class="nav-btn" data-page="tracker"><span>📊</span> Stats & Badges</button>
   </nav>
   <div class="sidebar-footer">
     <div class="lofi-box">
-      <div class="lofi-header"><span class="lofi-bars"><i></i><i></i><i></i></span><span>Lo-fi Focus</span></div>
-      <div class="lofi-controls">
-        <button class="sound-btn" id="btnLofi" title="Lo-fi music">▶️</button>
-        <button class="sound-btn" id="btnMute" title="Toggle sounds">🔊</button>
-        <button class="sound-btn" id="btnDark" title="Dark mode">🌙</button>
+      <div class="lofi-header">
+        <span class="lofi-bars" id="lofiBars"><i></i><i></i><i></i></span>
+        <span id="lofiLabel">Lo-fi Synth</span>
       </div>
-      <audio id="lofiAudio" loop><source src="audio/lofi.mp3" type="audio/mpeg"></audio>
+      <div class="lofi-controls">
+        <button class="sound-btn" id="btnLofi" title="Play Relaxing Lo-fi Synth">🎵 Lo-fi</button>
+        <button class="sound-btn" id="btnRain" title="Play Ambient Rain">🌧️ Rain</button>
+        <button class="sound-btn" id="btnDark" title="Dark Mode">🌙</button>
+      </div>
     </div>
-    <p class="credit">Made with 💛 for your studies</p>
+    <p class="credit">Para sa kinabukasan 🇵🇭</p>
   </div>
 </aside>
 
-<!-- ===== MAIN ===== -->
+<!-- MAIN APP -->
 <main class="main">
 
-  <!-- HOME -->
+  <!-- HOME PAGE -->
   <section class="page active" id="page-home">
     <div class="hero">
-      <h1>Mag-review na, <span class="highlight">Pare</span>! 👋</h1>
-      <p>Upload your lesson, get instant flashcards, quizzes, and a match game — all in one chill study buddy.</p>
-      <div class="hero-stats">
-        <span id="homeStreak" class="streak-badge">🔥 0-day streak</span>
-        <span id="homeXp" class="xp-badge">⚡ 0 XP</span>
+      <h1>Mag-review nang smart, <span class="highlight">Ka-Buddy</span>! 👋</h1>
+      <p>Instant reviewer generator for Filipino students. Drop your lesson PDF, Word, or notes to get flashcards, practice quizzes, and spaced review schedules.</p>
+      <div class="hero-badges">
+        <span id="homeStreak" class="hero-badge streak-badge">🔥 0-day streak</span>
+        <span id="homeXp" class="hero-badge xp-badge">⚡ 0 XP</span>
+        <span id="homeRank" class="hero-badge rank-badge">🐣 Freshey</span>
       </div>
-      <button class="btn btn-primary big" data-page="upload">📤 Start Uploading →</button>
+      <button class="btn btn-primary big" data-page="upload">📤 Start Uploading Lesson →</button>
     </div>
     <div class="hero-cards">
-      <div class="mini-card"><span>📄</span><h4>Upload Lesson</h4><p>PDF, PPT, Word, or paste text</p></div>
-      <div class="mini-card"><span>🃏</span><h4>Flashcards</h4><p>Flip & memorize fast</p></div>
-      <div class="mini-card"><span>📝</span><h4>Smart Quiz</h4><p>Retries your weak areas</p></div>
+      <div class="mini-card" data-page="upload"><span>📄</span><h4>Smart Extraction</h4><p>Upload PDF, DOCX, or paste notes</p></div>
+      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Audio Flashcards</h4><p>Flip & listen with TTS audio</p></div>
+      <div class="mini-card" data-page="quiz"><span>📝</span><h4>Adaptive Quiz</h4><p>Retries your weak terms</p></div>
+      <div class="mini-card" data-page="match"><span>🧩</span><h4>Speed Match</h4><p>Race the clock to connect terms</p></div>
     </div>
   </section>
 
-  <!-- UPLOAD -->
+  <!-- UPLOAD PAGE -->
   <section class="page" id="page-upload">
     <h2 class="page-title">📤 Upload Your Lesson</h2>
-    <p class="page-sub">Giving a little info helps us build your reviewer perfectly.</p>
+    <p class="page-sub">Upload notes or choose a pre-loaded sample lesson to test instantly.</p>
     <div class="upload-grid">
-      <div class="dropzone" id="dropzone">
-        <div class="dz-icon">📁</div>
-        <p>Drag & drop your file here<br><small>or</small></p>
-        <label class="btn btn-outline" for="fileInput" style="margin-top:8px">Choose File</label>
-        <input type="file" id="fileInput" accept=".pdf,.ppt,.pptx,.doc,.docx,.txt" hidden>
-        <p class="file-name" id="fileName">No file selected</p>
-        <p class="paste-hint">⚠️ Can't parse Word/PPT? <span class="link" id="showPaste">Paste the text</span> instead.</p>
-      </div>
-      <div class="upload-form">
-        <label class="field-label">Subject <span class="req">*</span></label>
-        <input type="text" id="subjectInput" placeholder="e.g. Biology, History, Math...">
-        <label class="field-label">Exam Date <span class="req">*</span></label>
-        <input type="date" id="examDate">
-        <button class="btn btn-primary full" id="btnGenerate" style="margin-top:16px">✨ Generate My Reviewer</button>
-        <div class="paste-area" id="pasteArea" style="display:none">
-          <label class="field-label">Or paste your lesson text here:</label>
-          <textarea id="pasteText" rows="4" placeholder="Each line: Term :: Definition"></textarea>
+      <div>
+        <div class="dropzone" id="dropzone">
+          <div class="dz-icon">📁</div>
+          <p><strong>Drag & drop your file here</strong><br><small>Supports PDF, DOCX, TXT</small></p>
+          <label class="btn btn-outline" for="fileInput" style="margin-top:14px">Browse Files</label>
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" hidden>
+          <p class="file-name" id="fileName">No file chosen yet</p>
+        </div>
+        <div class="samples-bar">
+          <span style="font-size:0.85rem;font-weight:700;color:var(--gray)">Try a sample:</span>
+          <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
+          <button class="sample-btn" data-sample="hist">🇵🇭 PH History</button>
+          <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
         </div>
       </div>
+      <div class="upload-form">
+        <label class="field-label">Subject Name <span class="req">*</span></label>
+        <input type="text" id="subjectInput" placeholder="e.g. General Biology, Rizal Course, IT 101">
+        
+        <label class="field-label">Target Exam Date <span class="req">*</span></label>
+        <input type="date" id="examDate">
+        
+        <label class="field-label" style="margin-top:14px">Or Paste Raw Lesson Text / Bullet Points:</label>
+        <textarea id="pasteText" rows="5" placeholder="Example format:&#10;Photosynthesis :: Process of converting light into chemical energy&#10;Mitochondria - The powerhouse of the cell"></textarea>
+        
+        <button class="btn btn-primary full" id="btnGenerate" style="margin-top:18px">✨ Generate Complete Reviewer</button>
+      </div>
     </div>
+
     <div class="result-box" id="resultBox" style="display:none">
-      <h3>✅ Reviewer Ready!</h3>
-      <p>We detected <strong id="detectSubject">-</strong> and added <strong id="termCount">0</strong> terms.</p>
-      <p>🗓️ Scheduled sessions until exam on <strong id="examDateShow">-</strong>.</p>
-      <button class="btn btn-primary" data-page="reviewer" style="margin-top:8px">📖 View Reviewer →</button>
+      <h3>✅ Reviewer Generated Successfully!</h3>
+      <p>Subject: <strong id="detectSubject">-</strong></p>
+      <p>Extracted: <strong id="termCount">0</strong> flashcard terms & definitions.</p>
+      <p>🗓️ Study sessions scheduled across calendar until exam on <strong id="examDateShow">-</strong>.</p>
+      <button class="btn btn-primary" data-page="reviewer" style="margin-top:10px">📖 Open Reviewer →</button>
     </div>
   </section>
 
-  <!-- REVIEWER -->
+  <!-- REVIEWER PAGE -->
   <section class="page" id="page-reviewer">
     <div class="page-head-flex">
       <div>
-        <h2 class="page-title">📖 Your Reviewer</h2>
+        <h2 class="page-title">📖 Your Reviewer Guide</h2>
         <p class="page-sub" id="reviewerSubject">Subject: —</p>
       </div>
-      <button class="btn btn-outline" id="btnPrintReviewer">🖨️ Print / Save PDF</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" id="btnExportCsv">💾 Export Anki/CSV</button>
+        <button class="btn btn-outline btn-sm" id="btnPrintReviewer">🖨️ Print / Save PDF</button>
+      </div>
     </div>
-    <div id="reviewerContent" class="reviewer-content"><p class="empty-msg">No reviewer yet. Upload a file or paste text first!</p></div>
+    <div class="filter-bar">
+      <input type="text" id="reviewerSearch" class="filter-input" placeholder="🔍 Search terms or definitions...">
+      <button class="btn btn-primary btn-sm" id="btnAddTermModal">+ Add Term</button>
+    </div>
+    <div id="reviewerContent" class="reviewer-content">
+      <p class="empty-msg">No reviewer loaded yet. Upload a lesson or choose a sample!</p>
+    </div>
   </section>
 
-  <!-- FLASHCARDS -->
+  <!-- FLASHCARDS PAGE -->
   <section class="page" id="page-flashcards">
-    <h2 class="page-title">🃏 Flashcards</h2>
-    <p class="page-sub">Click a card to flip it. Click the arrows to move.</p>
+    <h2 class="page-title">🃏 Spaced Flashcards</h2>
+    <p class="page-sub">Click card or press <strong>Space</strong> to flip. Use <strong>Arrow keys</strong> to navigate.</p>
     <div class="card-deck">
-      <div class="flashcard" id="flashcard"><div class="fc-inner">
-        <div class="fc-face fc-front" id="fcTerm">Term</div>
-        <div class="fc-face fc-back" id="fcDef">Definition</div>
-      </div></div>
+      <div class="flashcard" id="flashcard">
+        <div class="fc-inner">
+          <div class="fc-face fc-front">
+            <span class="fc-tag">Term</span>
+            <div class="fc-text" id="fcTerm">No terms loaded</div>
+            <span class="fc-hint">💡 Click or press Space to flip</span>
+          </div>
+          <div class="fc-face fc-back">
+            <span class="fc-tag">Definition</span>
+            <div class="fc-text" id="fcDef">Upload notes to generate flashcards</div>
+            <span class="fc-hint">💡 Click to flip back</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="fc-controls">
       <button class="btn btn-round" id="fcPrev">⬅️</button>
@@ -270,94 +586,109 @@ body{background:#fff;color:#000}
     </div>
     <div class="fc-actions">
       <button class="btn btn-primary" id="fcGotIt">😊 Got it (+10 XP)</button>
+      <button class="btn btn-outline" id="fcAudio">🔊 Speak</button>
       <button class="btn btn-outline" id="fcShuffle">🔀 Shuffle</button>
     </div>
   </section>
 
-  <!-- QUIZ -->
+  <!-- PRACTICE QUIZ PAGE -->
   <section class="page" id="page-quiz">
     <h2 class="page-title">📝 Practice Quiz</h2>
     <div id="quizArea">
-      <p class="page-sub">Test yourself! Wrong answers get saved for a smart retry.</p>
-      <button class="btn btn-primary" id="btnStartQuiz">▶️ Start Quiz</button>
-      <button class="btn btn-outline" id="btnRetryWeak" style="margin-left:10px">🎯 Retry Weak Areas</button>
+      <p class="page-sub">Adaptive multiple-choice test. Incorrect answers are tagged as weak areas for smart retrying.</p>
+      <button class="btn btn-primary big" id="btnStartQuiz">▶️ Start All Terms Quiz</button>
+      <button class="btn btn-outline big" id="btnRetryWeak" style="margin-left:10px">🎯 Retry Weak Areas</button>
     </div>
     <div class="quiz-question" id="quizQuestion" style="display:none">
+      <div class="q-meta">
+        <span id="qProgress">Question 1 of 5</span>
+        <span id="qScoreLive">Score: 0</span>
+      </div>
       <p id="qText" class="q-text"></p>
       <div id="qOptions" class="q-options"></div>
       <div id="qFeedback" class="q-feedback"></div>
-      <button class="btn" id="btnNextQ" style="display:none">Next →</button>
+      <button class="btn btn-primary" id="btnNextQ" style="display:none;margin-top:16px">Next Question →</button>
     </div>
-    <div id="quizResult" style="display:none;text-align:center"></div>
+    <div id="quizResult" style="display:none;text-align:center;padding:30px 0"></div>
   </section>
 
-  <!-- MATCH -->
+  <!-- MATCH GAME PAGE -->
   <section class="page" id="page-match">
-    <h2 class="page-title">🧩 Match Game</h2>
-    <p class="page-sub">Match each term to its correct definition!</p>
-    <div id="matchGame"><button class="btn btn-primary" id="btnStartMatch">▶️ Start Match</button></div>
+    <h2 class="page-title">🧩 Speed Match Game</h2>
+    <p class="page-sub">Match each term on the left to its definition on the right as fast as possible!</p>
+    <div id="matchGame"><button class="btn btn-primary big" id="btnStartMatch">▶️ Start Speed Match</button></div>
     <div id="matchBoard" style="display:none">
       <div class="match-stats">
-        <span>Score: <strong id="matchScore">0</strong></span>
-        <span>Mistakes: <strong id="matchMiss">0</strong></span>
+        <span>Matches: <strong id="matchScore" style="color:var(--green)">0</strong></span>
+        <span>Mistakes: <strong id="matchMiss" style="color:var(--red)">0</strong></span>
         <span>⏱️ <strong id="matchTime">0</strong>s</span>
       </div>
       <div class="match-cols">
         <div id="matchTermCol" class="match-col"></div>
         <div id="matchDefCol" class="match-col"></div>
       </div>
-      <div style="text-align:center;margin-top:14px"><button class="btn btn-outline" id="btnMatchReset">🔄 Reset</button></div>
+      <div style="text-align:center;margin-top:20px">
+        <button class="btn btn-outline" id="btnMatchReset">🔄 Reset Game</button>
+      </div>
     </div>
   </section>
 
-  <!-- POMODORO -->
+  <!-- POMODORO PAGE -->
   <section class="page" id="page-pomodoro">
-    <h2 class="page-title">⏱️ Pomodoro Timer</h2>
-    <p class="page-sub">Study in focused blocks with short breaks. Focus 25, rest 5!</p>
-    <div class="pomodoro-box">
+    <h2 class="page-title">⏱️ Study Pomodoro</h2>
+    <p class="page-sub">Boost retention with focused study sprints and scheduled rest breaks.</p>
+    <div class="pomodoro-box" id="pomoBox">
       <div class="pomo-mode-tabs">
-        <button class="pomo-tab active" data-mode="focus">📚 Focus</button>
-        <button class="pomo-tab" data-mode="short">☕ Short Break</button>
-        <button class="pomo-tab" data-mode="long">🌴 Long Break</button>
+        <button class="pomo-tab active" data-mode="focus">📚 Focus (25m)</button>
+        <button class="pomo-tab" data-mode="short">☕ Short Break (5m)</button>
+        <button class="pomo-tab" data-mode="long">🌴 Long Break (15m)</button>
       </div>
       <div class="pomo-time" id="pomoTime">25:00</div>
       <div class="pomo-controls">
-        <button class="btn btn-primary" id="btnPomoStart">▶️ Start</button>
+        <button class="btn btn-primary big" id="btnPomoStart">▶️ Start Session</button>
         <button class="btn btn-outline" id="btnPomoReset">🔄 Reset</button>
       </div>
       <p class="pomo-status" id="pomoStatus">Ready to focus!</p>
     </div>
   </section>
 
-  <!-- CALENDAR -->
+  <!-- CALENDAR PAGE -->
   <section class="page" id="page-calendar">
-    <h2 class="page-title">📅 Study Calendar</h2>
+    <h2 class="page-title">📅 Spaced Study Calendar</h2>
     <div class="cal-head">
       <button class="btn btn-round" id="calPrev">⬅️</button>
       <h3 id="calMonthYear"></h3>
       <button class="btn btn-round" id="calNext">➡️</button>
     </div>
-    <div class="cal-week"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+    <div class="cal-week">
+      <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
     <div class="cal-grid" id="calGrid"></div>
   </section>
 
-  <!-- TRACKER -->
+  <!-- TRACKER / STATS PAGE -->
   <section class="page" id="page-tracker">
-    <h2 class="page-title">📊 Review Tracker</h2>
+    <h2 class="page-title">📊 Study Analytics & Milestones</h2>
     <div class="stats-grid">
-      <div class="stat-card"><span class="stat-num" id="statTerms">0</span><p>Terms Added</p></div>
-      <div class="stat-card"><span class="stat-num" id="statQuiz">0</span><p>Quizzes Taken</p></div>
-      <div class="stat-card"><span class="stat-num" id="statWeak">0</span><p>Weak Areas</p></div>
+      <div class="stat-card"><span class="stat-num" id="statTerms">0</span><p>Terms Memorized</p></div>
+      <div class="stat-card"><span class="stat-num" id="statQuiz">0</span><p>Quizzes Passed</p></div>
+      <div class="stat-card"><span class="stat-num" id="statWeak">0</span><p>Weak Spots</p></div>
       <div class="stat-card"><span class="stat-num" id="statDays">0</span><p>Days to Exam</p></div>
       <div class="stat-card"><span class="stat-num" id="statStreak">0</span><p>🔥 Day Streak</p></div>
       <div class="stat-card"><span class="stat-num" id="statXp">0</span><p>⚡ Total XP</p></div>
     </div>
     <div class="progress-block">
-      <h4>Quiz Mastery Progress</h4>
-      <div class="progress-bar"><div class="progress-fill" id="masteryBar"></div></div>
-      <p id="masteryText" style="margin-top:8px;color:var(--gray)">Review and take quizzes to build mastery!</p>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h4>Reviewer Mastery Progress</h4>
+        <span id="rankTitle" style="font-weight:700;color:var(--yellow-dark)">Freshey</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="masteryBar" style="width:0%"></div></div>
+      <p id="masteryText" style="margin-top:10px;color:var(--gray);font-size:0.92rem">Complete flashcards and take quizzes to build subject mastery.</p>
     </div>
-    <div class="progress-block"><h4>🏆 Achievements</h4><div id="achievements" class="achievements"></div></div>
+    <div class="progress-block">
+      <h4>🏆 Unlocked Achievements</h4>
+      <div id="achievements" class="achievements"></div>
+    </div>
   </section>
 
 </main>
@@ -366,475 +697,1026 @@ body{background:#fff;color:#000}
 
 <script>
 "use strict";
-/* StudyBuddy PH — Storage, Navigation, and Core State */
-const Store={
-  KEY:"studybuddy_data_v3",
-  defaultData:()=>({terms:[],subject:"",examDate:null,schedule:[],quizHistory:[],quizCount:0,xp:0,streak:0,lastCheckin:null,lastBonusDate:null,darkMode:false,muted:false,pomodoroCount:0,matchCount:0,achievedAchs:[],bestQuizScore:0}),
-  get(){try{return Object.assign(this.defaultData(),JSON.parse(localStorage.getItem(this.KEY))||{})}catch{return this.defaultData()}},
-  set(d){try{localStorage.setItem(this.KEY,JSON.stringify(d))}catch(e){console.warn(e)}},
-  update(fn){this.set(fn(this.get()))}
+
+/* ============================================================
+   1. DATA STORAGE & RANKS
+   ============================================================ */
+const Store = {
+  KEY: "studybuddy_ph_v4",
+  defaultData: () => ({
+    terms: [],
+    subject: "",
+    examDate: null,
+    schedule: [],
+    quizHistory: [],
+    quizCount: 0,
+    xp: 0,
+    streak: 0,
+    lastCheckin: null,
+    lastBonusDate: null,
+    darkMode: false,
+    pomodoroCount: 0,
+    matchCount: 0,
+    achievedAchs: [],
+    bestQuizScore: 0
+  }),
+  get() {
+    try {
+      return Object.assign(this.defaultData(), JSON.parse(localStorage.getItem(this.KEY)) || {});
+    } catch {
+      return this.defaultData();
+    }
+  },
+  set(d) {
+    try {
+      localStorage.setItem(this.KEY, JSON.stringify(d));
+    } catch (e) {
+      console.warn("Storage write error", e);
+    }
+  },
+  update(fn) {
+    const updated = fn(this.get());
+    this.set(updated);
+    return updated;
+  }
 };
 
-const $=id=>document.getElementById(id);
-function showToast(m){const t=$("toast");if(!t)return;t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
-function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
-function esc(s){return String(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
-function formatDate(d){const dt=new Date(d);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`}
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+const formatDate = d => {
+  const dt = new Date(d);
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+};
 
-function playBeep(f=520,d=.1){if(Store.get().muted)return;try{const c=new(window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;o.type="sine";g.gain.setValueAtTime(.15,c.currentTime);o.start();o.stop(c.currentTime+d)}catch(e){}}
-function uiClick(){playBeep(620,.06)}
-function successSfx(){try{playBeep(520,.12);setTimeout(()=>playBeep(660,.12),80)}catch(e){}}
-function failSfx(){playBeep(220,.15)}
+function showToast(m) {
+  const t = $("toast");
+  if (!t) return;
+  t.textContent = m;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 2600);
+}
 
-/* ---------- LO-FI & SOUND ---------- */
-let lofiOn=false,audio=$("lofiAudio");
-$("btnLofi").addEventListener("click",()=>{
-  lofiOn=!lofiOn;$("btnLofi").textContent=lofiOn?"⏸️":"▶️";
-  if(lofiOn){
-    if(Store.get().muted){showToast("🔇 Unmute first!");lofiOn=false;$("btnLofi").textContent="▶️";return}
-    audio.volume=.5;
-    audio.play().then(()=>showToast("🎧 Lo-fi on — focus!")).catch(()=>{showToast("⚠️ Put audio/lofi.mp3 in the folder");lofiOn=false;$("btnLofi").textContent="▶️"});
-  }else{audio.pause();showToast("🎧 Lo-fi off")}
-});
-$("btnMute").addEventListener("click",()=>{
-  Store.update(s=>{s.muted=!s.muted;return s});
-  $("btnMute").textContent=Store.get().muted?"🔇":"🔊";
-  if(Store.get().muted&&lofiOn){audio.pause();lofiOn=false;$("btnLofi").textContent="▶️"}
-  showToast(Store.get().muted?"🔇 Sounds muted":"🔊 Sounds on");
-});
-if(Store.get().muted)$("btnMute").textContent="🔇";
+function shuffle(arr) {
+  const r = [...arr];
+  for (let i = r.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [r[i], r[j]] = [r[j], r[i]];
+  }
+  return r;
+}
 
-/* ---------- DARK MODE ---------- */
-$("btnDark").addEventListener("click",()=>{
-  uiClick();
-  const on=document.body.classList.toggle("dark-mode");
-  $("btnDark").textContent=on?"☀️":"🌙";
-  Store.update(s=>{s.darkMode=on;return s});
-});
-if(Store.get().darkMode){document.body.classList.add("dark-mode");$("btnDark").textContent="☀️"}
+function esc(s) {
+  return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
 
-/* ---------- XP & STREAK ---------- */
-function addXP(a){Store.update(s=>{s.xp=(s.xp||0)+a;return s});updateHomeHeader();renderAchievements();showToast(`⚡ +${a} XP!`)}
-function checkStreak(){
-  const today=formatDate(new Date()),d=Store.get();
-  if(d.lastCheckin!==today){
-    const prev=formatDate(new Date(Date.now()-86400000));
-    Store.update(s=>{s.streak=s.lastCheckin===prev?(s.streak||0)+1:1;s.lastCheckin=today;return s});
+/* ============================================================
+   2. PROCEDURAL AUDIO & SOUND FX (Web Audio API)
+   ============================================================ */
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+function playBeep(freq = 520, dur = 0.1, type = "sine") {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch (e) {}
+}
+
+const uiClick = () => playBeep(600, 0.05);
+const successSfx = () => {
+  playBeep(523.25, 0.1);
+  setTimeout(() => playBeep(659.25, 0.1), 90);
+  setTimeout(() => playBeep(783.99, 0.15), 180);
+};
+const failSfx = () => {
+  playBeep(260, 0.15, "triangle");
+  setTimeout(() => playBeep(220, 0.2, "triangle"), 110);
+};
+
+// Procedural Lo-fi ambient synth and rain generators
+let lofiOscs = [], lofiInterval = null, isLofiOn = false;
+let rainNode = null, isRainOn = false;
+
+function toggleLofi() {
+  isLofiOn = !isLofiOn;
+  $("btnLofi").classList.toggle("active", isLofiOn);
+  $("lofiBars").classList.toggle("playing", isLofiOn || isRainOn);
+  if (isLofiOn) {
+    const ctx = getAudioCtx();
+    const chords = [
+      [261.63, 329.63, 392.00, 493.88], // Cmaj7
+      [220.00, 261.63, 329.63, 392.00], // Am7
+      [174.61, 220.00, 261.63, 329.63], // Fmaj7
+      [196.00, 246.94, 293.66, 349.23]  // G7
+    ];
+    let chordIdx = 0;
+    const playChord = () => {
+      lofiOscs.forEach(o => { try { o.stop(); } catch(e) {} });
+      lofiOscs = [];
+      const notes = chords[chordIdx % chords.length];
+      chordIdx++;
+      notes.forEach(f => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = f;
+        g.gain.setValueAtTime(0.015, ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 1);
+        g.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 3.8);
+        osc.connect(g);
+        g.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 4);
+        lofiOscs.push(osc);
+      });
+    };
+    playChord();
+    lofiInterval = setInterval(playChord, 4000);
+    showToast("🎵 Playing procedural Lo-Fi focus tones");
+  } else {
+    clearInterval(lofiInterval);
+    lofiOscs.forEach(o => { try { o.stop(); } catch(e) {} });
+    lofiOscs = [];
+    showToast("🎵 Lo-Fi paused");
   }
 }
-function dailyBonus(){
-  const today=formatDate(new Date()),d=Store.get();
-  if(d.lastBonusDate!==today&&d.streak>=1){Store.update(s=>{s.xp=(s.xp||0)+2;s.lastBonusDate=today;return s});showToast("🔥 Daily check-in +2 XP!")}
-}
-function updateHomeHeader(){const d=Store.get();if($("homeStreak"))$("homeStreak").textContent=`🔥 ${d.streak||0}-day streak`;if($("homeXp"))$("homeXp").textContent=`⚡ ${d.xp||0} XP`}
-checkStreak();dailyBonus();updateHomeHeader();
 
-/* ---------- NAVIGATION ---------- */
-function navigateTo(page){
-  if(!page)return;
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  const el=$("page-"+page);if(el)el.classList.add("active");
-  if(page==="reviewer")renderReviewer();
-  if(page==="flashcards")initFlashcards();
-  if(page==="tracker")renderTracker();
-  if(page==="calendar")renderCalendar(calView);
-  if(page==="quiz")initQuizScreen();
+function toggleRain() {
+  isRainOn = !isRainOn;
+  $("btnRain").classList.toggle("active", isRainOn);
+  $("lofiBars").classList.toggle("playing", isLofiOn || isRainOn);
+  if (isRainOn) {
+    const ctx = getAudioCtx();
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+    
+    const whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+    
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 800;
+    
+    const gain = ctx.createGain();
+    gain.gain.value = 0.05;
+    
+    whiteNoise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    whiteNoise.start();
+    rainNode = { source: whiteNoise, gain };
+    showToast("🌧️ Ambient study rain active");
+  } else {
+    if (rainNode) {
+      try { rainNode.source.stop(); } catch(e) {}
+      rainNode = null;
+    }
+    showToast("🌧️ Rain stopped");
+  }
 }
 
-document.querySelectorAll(".nav-btn, [data-page]").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    const page=btn.dataset.page;if(!page)return;
-    if(btn.classList.contains("nav-btn"))uiClick();
-    navigateTo(page);
+$("btnLofi").addEventListener("click", toggleLofi);
+$("btnRain").addEventListener("click", toggleRain);
+
+/* ============================================================
+   3. THEME, XP, AND STREAKS
+   ============================================================ */
+$("btnDark").addEventListener("click", () => {
+  uiClick();
+  const isDark = document.body.classList.toggle("dark-mode");
+  $("btnDark").textContent = isDark ? "☀️" : "🌙";
+  Store.update(s => { s.darkMode = isDark; return s; });
+});
+if (Store.get().darkMode) {
+  document.body.classList.add("dark-mode");
+  $("btnDark").textContent = "☀️";
+}
+
+const RANKS = [
+  { xp: 0, title: "Freshey 🐣" },
+  { xp: 50, title: "Diligent Reviewer 📚" },
+  { xp: 150, title: "Dean's Lister 📜" },
+  { xp: 300, title: "Cum Laude 🏅" },
+  { xp: 600, title: "Magna Cum Laude 🌟" },
+  { xp: 1200, title: "Summa Cum Laude 👑" },
+  { xp: 2000, title: "National Scholar 🇵🇭" }
+];
+
+function getRank(xp) {
+  let rank = RANKS[0].title;
+  for (const r of RANKS) {
+    if (xp >= r.xp) rank = r.title;
+  }
+  return rank;
+}
+
+function addXP(amount) {
+  const prevRank = getRank(Store.get().xp);
+  Store.update(s => { s.xp = (s.xp || 0) + amount; return s; });
+  const newRank = getRank(Store.get().xp);
+  if (prevRank !== newRank) {
+    showToast(`🎉 Level Up! You achieved ${newRank}!`);
+    if (typeof confetti === "function") confetti({ particleCount: 80, spread: 60 });
+  } else {
+    showToast(`⚡ +${amount} XP!`);
+  }
+  updateHomeHeader();
+  renderAchievements();
+}
+
+function checkStreak() {
+  const today = formatDate(new Date());
+  const d = Store.get();
+  if (d.lastCheckin !== today) {
+    const yesterday = formatDate(new Date(Date.now() - 86400000));
+    Store.update(s => {
+      s.streak = (s.lastCheckin === yesterday) ? (s.streak || 0) + 1 : 1;
+      s.lastCheckin = today;
+      return s;
+    });
+  }
+}
+
+function updateHomeHeader() {
+  const d = Store.get();
+  if ($("homeStreak")) $("homeStreak").textContent = `🔥 ${d.streak || 0}-day streak`;
+  if ($("homeXp")) $("homeXp").textContent = `⚡ ${d.xp || 0} XP`;
+  if ($("homeRank")) $("homeRank").textContent = getRank(d.xp || 0);
+  if ($("rankTitle")) $("rankTitle").textContent = getRank(d.xp || 0);
+}
+
+checkStreak();
+updateHomeHeader();
+
+/* ============================================================
+   4. NAVIGATION
+   ============================================================ */
+function navigateTo(page) {
+  if (!page) return;
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === page));
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const target = $("page-" + page);
+  if (target) target.classList.add("active");
+
+  if (page === "reviewer") renderReviewer();
+  if (page === "flashcards") initFlashcards();
+  if (page === "tracker") renderTracker();
+  if (page === "calendar") renderCalendar(calView);
+  if (page === "quiz") initQuizScreen();
+}
+
+document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const p = btn.dataset.page;
+    if (btn.classList.contains("nav-btn")) uiClick();
+    navigateTo(p);
   });
 });
 
-/* ---------- SUBJECT DETECT & PARSING ---------- */
-function detectSubject(txt){const s=(txt||"").toLowerCase();const m={biology:"Biology",science:"Biology",history:"History",kasaysayan:"History",math:"Mathematics",algebra:"Math",trig:"Math",filipino:"Filipino",english:"English",chemistry:"Chemistry",chem:"Chemistry",physics:"Physics",earth:"Earth Science"};for(const k in m)if(s.includes(k))return m[k];return""}
+/* ============================================================
+   5. SMART PARSING & DOCUMENT EXTRACTION
+   ============================================================ */
+const SAMPLES = {
+  bio: {
+    subject: "General Biology 101",
+    text: `Photosynthesis :: The process by which green plants and some organisms use sunlight to synthesize nutrients from CO2 and water.
+Mitochondria :: The powerhouse of the cell responsible for ATP cellular energy production.
+Cell Membrane :: Phospholipid bilayer that regulates what enters and exits the cell.
+Ribosome :: Cellular structure that synthesizes proteins by translating mRNA.
+Chloroplast :: Organelle found in plant cells where photosynthesis takes place.
+Endoplasmic Reticulum :: Membrane network involved in protein synthesis and lipid metabolism.
+DNA :: Deoxyribonucleic acid carrying the genetic instructions for living organisms.
+Enzyme :: Biological protein catalyst that accelerates biochemical reactions.`
+  },
+  hist: {
+    subject: "Philippine History & Rizal",
+    text: `Noli Me Tangere :: Novel written by Jose Rizal exposing the abuses of the Spanish friars and colonial government.
+Kilusang Propaganda :: Peaceful reform movement in Spain advocating for Philippine representation and equality.
+Katipunan (KKK) :: Secret revolutionary society founded by Andres Bonifacio in 1892 to gain independence.
+Cry of Pugad Lawin :: Event in August 1896 where Katipuneros tore their cedulas declaring open rebellion.
+La Liga Filipina :: Civic association founded by Jose Rizal in 1892 before his exile to Dapitan.
+Treaty of Paris :: 1898 agreement where Spain ceded the Philippines to the United States for $20 million.
+Biak-na-Bato :: Truce signed in 1897 between Spanish forces and Emilio Aguinaldo's revolutionary government.`
+  },
+  cs: {
+    subject: "Computer Science Fundamentals",
+    text: `Algorithm :: A finite, step-by-step set of instructions to solve a specific problem.
+Data Structure :: A specialized format for organizing, processing, and storing data efficiently.
+Recursion :: A programming technique where a function calls itself to solve smaller subproblems.
+Binary Search :: An O(log n) search algorithm that repeatedly divides a sorted array in half.
+Object-Oriented Programming :: A programming paradigm based on the concept of objects containing data and code.
+API :: Application Programming Interface allowing different software applications to communicate.
+Stack :: A Last-In First-Out (LIFO) linear data structure.`
+  }
+};
 
-function parseTermText(text){
-  const lines=(text||"").split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
-  const terms=[];
-  for(const line of lines){
-    let parts=null;
-    for(const sep of ["::"," — "," – "," - "," : ","→","=>"]){
-      const idx=line.indexOf(sep);
-      if(idx!==-1){parts=[line.slice(0,idx).trim(),line.slice(idx+sep.length).trim()];break}
+document.querySelectorAll(".sample-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.sample;
+    if (SAMPLES[key]) {
+      $("subjectInput").value = SAMPLES[key].subject;
+      $("pasteText").value = SAMPLES[key].text;
+      const d = new Date();
+      d.setDate(d.getDate() + 14);
+      $("examDate").value = formatDate(d);
+      showToast(`✨ Loaded ${SAMPLES[key].subject} sample! Click Generate.`);
     }
-    if(parts&&parts[0]&&parts[1])terms.push({term:parts[0],def:parts[1],id:terms.length});
+  });
+});
+
+function parseTermText(text) {
+  const lines = (text || "").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+  const terms = [];
+  
+  for (const line of lines) {
+    let parts = null;
+    for (const sep of ["::", " — ", " – ", " - ", " : ", "=>", "→", "\t"]) {
+      const idx = line.indexOf(sep);
+      if (idx !== -1) {
+        parts = [line.slice(0, idx).trim(), line.slice(idx + sep.length).trim()];
+        break;
+      }
+    }
+    // Handle bullet list or Q&A patterns (e.g. Q: What is X? A: X is...)
+    if (!parts && (line.toLowerCase().startsWith("q:") || line.toLowerCase().startsWith("question:"))) {
+      const qIdx = line.indexOf("?");
+      if (qIdx !== -1) {
+        parts = [line.slice(0, qIdx + 1).replace(/^q:\s*/i, "").trim(), line.slice(qIdx + 1).replace(/^[aA]:\s*/, "").trim()];
+      }
+    }
+    if (parts && parts[0] && parts[1]) {
+      terms.push({ term: parts[0], def: parts[1], id: terms.length });
+    }
   }
   return terms;
 }
 
-/* ---------- FILE HANDLING ---------- */
-$("fileInput").addEventListener("change",e=>handleFile(e.target.files[0]));
-const dz=$("dropzone");
-["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("hover")}));
-["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("hover")}));
-dz.addEventListener("drop",e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f)});
+$("fileInput").addEventListener("change", e => handleFile(e.target.files[0]));
+const dz = $("dropzone");
+["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("hover"); }));
+["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("hover"); }));
+dz.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
 
-function handleFile(file){
-  if(!file)return;
-  $("fileName").textContent=file.name;
-  const ext=file.name.split(".").pop().toLowerCase();
-  if(ext==="txt"){const r=new FileReader();r.onload=ev=>handleText(ev.target.result);r.readAsText(file);return}
-  if(ext==="pdf"){
-    if(typeof pdfjsLib==="undefined"){showToast("⚠️ PDF parsing library missing. Paste text instead.");$("pasteArea").style.display="block";return}
-    const r=new FileReader();
-    r.onload=async ev=>{
-      try{
-        const pdf=await pdfjsLib.getDocument({data:ev.target.result}).promise;let full="";
-        for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();full+=tc.items.map(it=>it.str).join(" ")+"\n"}
-        handleText(full);
-      }catch(e){console.error(e);showToast("⚠️ Couldn't read PDF. Paste text instead.");$("pasteArea").style.display="block"}
-    };
-    r.readAsArrayBuffer(file);return;
+function handleFile(file) {
+  if (!file) return;
+  $("fileName").textContent = file.name;
+  const ext = file.name.split(".").pop().toLowerCase();
+
+  if (ext === "txt") {
+    const r = new FileReader();
+    r.onload = ev => handleExtractedText(ev.target.result);
+    r.readAsText(file);
+    return;
   }
-  showToast("ℹ️ Word/PPT cannot be parsed natively. Please paste the text.");
-  $("pasteArea").style.display="block";
+  if (ext === "docx") {
+    if (typeof mammoth === "undefined") {
+      showToast("⚠️ Word parser loading... Paste text directly if needed.");
+      return;
+    }
+    const r = new FileReader();
+    r.onload = ev => {
+      mammoth.extractRawText({ arrayBuffer: ev.target.result })
+        .then(result => handleExtractedText(result.value))
+        .catch(() => showToast("⚠️ Could not read DOCX. Please paste the text."));
+    };
+    r.readAsArrayBuffer(file);
+    return;
+  }
+  if (ext === "pdf") {
+    if (typeof pdfjsLib === "undefined") {
+      showToast("⚠️ PDF Library unavailable. Please paste the text.");
+      return;
+    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    const r = new FileReader();
+    r.onload = async ev => {
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: ev.target.result }).promise;
+        let full = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const pg = await pdf.getPage(i);
+          const tc = await pg.getTextContent();
+          full += tc.items.map(it => it.str).join(" ") + "\n";
+        }
+        handleExtractedText(full);
+      } catch (err) {
+        showToast("⚠️ Could not parse PDF. Paste text directly.");
+      }
+    };
+    r.readAsArrayBuffer(file);
+    return;
+  }
+  showToast("⚠️ File type not supported. Please paste text directly.");
 }
 
-function handleText(text){
-  const t=parseTermText(text);
-  if(t.length===0){showToast("⚠️ No terms found. Format: Term :: Definition");return}
-  const d=Store.get();
-  d.terms=t;
-  if(!d.subject){const det=detectSubject(text)||$("subjectInput").value.trim();d.subject=det||"My Subject"}
-  Store.set(d);
-  showToast(`✅ ${t.length} terms extracted!`);
-  $("resultBox").style.display="block";
-  $("detectSubject").textContent=d.subject;
-  $("termCount").textContent=t.length;
-  renderReviewer();
+function handleExtractedText(raw) {
+  $("pasteText").value = raw;
+  const t = parseTermText(raw);
+  if (t.length > 0) {
+    showToast(`✅ Extracted ${t.length} terms from document!`);
+  } else {
+    showToast("ℹ️ File loaded into text box. Format as 'Term :: Definition' to generate.");
+  }
 }
 
-/* ---------- GENERATE REVIEWER ---------- */
-$("showPaste").addEventListener("click",()=>{uiClick();$("pasteArea").style.display="block"});
-$("btnGenerate").addEventListener("click",()=>{
+$("btnGenerate").addEventListener("click", () => {
   uiClick();
-  const d=Store.get();
-  const subject=$("subjectInput").value.trim();
-  const exam=$("examDate").value;
-  const pasted=$("pasteText").value.trim();
-  if(subject)d.subject=subject;
-  if(exam)d.examDate=exam;
-  if(pasted){const t=parseTermText(pasted);if(t.length>0){d.terms=t;showToast(`✅ ${t.length} terms from text!`)}}
-  if(!d.examDate){showToast("⚠️ Please pick an exam date.");return}
-  if(d.terms.length===0){showToast("⚠️ No terms yet.");return}
-  Store.set(d);
-  buildSchedule();
-  $("resultBox").style.display="block";
-  $("detectSubject").textContent=d.subject;
-  $("termCount").textContent=d.terms.length;
-  $("examDateShow").textContent=new Date(d.examDate).toDateString();
-  renderReviewer();renderTracker();
-  showToast(`🗓️ Study days scheduled until ${new Date(d.examDate).toDateString()}`);
-});
+  const d = Store.get();
+  const subject = $("subjectInput").value.trim() || "My Reviewer";
+  const exam = $("examDate").value;
+  const rawText = $("pasteText").value.trim();
 
-/* ---------- SCHEDULE ---------- */
-function buildSchedule(){
-  const d=Store.get();if(!d.examDate)return;
-  const exam=new Date(d.examDate+"T23:59:59");
-  const today=new Date();today.setHours(0,0,0,0);
-  const daysLeft=Math.max(0,Math.round((exam-today)/86400000));
-  const sched=[];
-  const intervals=Math.min(daysLeft,5);
-  for(let i=0;i<intervals;i++){
-    const off=Math.floor(daysLeft*i/intervals);
-    const dt=new Date(today);dt.setDate(dt.getDate()+off);
+  if (!exam) {
+    showToast("⚠️ Please select your target exam date.");
+    return;
+  }
+  const terms = parseTermText(rawText);
+  if (terms.length === 0) {
+    showToast("⚠️ No terms found. Use 'Term :: Definition' format.");
+    return;
+  }
+
+  d.subject = subject;
+  d.examDate = exam;
+  d.terms = terms;
+  d.quizHistory = [];
+  
+  // Build Spaced Repetition Schedule
+  const examDt = new Date(exam + "T23:59:59");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const daysLeft = Math.max(0, Math.round((examDt - today) / 86400000));
+  const sched = [];
+  const intervals = Math.min(daysLeft, 5);
+  for (let i = 0; i < intervals; i++) {
+    const off = Math.floor(daysLeft * i / intervals);
+    const dt = new Date(today);
+    dt.setDate(dt.getDate() + off);
     sched.push(formatDate(dt));
   }
-  d.schedule=[...new Set(sched)];
+  d.schedule = [...new Set(sched)];
   Store.set(d);
-}
 
-/* ---------- REVIEWER ---------- */
-function renderReviewer(){
-  const d=Store.get();
-  $("reviewerSubject").textContent="Subject: "+(d.subject||"—");
-  const box=$("reviewerContent");
-  if(d.terms.length===0){box.innerHTML='<p class="empty-msg">No reviewer yet. Upload a file or paste text first!</p>';return}
-  box.innerHTML=d.terms.map(t=>`<div class="reviewer-item"><div class="term">${esc(t.term)}</div><div class="def">${esc(t.def)}</div></div>`).join("");
-}
-$("btnPrintReviewer").addEventListener("click",()=>{uiClick();showToast("🖨️ Use the dialog to Save as PDF");setTimeout(()=>window.print(),400)});
-
-/* ---------- CALENDAR ---------- */
-let calView=new Date();
-const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-function renderCalendar(date){
-  const d=Store.get();
-  const y=date.getFullYear();const m=date.getMonth();
-  $("calMonthYear").textContent=MONTHS[m]+" "+y;
-  const first=new Date(y,m,1),start=first.getDay();
-  const daysIn=new Date(y,m+1,0).getDate();
-  const today=formatDate(new Date());
-  const exam=d.examDate?formatDate(d.examDate):null;
-  let html="";
-  for(let i=0;i<start;i++)html+='<div class="cal-day empty"></div>';
-  for(let day=1;day<=daysIn;day++){
-    const dstr=`${y}-${String(m+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-    let cls="cal-day";
-    if(dstr===today)cls+=" today";
-    if(d.schedule&&d.schedule.includes(dstr))cls+=" study";
-    if(exam&&dstr===exam)cls+=" exam";
-    html+=`<div class="${cls}">${day}`;
-    if(d.schedule&&d.schedule.includes(dstr))html+='<span class="badge">Study</span>';
-    if(exam&&dstr===exam)html+='<span class="badge">Exam</span>';
-    html+="</div>";
-  }
-  $("calGrid").innerHTML=html;
-}
-$("calPrev").addEventListener("click",()=>{uiClick();calView.setMonth(calView.getMonth()-1);renderCalendar(calView)});
-$("calNext").addEventListener("click",()=>{uiClick();calView.setMonth(calView.getMonth()+1);renderCalendar(calView)});
-renderCalendar(calView);
-
-/* ---------- FLASHCARDS ---------- */
-let fcDeck=[],fcIdx=0;
-function initFlashcards(){
-  const d=Store.get();
-  if(d.terms.length===0){$("fcTerm").textContent="No terms yet!";$("fcDef").textContent="Upload or paste a lesson first.";$("fcCounter").textContent="0 / 0";return}
-  if(fcDeck.length===0)fcDeck=[...d.terms];
-  fcIdx=Math.min(fcIdx,fcDeck.length-1);
-  showFc();
-}
-function showFc(){
-  if(fcDeck.length===0)return;
-  const t=fcDeck[fcIdx];
-  $("flashcard").classList.remove("flip");
-  $("fcTerm").textContent=t.term;
-  $("fcDef").textContent=t.def;
-  $("fcCounter").textContent=`${fcIdx+1} / ${fcDeck.length}`;
-}
-$("flashcard").addEventListener("click",()=>$("flashcard").classList.toggle("flip"));
-$("fcPrev").addEventListener("click",()=>{uiClick();if(fcDeck.length===0)return;fcIdx=(fcIdx-1+fcDeck.length)%fcDeck.length;showFc()});
-$("fcNext").addEventListener("click",()=>{uiClick();if(fcDeck.length===0)return;fcIdx=(fcIdx+1)%fcDeck.length;showFc()});
-$("fcGotIt").addEventListener("click",()=>{
-  if(fcDeck.length===0)return;
-  addXP(10);successSfx();
-  fcDeck.splice(fcIdx,1);
-  if(fcDeck.length===0){$("fcTerm").textContent="All done! 🎉";$("fcDef").textContent="";$("fcCounter").textContent="0 / 0";return}
-  fcIdx=Math.min(fcIdx,fcDeck.length-1);
-  showFc();
-});
-$("fcShuffle").addEventListener("click",()=>{uiClick();fcDeck=shuffle([...Store.get().terms]);fcIdx=0;showFc()});
-
-/* ---------- QUIZ ---------- */
-let quizTerms=[],quizIdx=0,quizCorrectCount=0;
-function initQuizScreen(){
-  const d=Store.get();
-  $("quizArea").style.display=d.terms.length?"block":"none";
-  $("quizQuestion").style.display="none";$("quizResult").style.display="none";
-  if(d.terms.length===0){$("quizResult").style.display="block";$("quizResult").innerHTML='<p class="empty-msg">No terms yet. Upload a lesson first!</p>';return}
-  $("btnRetryWeak").style.display=(d.quizHistory&&d.quizHistory.length)?"inline-block":"none";
-}
-$("btnStartQuiz").addEventListener("click",()=>startQuiz());
-$("btnRetryWeak").addEventListener("click",()=>{
-  const weak=[...new Set(Store.get().quizHistory||[])];
-  if(weak.length===0){showToast("🎉 No weak areas — you're solid!");return}
-  startQuiz(weak);
-});
-
-function startQuiz(ids){
-  const all=Store.get().terms;
-  if(all.length<2){showToast("⚠️ Need at least 2 terms for a quiz.");return}
-  quizTerms=ids?all.filter(t=>ids.includes(t.id)):[...all];
-  if(quizTerms.length<2)quizTerms=[...all];
-  quizTerms=shuffle(quizTerms);
-  quizIdx=0;
-  quizCorrectCount=0;
-  $("quizArea").style.display="none";$("quizQuestion").style.display="block";$("quizResult").style.display="none";
-  showQ();
-}
-function showQ(){
-  const q=quizTerms[quizIdx];
-  $("qText").textContent=q.term;
-  const distractors=shuffle(Store.get().terms.filter(t=>t.id!==q.id));
-  const opts=shuffle([...distractors.slice(0,3).map(t=>t.def),q.def]);
-  $("qOptions").innerHTML=opts.map(o=>`<button class="q-opt">${esc(o)}</button>`).join("");
-  $("qFeedback").textContent="";
-  $("btnNextQ").style.display="none";
-  document.querySelectorAll(".q-opt").forEach(b=>b.addEventListener("click",()=>answerQ(b,q)));
-}
-function answerQ(btn,q){
-  const correct=btn.textContent===q.def;
-  document.querySelectorAll(".q-opt").forEach(b=>{
-    b.disabled=true;
-    if(b.textContent===q.def)b.classList.add("correct");
-    else if(b===btn)b.classList.add("wrong");
-  });
-  if(correct){
-    quizCorrectCount++;
-    successSfx();
-    $("qFeedback").textContent="✅ Correct! +5 XP";
-    Store.update(s=>{
-      s.xp=(s.xp||0)+5;
-      if(s.quizHistory)s.quizHistory=s.quizHistory.filter(id=>id!==q.id);
-      return s;
-    });
-  }else{
-    failSfx();
-    $("qFeedback").textContent="❌ Incorrect. Saved for retry.";
-    Store.update(s=>{s.quizHistory=[...new Set([...(s.quizHistory||[]),q.id])];return s});
-  }
-  $("btnNextQ").style.display="inline-block";
-  $("btnNextQ").textContent=(quizIdx<quizTerms.length-1)?"Next →":"See Results";
-  updateHomeHeader();renderAchievements();
-}
-$("btnNextQ").addEventListener("click",()=>{
-  quizIdx++;
-  if(quizIdx<quizTerms.length){showQ();return}
-  const right=quizCorrectCount;
-  const sc=quizTerms.length?Math.round((right/quizTerms.length)*100):0;
-  Store.update(s=>{
-    s.quizCount=(s.quizCount||0)+1;
-    if(sc>=(s.bestQuizScore||0))s.bestQuizScore=sc;
-    return s;
-  });
-  $("quizQuestion").style.display="none";
-  $("quizResult").style.display="block";
-  $("quizResult").innerHTML=`<h2 style="margin-bottom:10px">🎉 Quiz Complete!</h2>
-    <p class="page-sub">Score: ${sc}% (${right}/${quizTerms.length})</p>
-    <button class="btn btn-primary" id="btnRetakeQuiz">🔄 Retake</button>
-    <button class="btn btn-outline" id="btnStatsQuiz">🏆 View Stats</button>`;
-  $("btnRetakeQuiz").addEventListener("click",()=>startQuiz());
-  $("btnStatsQuiz").addEventListener("click",()=>navigateTo("tracker"));
+  $("resultBox").style.display = "block";
+  $("detectSubject").textContent = d.subject;
+  $("termCount").textContent = d.terms.length;
+  $("examDateShow").textContent = new Date(d.examDate).toDateString();
+  addXP(25);
+  renderReviewer();
   renderTracker();
 });
 
-/* ---------- MATCH GAME ---------- */
-let matchPairs=[],matchSel=null,matchMiss=0,matchTimer=null,matchSec=0,matchedIds=new Set();
-$("btnStartMatch").addEventListener("click",()=>{
-  const t=Store.get().terms;
-  if(t.length<2){showToast("⚠️ Need at least 2 terms.");return}
-  matchPairs=shuffle(t).slice(0,Math.min(8,t.length));
-  matchSel=null;matchMiss=0;matchSec=0;matchedIds=new Set();
-  $("matchGame").style.display="none";$("matchBoard").style.display="block";
-  clearInterval(matchTimer);
-  matchTimer=setInterval(()=>{matchSec++;$("matchTime").textContent=matchSec},1000);
-  renderMatch();
-});
+/* ============================================================
+   6. REVIEWER & EXPORT
+   ============================================================ */
+function renderReviewer() {
+  const d = Store.get();
+  $("reviewerSubject").textContent = "Subject: " + (d.subject || "Not Set");
+  const box = $("reviewerContent");
+  const q = ($("reviewerSearch") ? $("reviewerSearch").value.toLowerCase() : "");
 
-function renderMatch(){
-  $("matchScore").textContent=matchedIds.size;
-  $("matchMiss").textContent=matchMiss;
-  const terms=shuffle(matchPairs),defs=shuffle(matchPairs);
-  $("matchTermCol").innerHTML=terms.map(t=>`<div class="match-chip" data-id="${t.id}" data-role="term">${esc(t.term)}</div>`).join("");
-  $("matchDefCol").innerHTML=defs.map(t=>`<div class="match-chip def" data-id="${t.id}" data-role="def">${esc(t.def)}</div>`).join("");
-  document.querySelectorAll(".match-chip").forEach(c=>c.addEventListener("click",()=>matchClick(c)));
-}
-
-function matchClick(chip){
-  const role=chip.dataset.role,id=+chip.dataset.id;
-  if(matchedIds.has(id)||chip.classList.contains("done"))return;
-  if(role==="term"){
-    document.querySelectorAll('.match-chip[data-role="term"]').forEach(c=>c.classList.remove("selected"));
-    chip.classList.add("selected");
-    matchSel=chip;
+  if (!d.terms || d.terms.length === 0) {
+    box.innerHTML = '<p class="empty-msg">No terms yet. Upload a lesson or load a sample first!</p>';
     return;
   }
-  if(matchSel){
-    const tId=+matchSel.dataset.id;
-    if(tId===id){
-      successSfx();matchedIds.add(id);chip.classList.add("done");matchSel.classList.add("done");matchSel.classList.remove("selected");matchSel=null;
-      $("matchScore").textContent=matchedIds.size;
-      if(matchedIds.size===matchPairs.length){
+
+  const filtered = d.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q));
+  if (filtered.length === 0) {
+    box.innerHTML = '<p class="empty-msg">No matching terms found in search.</p>';
+    return;
+  }
+
+  box.innerHTML = filtered.map(t => `
+    <div class="reviewer-item">
+      <div class="reviewer-actions">
+        <button class="icon-btn" onclick="deleteTerm(${t.id})" title="Delete Term">🗑️</button>
+      </div>
+      <div class="term">${esc(t.term)}</div>
+      <div class="def">${esc(t.def)}</div>
+    </div>
+  `).join("");
+}
+
+window.deleteTerm = id => {
+  Store.update(s => {
+    s.terms = s.terms.filter(t => t.id !== id);
+    return s;
+  });
+  renderReviewer();
+  showToast("🗑️ Term removed");
+};
+
+$("reviewerSearch").addEventListener("input", renderReviewer);
+$("btnPrintReviewer").addEventListener("click", () => {
+  uiClick();
+  window.print();
+});
+
+$("btnExportCsv").addEventListener("click", () => {
+  const d = Store.get();
+  if (!d.terms.length) { showToast("⚠️ No terms to export!"); return; }
+  const csv = d.terms.map(t => `"${t.term.replace(/"/g, '""')}","${t.def.replace(/"/g, '""')}"`).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${d.subject || "reviewer"}_flashcards.csv`;
+  a.click();
+  showToast("💾 CSV exported for Anki / Quizlet!");
+});
+
+$("btnAddTermModal").addEventListener("click", () => {
+  const t = prompt("Enter Term:");
+  if (!t) return;
+  const def = prompt("Enter Definition:");
+  if (!def) return;
+  Store.update(s => {
+    s.terms.push({ term: t.trim(), def: def.trim(), id: Date.now() });
+    return s;
+  });
+  renderReviewer();
+  showToast("✅ Term added!");
+});
+
+/* ============================================================
+   7. FLASHCARDS & TTS
+   ============================================================ */
+let fcDeck = [], fcIdx = 0;
+function initFlashcards() {
+  const d = Store.get();
+  if (!d.terms || d.terms.length === 0) {
+    $("fcTerm").textContent = "No terms loaded";
+    $("fcDef").textContent = "Upload or select a lesson first.";
+    $("fcCounter").textContent = "0 / 0";
+    return;
+  }
+  if (fcDeck.length === 0) fcDeck = [...d.terms];
+  fcIdx = Math.min(fcIdx, fcDeck.length - 1);
+  showFc();
+}
+
+function showFc() {
+  if (fcDeck.length === 0) return;
+  const t = fcDeck[fcIdx];
+  $("flashcard").classList.remove("flip");
+  $("fcTerm").textContent = t.term;
+  $("fcDef").textContent = t.def;
+  $("fcCounter").textContent = `${fcIdx + 1} / ${fcDeck.length}`;
+}
+
+$("flashcard").addEventListener("click", () => $("flashcard").classList.toggle("flip"));
+
+$("fcPrev").addEventListener("click", () => {
+  uiClick();
+  if (fcDeck.length === 0) return;
+  fcIdx = (fcIdx - 1 + fcDeck.length) % fcDeck.length;
+  showFc();
+});
+
+$("fcNext").addEventListener("click", () => {
+  uiClick();
+  if (fcDeck.length === 0) return;
+  fcIdx = (fcIdx + 1) % fcDeck.length;
+  showFc();
+});
+
+$("fcGotIt").addEventListener("click", () => {
+  if (fcDeck.length === 0) return;
+  addXP(10);
+  successSfx();
+  fcDeck.splice(fcIdx, 1);
+  if (fcDeck.length === 0) {
+    $("fcTerm").textContent = "All Done! 🎉";
+    $("fcDef").textContent = "You memorized all cards in this deck!";
+    $("fcCounter").textContent = "0 / 0";
+    if (typeof confetti === "function") confetti({ particleCount: 70, spread: 50 });
+    return;
+  }
+  fcIdx = Math.min(fcIdx, fcDeck.length - 1);
+  showFc();
+});
+
+$("fcShuffle").addEventListener("click", () => {
+  uiClick();
+  fcDeck = shuffle([...Store.get().terms]);
+  fcIdx = 0;
+  showFc();
+  showToast("🔀 Deck shuffled");
+});
+
+$("fcAudio").addEventListener("click", () => {
+  if (fcDeck.length === 0 || !window.speechSynthesis) return;
+  const isFlipped = $("flashcard").classList.contains("flip");
+  const text = isFlipped ? fcDeck[fcIdx].def : fcDeck[fcIdx].term;
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+});
+
+// Keyboard controls for flashcards
+window.addEventListener("keydown", e => {
+  const activePage = document.querySelector(".page.active");
+  if (!activePage || activePage.id !== "page-flashcards") return;
+  if (e.code === "Space") { e.preventDefault(); $("flashcard").click(); }
+  if (e.code === "ArrowLeft") { $("fcPrev").click(); }
+  if (e.code === "ArrowRight") { $("fcNext").click(); }
+});
+
+/* ============================================================
+   8. ADAPTIVE PRACTICE QUIZ
+   ============================================================ */
+let quizTerms = [], quizIdx = 0, quizCorrect = 0;
+
+function initQuizScreen() {
+  const d = Store.get();
+  $("quizArea").style.display = d.terms.length ? "block" : "none";
+  $("quizQuestion").style.display = "none";
+  $("quizResult").style.display = "none";
+  if (d.terms.length === 0) {
+    $("quizResult").style.display = "block";
+    $("quizResult").innerHTML = '<p class="empty-msg">No terms available. Upload a lesson to take quizzes!</p>';
+    return;
+  }
+  $("btnRetryWeak").style.display = (d.quizHistory && d.quizHistory.length) ? "inline-block" : "none";
+}
+
+$("btnStartQuiz").addEventListener("click", () => startQuiz());
+$("btnRetryWeak").addEventListener("click", () => {
+  const weak = [...new Set(Store.get().quizHistory || [])];
+  if (weak.length === 0) { showToast("🎉 No weak areas tagged!"); return; }
+  startQuiz(weak);
+});
+
+function startQuiz(ids) {
+  const all = Store.get().terms;
+  if (all.length < 2) { showToast("⚠️ Need at least 2 terms for a quiz."); return; }
+  quizTerms = ids ? all.filter(t => ids.includes(t.id)) : [...all];
+  if (quizTerms.length < 2) quizTerms = [...all];
+  quizTerms = shuffle(quizTerms);
+  quizIdx = 0;
+  quizCorrect = 0;
+  $("quizArea").style.display = "none";
+  $("quizQuestion").style.display = "block";
+  $("quizResult").style.display = "none";
+  showQ();
+}
+
+function showQ() {
+  const q = quizTerms[quizIdx];
+  $("qProgress").textContent = `Question ${quizIdx + 1} of ${quizTerms.length}`;
+  $("qScoreLive").textContent = `Score: ${quizCorrect}`;
+  $("qText").textContent = `What is the definition of: "${q.term}"?`;
+
+  const distractors = shuffle(Store.get().terms.filter(t => t.id !== q.id));
+  const options = shuffle([...distractors.slice(0, 3).map(t => t.def), q.def]);
+
+  $("qOptions").innerHTML = options.map(opt => `<button class="q-opt">${esc(opt)}</button>`).join("");
+  $("qFeedback").textContent = "";
+  $("btnNextQ").style.display = "none";
+
+  document.querySelectorAll(".q-opt").forEach(btn => {
+    btn.addEventListener("click", () => handleQuizAnswer(btn, q));
+  });
+}
+
+function handleQuizAnswer(btn, q) {
+  const isCorrect = btn.textContent === q.def;
+  document.querySelectorAll(".q-opt").forEach(b => {
+    b.disabled = true;
+    if (b.textContent === q.def) b.classList.add("correct");
+    else if (b === btn) b.classList.add("wrong");
+  });
+
+  if (isCorrect) {
+    quizCorrect++;
+    successSfx();
+    $("qFeedback").innerHTML = '<span style="color:var(--green)">✅ Correct! +5 XP</span>';
+    Store.update(s => {
+      s.xp = (s.xp || 0) + 5;
+      if (s.quizHistory) s.quizHistory = s.quizHistory.filter(id => id !== q.id);
+      return s;
+    });
+  } else {
+    failSfx();
+    $("qFeedback").innerHTML = '<span style="color:var(--red)">❌ Incorrect. Saved to weak areas.</span>';
+    Store.update(s => {
+      s.quizHistory = [...new Set([...(s.quizHistory || []), q.id])];
+      return s;
+    });
+  }
+
+  $("btnNextQ").style.display = "inline-block";
+  $("btnNextQ").textContent = (quizIdx < quizTerms.length - 1) ? "Next Question →" : "See Final Score";
+  updateHomeHeader();
+  renderAchievements();
+}
+
+$("btnNextQ").addEventListener("click", () => {
+  quizIdx++;
+  if (quizIdx < quizTerms.length) {
+    showQ();
+    return;
+  }
+  const scorePercent = Math.round((quizCorrect / quizTerms.length) * 100);
+  Store.update(s => {
+    s.quizCount = (s.quizCount || 0) + 1;
+    if (scorePercent >= (s.bestQuizScore || 0)) s.bestQuizScore = scorePercent;
+    return s;
+  });
+
+  $("quizQuestion").style.display = "none";
+  $("quizResult").style.display = "block";
+  if (scorePercent >= 80 && typeof confetti === "function") confetti({ particleCount: 100, spread: 70 });
+
+  $("quizResult").innerHTML = `
+    <h2 style="font-size:2rem;margin-bottom:12px">🎉 Quiz Complete!</h2>
+    <p style="font-size:1.2rem;color:var(--navy);font-weight:700">Final Score: ${scorePercent}% (${quizCorrect}/${quizTerms.length})</p>
+    <p style="color:var(--gray);margin:8px 0 20px">${scorePercent >= 100 ? "🌟 Perfect score! Astig!" : scorePercent >= 70 ? "👍 Good job! Keep practicing." : "💪 Kaya mo 'yan! Retry your weak areas."}</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-primary" id="btnQuizRestart">🔄 Retake Quiz</button>
+      <button class="btn btn-outline" id="btnQuizToStats">📊 View Stats</button>
+    </div>
+  `;
+  $("btnQuizRestart").addEventListener("click", () => startQuiz());
+  $("btnQuizToStats").addEventListener("click", () => navigateTo("tracker"));
+  renderTracker();
+});
+
+/* ============================================================
+   9. SPEED MATCH GAME
+   ============================================================ */
+let matchPairs = [], matchSel = null, matchMiss = 0, matchTimer = null, matchSec = 0, matchedIds = new Set();
+
+$("btnStartMatch").addEventListener("click", () => {
+  const t = Store.get().terms;
+  if (t.length < 2) { showToast("⚠️ Need at least 2 terms."); return; }
+  matchPairs = shuffle(t).slice(0, Math.min(6, t.length));
+  matchSel = null;
+  matchMiss = 0;
+  matchSec = 0;
+  matchedIds = new Set();
+  $("matchGame").style.display = "none";
+  $("matchBoard").style.display = "block";
+  clearInterval(matchTimer);
+  matchTimer = setInterval(() => { matchSec++; $("matchTime").textContent = matchSec; }, 1000);
+  renderMatch();
+});
+
+function renderMatch() {
+  $("matchScore").textContent = matchedIds.size;
+  $("matchMiss").textContent = matchMiss;
+  const terms = shuffle(matchPairs), defs = shuffle(matchPairs);
+  $("matchTermCol").innerHTML = terms.map(t => `<div class="match-chip" data-id="${t.id}" data-role="term">${esc(t.term)}</div>`).join("");
+  $("matchDefCol").innerHTML = defs.map(t => `<div class="match-chip" data-id="${t.id}" data-role="def">${esc(t.def)}</div>`).join("");
+  document.querySelectorAll(".match-chip").forEach(c => c.addEventListener("click", () => onMatchClick(c)));
+}
+
+function onMatchClick(chip) {
+  const role = chip.dataset.role;
+  const id = +chip.dataset.id;
+  if (matchedIds.has(id) || chip.classList.contains("done")) return;
+
+  if (role === "term") {
+    document.querySelectorAll('.match-chip[data-role="term"]').forEach(c => c.classList.remove("selected"));
+    chip.classList.add("selected");
+    matchSel = chip;
+    return;
+  }
+  if (matchSel) {
+    const termId = +matchSel.dataset.id;
+    if (termId === id) {
+      successSfx();
+      matchedIds.add(id);
+      chip.classList.add("done");
+      matchSel.classList.add("done");
+      matchSel.classList.remove("selected");
+      matchSel = null;
+      $("matchScore").textContent = matchedIds.size;
+
+      if (matchedIds.size === matchPairs.length) {
         clearInterval(matchTimer);
-        Store.update(s=>{s.matchCount=(s.matchCount||0)+1;s.xp=(s.xp||0)+50;return s});
-        showToast(`🏁 Finished in ${matchSec}s! +50 XP`);
-        renderAchievements();renderTracker();
+        Store.update(s => {
+          s.matchCount = (s.matchCount || 0) + 1;
+          s.xp = (s.xp || 0) + 50;
+          return s;
+        });
+        if (typeof confetti === "function") confetti({ particleCount: 90, spread: 60 });
+        showToast(`🏁 Matched all in ${matchSec}s! +50 XP`);
+        renderAchievements();
+        renderTracker();
       }
-    }else{
-      failSfx();matchMiss++;matchSel.classList.remove("selected");matchSel=null;$("matchMiss").textContent=matchMiss;
+    } else {
+      failSfx();
+      matchMiss++;
+      matchSel.classList.remove("selected");
+      matchSel = null;
+      $("matchMiss").textContent = matchMiss;
     }
-  }else{
-    showToast("👈 Pick a term first!");
+  } else {
+    showToast("👈 Select a term on the left first!");
   }
 }
 
-$("btnMatchReset").addEventListener("click",()=>{
-  uiClick();matchSel=null;matchMiss=0;matchSec=0;matchedIds=new Set();
+$("btnMatchReset").addEventListener("click", () => {
+  uiClick();
+  matchSel = null;
+  matchMiss = 0;
+  matchSec = 0;
+  matchedIds = new Set();
   clearInterval(matchTimer);
-  matchTimer=setInterval(()=>{matchSec++;$("matchTime").textContent=matchSec},1000);
+  matchTimer = setInterval(() => { matchSec++; $("matchTime").textContent = matchSec; }, 1000);
   renderMatch();
-  $("matchTime").textContent="0";$("matchScore").textContent="0";$("matchMiss").textContent="0";
+  $("matchTime").textContent = "0";
 });
 
-/* ---------- POMODORO ---------- */
-const POMO={focus:25*60,short:5*60,long:15*60};
-let pomoMode="focus",pomoLeft=POMO.focus,pomoInt=null;
-function pomoRender(){const mm=String(Math.floor(pomoLeft/60)).padStart(2,"0"),ss=String(pomoLeft%60).padStart(2,"0");$("pomoTime").textContent=mm+":"+ss}
-function switchMode(mode){
-  pomoMode=mode;pomoLeft=POMO[mode];
-  document.querySelectorAll(".pomo-tab").forEach(t=>t.classList.toggle("active",t.dataset.mode===mode));
-  const cls=mode==="focus"?"focus-mode":"break-mode";
-  document.querySelector(".pomodoro-box").className="pomodoro-box "+cls;
-  pomoRender();
+/* ============================================================
+   10. POMODORO TIMER
+   ============================================================ */
+const POMO = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+let pomoMode = "focus", pomoLeft = POMO.focus, pomoInt = null;
+
+function renderPomoTime() {
+  const mm = pad(Math.floor(pomoLeft / 60));
+  const ss = pad(pomoLeft % 60);
+  $("pomoTime").textContent = `${mm}:${ss}`;
 }
-$("btnPomoStart").addEventListener("click",()=>{
-  if(pomoInt){clearInterval(pomoInt);pomoInt=null;$("btnPomoStart").textContent="▶️ Start";$("pomoStatus").textContent="Paused";return}
-  $("btnPomoStart").textContent="⏸️ Pause";$("pomoStatus").textContent="Focus mode — you got this!";
-  pomoInt=setInterval(()=>{
-    pomoLeft--;pomoRender();
-    if(pomoLeft<=0){
-      clearInterval(pomoInt);pomoInt=null;successSfx();
-      if(pomoMode==="focus"){Store.update(s=>{s.pomodoroCount=(s.pomodoroCount||0)+1;s.xp=(s.xp||0)+20;return s});showToast("🍅 Focus done! +20 XP");switchMode("short");renderAchievements();renderTracker()}
-      else{showToast("☕ Break over — back to it!");switchMode("focus")}
-      $("btnPomoStart").textContent="▶️ Start";
-    }
-  },1000);
-});
-$("btnPomoReset").addEventListener("click",()=>{uiClick();clearInterval(pomoInt);pomoInt=null;switchMode(pomoMode);$("btnPomoStart").textContent="▶️ Start";$("pomoStatus").textContent="Ready to focus!"});
-document.querySelectorAll(".pomo-tab").forEach(t=>t.addEventListener("click",()=>{uiClick();clearInterval(pomoInt);pomoInt=null;$("btnPomoStart").textContent="▶️ Start";switchMode(t.dataset.mode)}));
-pomoRender();
 
-/* ---------- TRACKER & ACHIEVEMENTS ---------- */
-const ACHS=[
-  {id:"first",icon:"🚀",name:"First Steps",cond:d=>d.terms.length>=1},
-  {id:"terms10",icon:"📚",name:"10 Terms",cond:d=>d.terms.length>=10},
-  {id:"terms50",icon:"🏛️",name:"50 Terms",cond:d=>d.terms.length>=50},
-  {id:"quiz1",icon:"📝",name:"First Quiz",cond:d=>d.quizCount>=1},
-  {id:"quiz5",icon:"🎯",name:"5 Quizzes",cond:d=>d.quizCount>=5},
-  {id:"perfect",icon:"💯",name:"Perfect Quiz",cond:d=>d.bestQuizScore>=100},
-  {id:"match1",icon:"🧩",name:"Match Master",cond:d=>d.matchCount>=1},
-  {id:"pomo3",icon:"🍅",name:"3 Pomodoros",cond:d=>d.pomodoroCount>=3},
-  {id:"xp100",icon:"⚡",name:"100 XP",cond:d=>d.xp>=100},
-  {id:"xp500",icon:"👑",name:"500 XP",cond:d=>d.xp>=500}
+function switchPomoMode(mode) {
+  pomoMode = mode;
+  pomoLeft = POMO[mode];
+  document.querySelectorAll(".pomo-tab").forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
+  $("pomoBox").className = "pomodoro-box " + (mode === "focus" ? "focus-mode" : "break-mode");
+  renderPomoTime();
+}
+
+$("btnPomoStart").addEventListener("click", () => {
+  if (pomoInt) {
+    clearInterval(pomoInt);
+    pomoInt = null;
+    $("btnPomoStart").textContent = "▶️ Resume";
+    $("pomoStatus").textContent = "Paused";
+    return;
+  }
+  $("btnPomoStart").textContent = "⏸️ Pause";
+  $("pomoStatus").textContent = (pomoMode === "focus") ? "Focused study session..." : "Rest & recharge!";
+  pomoInt = setInterval(() => {
+    pomoLeft--;
+    renderPomoTime();
+    if (pomoLeft <= 0) {
+      clearInterval(pomoInt);
+      pomoInt = null;
+      successSfx();
+      if (pomoMode === "focus") {
+        Store.update(s => { s.pomodoroCount = (s.pomodoroCount || 0) + 1; s.xp = (s.xp || 0) + 25; return s; });
+        showToast("🍅 Focus session finished! +25 XP");
+        switchPomoMode("short");
+      } else {
+        showToast("☕ Break ended — ready for the next sprint!");
+        switchPomoMode("focus");
+      }
+      $("btnPomoStart").textContent = "▶️ Start Session";
+    }
+  }, 1000);
+});
+
+$("btnPomoReset").addEventListener("click", () => {
+  uiClick();
+  clearInterval(pomoInt);
+  pomoInt = null;
+  switchPomoMode(pomoMode);
+  $("btnPomoStart").textContent = "▶️ Start Session";
+  $("pomoStatus").textContent = "Ready to focus!";
+});
+
+document.querySelectorAll(".pomo-tab").forEach(t => {
+  t.addEventListener("click", () => {
+    uiClick();
+    clearInterval(pomoInt);
+    pomoInt = null;
+    $("btnPomoStart").textContent = "▶️ Start Session";
+    switchPomoMode(t.dataset.mode);
+  });
+});
+renderPomoTime();
+
+/* ============================================================
+   11. CALENDAR & SPACED REPETITION
+   ============================================================ */
+let calView = new Date();
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+function renderCalendar(date) {
+  const d = Store.get();
+  const y = date.getFullYear(), m = date.getMonth();
+  $("calMonthYear").textContent = `${MONTHS[m]} ${y}`;
+  const first = new Date(y, m, 1), start = first.getDay();
+  const daysIn = new Date(y, m + 1, 0).getDate();
+  const today = formatDate(new Date());
+  const exam = d.examDate ? formatDate(d.examDate) : null;
+
+  let html = "";
+  for (let i = 0; i < start; i++) html += '<div class="cal-day empty"></div>';
+  for (let day = 1; day <= daysIn; day++) {
+    const dstr = `${y}-${pad(m + 1)}-${pad(day)}`;
+    let cls = "cal-day";
+    if (dstr === today) cls += " today";
+    if (d.schedule && d.schedule.includes(dstr)) cls += " study";
+    if (exam && dstr === exam) cls += " exam";
+
+    html += `<div class="${cls}">${day}`;
+    if (d.schedule && d.schedule.includes(dstr)) html += '<span class="badge">Review</span>';
+    if (exam && dstr === exam) html += '<span class="badge">Exam Day</span>';
+    html += "</div>";
+  }
+  $("calGrid").innerHTML = html;
+}
+
+$("calPrev").addEventListener("click", () => { uiClick(); calView.setMonth(calView.getMonth() - 1); renderCalendar(calView); });
+$("calNext").addEventListener("click", () => { uiClick(); calView.setMonth(calView.getMonth() + 1); renderCalendar(calView); });
+renderCalendar(calView);
+
+/* ============================================================
+   12. TRACKER & ACHIEVEMENTS
+   ============================================================ */
+const ACHS = [
+  { id: "first", icon: "🚀", name: "First Steps", desc: "Upload 1st lesson", cond: d => d.terms.length >= 1 },
+  { id: "terms10", icon: "📚", name: "10 Terms", desc: "Memorize 10 terms", cond: d => d.terms.length >= 10 },
+  { id: "terms30", icon: "🏛️", name: "Study Master", desc: "Memorize 30 terms", cond: d => d.terms.length >= 30 },
+  { id: "quiz1", icon: "📝", name: "First Quiz", desc: "Complete 1 practice quiz", cond: d => d.quizCount >= 1 },
+  { id: "quiz5", icon: "🎯", name: "Quiz Streak", desc: "Complete 5 quizzes", cond: d => d.quizCount >= 5 },
+  { id: "perfect", icon: "💯", name: "Perfect Score", desc: "Score 100% on a quiz", cond: d => d.bestQuizScore >= 100 },
+  { id: "match1", icon: "🧩", name: "Speed Matcher", desc: "Win 1 match game", cond: d => d.matchCount >= 1 },
+  { id: "pomo3", icon: "🍅", name: "Deep Focus", desc: "Complete 3 Pomodoro sessions", cond: d => d.pomodoroCount >= 3 },
+  { id: "xp100", icon: "⚡", name: "Centurion", desc: "Reach 100 total XP", cond: d => d.xp >= 100 },
+  { id: "xp500", icon: "👑", name: "Scholar", desc: "Reach 500 total XP", cond: d => d.xp >= 500 }
 ];
 
-function renderAchievements(){
-  const d=Store.get();
-  const box=$("achievements");if(!box)return;
-  let newly=0;
-  if(!d.achievedAchs)d.achievedAchs=[];
-  ACHS.filter(a=>a.cond(d)).forEach(a=>{if(!d.achievedAchs.includes(a.id)){d.achievedAchs.push(a.id);newly++}});
-  if(newly>0){Store.set(d);showToast(`🏆 New achievement${newly>1?"s":""} unlocked!`)}
-  box.innerHTML=ACHS.map(a=>{
-    const has=d.achievedAchs.includes(a.id)||a.cond(d);
-    return `<div class="achievement-badge ${has?"unlocked":""}"><span>${a.icon}</span> ${a.name}</div>`;
+function renderAchievements() {
+  const d = Store.get();
+  const box = $("achievements");
+  if (!box) return;
+  if (!d.achievedAchs) d.achievedAchs = [];
+
+  let newly = 0;
+  ACHS.filter(a => a.cond(d)).forEach(a => {
+    if (!d.achievedAchs.includes(a.id)) {
+      d.achievedAchs.push(a.id);
+      newly++;
+    }
+  });
+  if (newly > 0) {
+    Store.set(d);
+    showToast(`🏆 ${newly} new achievement${newly > 1 ? "s" : ""} unlocked!`);
+  }
+
+  box.innerHTML = ACHS.map(a => {
+    const has = d.achievedAchs.includes(a.id) || a.cond(d);
+    return `<div class="achievement-badge ${has ? "unlocked" : ""}"><span>${a.icon}</span> <div><strong>${a.name}</strong><br><small style="font-size:0.75rem">${a.desc}</small></div></div>`;
   }).join("");
 }
 
-function renderTracker(){
-  const d=Store.get();
-  $("statTerms").textContent=d.terms.length;
-  $("statQuiz").textContent=d.quizCount||0;
-  $("statWeak").textContent=(d.quizHistory||[]).length;
-  $("statStreak").textContent=d.streak||0;
-  $("statXp").textContent=d.xp||0;
-  if(d.examDate){
-    const examDateObj=new Date(d.examDate+"T23:59:59");
-    const days=Math.round((examDateObj-new Date())/86400000);
-    $("statDays").textContent=Math.max(0,days);
-  }else{
-    $("statDays").textContent="—";
+function renderTracker() {
+  const d = Store.get();
+  $("statTerms").textContent = d.terms.length;
+  $("statQuiz").textContent = d.quizCount || 0;
+  $("statWeak").textContent = (d.quizHistory || []).length;
+  $("statStreak").textContent = d.streak || 0;
+  $("statXp").textContent = d.xp || 0;
+
+  if (d.examDate) {
+    const examDt = new Date(d.examDate + "T23:59:59");
+    const days = Math.round((examDt - new Date()) / 86400000);
+    $("statDays").textContent = Math.max(0, days);
+  } else {
+    $("statDays").textContent = "—";
   }
-  const pct=Math.min(100,Math.round(((d.bestQuizScore||0)*0.6+(d.quizCount||0)*5)));
-  $("masteryBar").style.width=pct+"%";
-  $("masteryText").textContent=pct>=100?"🏆 Master level reached — spectacular!":`Keep going — ${pct}% mastery. More quizzes = more mastery!`;
+
+  const pct = Math.min(100, Math.round(((d.bestQuizScore || 0) * 0.5 + (d.quizCount || 0) * 5 + (d.terms.length * 2))));
+  $("masteryBar").style.width = pct + "%";
+  $("masteryText").textContent = pct >= 100
+    ? "🏆 Dean's List Tier reached — ready to ace your exam!"
+    : `Current subject mastery: ${pct}%. Review flashcards and take more quizzes!`;
+
   renderAchievements();
 }
+
 renderTracker();
 </script>
 </body>
