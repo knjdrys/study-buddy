@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudyBuddy PRO 🇵🇭 — Ultimate AI Study Suite</title>
-<!-- PDF.js, DOCX Parser, & Confetti -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<title>StudyBuddy PRO 🇵🇭 — Smart Reviewer & Flashcard Suite</title>
+<!-- Confetti celebration library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
@@ -14,24 +12,24 @@
   --primary: #FFC93C;
   --primary-dark: #E0A800;
   --primary-glow: rgba(255, 201, 60, 0.35);
-  --bg: #F8F9FA;
+  --bg: #FAF6EF;
   --surface: #FFFFFF;
-  --surface-subtle: #F1F3F5;
+  --surface-subtle: #F4EFE6;
   --text: #0D1B2A;
   --text-muted: #6C7A89;
-  --border: #E2E8F0;
+  --border: #E5E0D5;
   --navy-dark: #070E17;
   --green: #2E8B57;
   --green-light: #E6F7ED;
-  --red: #E63946;
+  --red: #D94F4F;
   --red-light: #FDEAEA;
   --blue: #3A86FF;
   --blue-light: #EBF2FF;
   --purple: #8338EC;
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 35px -10px rgba(0, 0, 0, 0.12);
+  --shadow: 0 8px 24px rgba(13,27,42,.08);
+  --shadow-lg: 0 16px 32px rgba(13,27,42,.12);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,7 +40,6 @@ body {
   color: var(--text);
   display: flex;
   transition: background 0.3s, color 0.3s;
-  overflow-x: hidden;
 }
 
 button { font-family: inherit; cursor: pointer; border: none; outline: none; }
@@ -50,7 +47,7 @@ input, textarea, select { font-family: inherit; }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
-  width: 270px;
+  width: 260px;
   min-height: 100vh;
   background: linear-gradient(180deg, #09111e 0%, #0d1b2a 100%);
   color: #cfd8e3;
@@ -60,7 +57,7 @@ input, textarea, select { font-family: inherit; }
   top: 0;
   flex-shrink: 0;
   z-index: 100;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.18);
 }
 .sidebar-header {
   padding: 24px 20px;
@@ -69,8 +66,8 @@ input, textarea, select { font-family: inherit; }
   gap: 12px;
   border-bottom: 1px solid rgba(255,255,255,.07);
 }
-.logo-icon { font-size: 1.9rem; }
-.logo-text { font-size: 1.25rem; font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -0.5px; }
+.logo-icon { font-size: 1.8rem; }
+.logo-text { font-size: 1.25rem; font-weight: 800; color: #fff; line-height: 1.2; }
 .logo-text em { color: var(--primary); font-style: normal; }
 .pro-pill {
   background: linear-gradient(135deg, #FFD700, #FFA500);
@@ -81,11 +78,9 @@ input, textarea, select { font-family: inherit; }
   border-radius: 20px;
   text-transform: uppercase;
   margin-left: 6px;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(255,165,0,0.4);
 }
 
-.nav { display: flex; flex-direction: column; padding: 14px 12px; flex: 1; gap: 4px; }
+.nav { display: flex; flex-direction: column; padding: 14px 10px; flex: 1; gap: 4px; }
 .nav-btn {
   display: flex;
   align-items: center;
@@ -97,7 +92,7 @@ input, textarea, select { font-family: inherit; }
   font-weight: 600;
   padding: 12px 16px;
   border-radius: 12px;
-  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all .2s;
   text-align: left;
 }
 .nav-btn:hover { background: rgba(255,201,60,.1); color: #fff; transform: translateX(3px); }
@@ -111,7 +106,6 @@ input, textarea, select { font-family: inherit; }
 .audio-bars.playing span { animation: eq 0.8s ease-in-out infinite alternate; }
 .audio-bars.playing span:nth-child(2) { animation-delay: 0.2s; }
 .audio-bars.playing span:nth-child(3) { animation-delay: 0.4s; }
-.audio-bars.playing span:nth-child(4) { animation-delay: 0.1s; }
 @keyframes eq { 0% { height: 4px; } 100% { height: 14px; } }
 
 .ambient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -125,16 +119,15 @@ input, textarea, select { font-family: inherit; }
   transition: all 0.2s;
 }
 .amb-btn.active { background: var(--primary); color: var(--navy-dark); font-weight: 800; }
-.vol-slider { width: 100%; margin-top: 10px; accent-color: var(--primary); }
 
-/* ===== MAIN WORKSPACE ===== */
-.main { flex: 1; padding: 36px 44px; max-width: 1100px; margin: 0 auto; width: 100%; }
+/* ===== MAIN CONTENT ===== */
+.main { flex: 1; padding: 36px 40px; max-width: 1040px; margin: 0 auto; width: 100%; }
 .page { display: none; }
-.page.active { display: block; animation: fadeSlide .35s cubic-bezier(0.16, 1, 0.3, 1); }
+.page.active { display: block; animation: fadeSlide .3s cubic-bezier(0.16, 1, 0.3, 1); }
 @keyframes fadeSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
-.page-title { font-size: 2rem; font-weight: 900; margin-bottom: 4px; letter-spacing: -0.5px; }
-.page-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 26px; }
+.page-title { font-size: 1.9rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+.page-sub { color: var(--text-muted); font-size: 0.98rem; margin-bottom: 24px; }
 
 /* BUTTONS */
 .btn {
@@ -149,10 +142,9 @@ input, textarea, select { font-family: inherit; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-.btn.big { font-size: 1.1rem; padding: 15px 30px; border-radius: 14px; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+.btn.big { font-size: 1.08rem; padding: 14px 28px; border-radius: 14px; }
 .btn-primary { background: var(--primary); color: var(--navy-dark); }
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-outline { background: transparent; color: var(--text); border: 2px solid var(--border); }
@@ -163,15 +155,15 @@ input, textarea, select { font-family: inherit; }
 
 /* HERO */
 .hero { padding: 10px 0 28px; }
-.hero h1 { font-size: 2.7rem; font-weight: 900; margin-bottom: 12px; line-height: 1.15; letter-spacing: -1px; }
-.hero .highlight { color: var(--primary-dark); background: linear-gradient(120deg, #FFE066 0%, #FFA900 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero p { color: var(--text-muted); font-size: 1.15rem; margin-bottom: 24px; max-width: 640px; line-height: 1.6; }
-.hero-badges { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.hero h1 { font-size: 2.6rem; font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
+.hero .highlight { color: var(--primary-dark); }
+.hero p { color: var(--text-muted); font-size: 1.15rem; margin-bottom: 24px; max-width: 600px; line-height: 1.6; }
+.hero-badges { display: flex; gap: 12px; margin-bottom: 26px; flex-wrap: wrap; }
 .hero-badge {
   background: var(--surface);
   border-radius: 30px;
-  padding: 8px 20px;
-  font-weight: 800;
+  padding: 8px 18px;
+  font-weight: 700;
   box-shadow: var(--shadow);
   font-size: .95rem;
   display: flex;
@@ -182,68 +174,69 @@ input, textarea, select { font-family: inherit; }
 .xp-badge { color: var(--navy-dark); border: 2px solid var(--primary); }
 .rank-badge { color: var(--purple); border: 2px solid #E9D8FD; }
 
-.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; }
 .mini-card {
   background: var(--surface);
   border-radius: var(--radius);
   padding: 24px 20px;
   box-shadow: var(--shadow);
   text-align: center;
-  transition: all .25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all .2s;
   cursor: pointer;
   border: 2px solid transparent;
 }
-.mini-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
-.mini-card span { font-size: 2.4rem; display: block; margin-bottom: 12px; }
-.mini-card h4 { font-size: 1.1rem; margin-bottom: 6px; font-weight: 800; }
-.mini-card p { color: var(--text-muted); font-size: .88rem; line-height: 1.4; }
+.mini-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+.mini-card span { font-size: 2.3rem; display: block; margin-bottom: 10px; }
+.mini-card h4 { font-size: 1.05rem; margin-bottom: 6px; font-weight: 800; }
+.mini-card p { color: var(--text-muted); font-size: .88rem; }
 
-/* UPLOAD PAGE */
-.upload-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; }
-@media(max-width:850px){ .upload-grid { grid-template-columns: 1fr; } }
-.dropzone {
-  border: 3px dashed #CBD5E1;
-  border-radius: var(--radius);
-  padding: 38px 24px;
-  text-align: center;
-  transition: all .25s;
-  cursor: pointer;
+/* CREATE / INSERT TERMS FORM */
+.create-card {
   background: var(--surface);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  max-width: 800px;
+  margin: 0 auto;
 }
-.dropzone.hover { border-color: var(--primary); background: #FFFDF5; transform: scale(1.01); }
-.dz-icon { font-size: 3.2rem; margin-bottom: 10px; }
-.file-name { color: var(--text); margin-top: 12px; font-weight: 800; font-size: 1rem; }
-
-.upload-progress-container {
-  display: none;
-  margin-top: 18px;
-  background: var(--surface-subtle);
-  padding: 16px;
-  border-radius: 12px;
-  text-align: left;
-}
-.up-status-text { font-size: 0.92rem; font-weight: 800; color: var(--text); display: flex; justify-content: space-between; }
-.up-progress-bar { background: #CBD5E1; border-radius: 10px; height: 12px; overflow: hidden; margin-top: 8px; }
-.up-progress-fill { background: linear-gradient(90deg, var(--primary), #FF8800); height: 100%; width: 0%; transition: width 0.15s ease; }
-.up-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; font-weight: 600; }
-
-.upload-form { background: var(--surface); padding: 26px; border-radius: var(--radius); box-shadow: var(--shadow); }
-.field-label { display: block; font-weight: 800; margin: 14px 0 6px; font-size: .92rem; }
-.field-label:first-child { margin-top: 0; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+@media(max-width:680px){ .form-row { grid-template-columns: 1fr; } }
+.field-label { display: block; font-weight: 800; margin-bottom: 8px; font-size: .92rem; }
 .req { color: var(--red); }
-.upload-form input, .upload-form textarea, .upload-form select {
+.input-text, .input-textarea {
   width: 100%;
   border: 2px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 0.96rem;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.98rem;
   transition: border .2s;
   background: var(--surface);
   color: var(--text);
 }
-.upload-form input:focus, .upload-form textarea:focus { outline: none; border-color: var(--primary); }
+.input-text:focus, .input-textarea:focus { outline: none; border-color: var(--primary); }
 
-.samples-bar { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.bullet-hint-box {
+  background: var(--surface-subtle);
+  border-left: 4px solid var(--primary);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+.counter-live-badge {
+  display: inline-block;
+  background: var(--green-light);
+  color: var(--green);
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 8px;
+}
+
+.samples-bar { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
 .sample-btn { background: var(--surface-subtle); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; font-size: 0.84rem; font-weight: 700; }
 .sample-btn:hover { background: var(--primary); border-color: var(--primary-dark); }
 
@@ -282,16 +275,6 @@ input, textarea, select { font-family: inherit; }
 .reviewer-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 .reviewer-item .term { font-weight: 800; font-size: 1.15rem; margin-bottom: 6px; color: var(--text); }
 .reviewer-item .def { color: var(--text-muted); font-size: .95rem; line-height: 1.5; }
-.reviewer-item .mnemonic-pill {
-  margin-top: 10px;
-  background: var(--blue-light);
-  color: var(--blue);
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  display: inline-block;
-}
 .reviewer-actions { position: absolute; top: 14px; right: 14px; display: flex; gap: 4px; }
 .icon-btn { background: none; border: none; font-size: 1.1rem; padding: 4px 6px; border-radius: 6px; color: var(--text-muted); }
 .icon-btn:hover { background: var(--surface-subtle); color: var(--text); }
@@ -311,7 +294,7 @@ input, textarea, select { font-family: inherit; }
 .leitner-pill.active { background: var(--navy-dark); color: #fff; border-color: var(--navy-dark); }
 
 .card-deck { display: flex; justify-content: center; margin: 10px 0 20px; flex-direction: column; align-items: center; }
-.flashcard { width: 100%; max-width: 480px; height: 290px; perspective: 1200px; cursor: pointer; }
+.flashcard { width: 100%; max-width: 480px; height: 280px; perspective: 1200px; cursor: pointer; }
 .fc-inner { position: relative; width: 100%; height: 100%; transition: transform .5s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
 .flashcard.flip .fc-inner { transform: rotateY(180deg); }
 .fc-face {
@@ -369,7 +352,7 @@ input, textarea, select { font-family: inherit; }
 .q-opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
 .q-feedback { margin-top: 18px; font-weight: 700; min-height: 26px; font-size: 1.05rem; }
 
-/* MATCH GAME PRO (COMBO STREAKS) */
+/* MATCH GAME */
 .match-stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; font-size: 1rem; flex-wrap: wrap; }
 .match-stats span { background: var(--surface); padding: 9px 20px; border-radius: 30px; box-shadow: var(--shadow); font-weight: 800; }
 .combo-badge { color: #8338EC; border: 2px solid #D8B4FE; }
@@ -432,17 +415,9 @@ input, textarea, select { font-family: inherit; }
 .stat-num { font-size: 2.3rem; font-weight: 900; color: var(--primary-dark); display: block; }
 .stat-card p { color: var(--text-muted); font-size: .88rem; margin-top: 4px; font-weight: 700; }
 
-.heatmap-block { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
-.heatmap-grid { display: grid; grid-template-columns: repeat(15, 1fr); gap: 6px; margin-top: 14px; }
-.heat-cell { height: 20px; border-radius: 4px; background: var(--surface-subtle); }
-.heat-cell.lvl-1 { background: #FEF08A; }
-.heat-cell.lvl-2 { background: #FDE047; }
-.heat-cell.lvl-3 { background: #EAB308; }
-.heat-cell.lvl-4 { background: #CA8A04; }
-
 .progress-block { background: var(--surface); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
 .progress-bar { background: var(--surface-subtle); border-radius: 20px; height: 16px; overflow: hidden; margin-top: 10px; }
-.progress-fill { background: linear-gradient(90deg, var(--primary), #FF8800); height: 100%; border-radius: 20px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+.progress-fill { background: linear-gradient(90deg, var(--primary), #FF8800); height: 100%; border-radius: 20px; transition: width .5s; }
 .achievements { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
 .achievement-badge {
   background: var(--surface-subtle);
@@ -509,7 +484,7 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
 </head>
 <body>
 
-<!-- ===== SIDEBAR ===== -->
+<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-header">
     <span class="logo-icon">🎓</span>
@@ -518,124 +493,118 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
         <span class="logo-text">StudyBuddy</span>
         <span class="pro-pill">PRO ✨</span>
       </div>
-      <span style="font-size:0.72rem;color:#7f93a8">All Features VIP Unlocked</span>
+      <span style="font-size:0.72rem;color:#7f93a8">Smart Pinoy Reviewer</span>
     </div>
   </div>
 
   <nav class="nav">
     <button class="nav-btn active" data-page="home"><span>🏠</span> Home Dashboard</button>
-    <button class="nav-btn" data-page="upload"><span>📤</span> AI Textbook Extractor</button>
-    <button class="nav-btn" data-page="reviewer"><span>📖</span> Reviewer & Cheatsheet</button>
+    <button class="nav-btn" data-page="upload"><span>📝</span> Create Reviewer</button>
+    <button class="nav-btn" data-page="reviewer"><span>📖</span> Reviewer Guide</button>
     <button class="nav-btn" data-page="flashcards"><span>🃏</span> Leitner Flashcards</button>
-    <button class="nav-btn" data-page="quiz"><span>📝</span> AI Mock Exam</button>
-    <button class="nav-btn" data-page="match"><span>🧩</span> Speed Match PRO</button>
+    <button class="nav-btn" data-page="quiz"><span>📝</span> Practice Quiz</button>
+    <button class="nav-btn" data-page="match"><span>🧩</span> Speed Match</button>
     <button class="nav-btn" data-page="pomodoro"><span>⏱️</span> Focus Pomodoro</button>
-    <button class="nav-btn" data-page="calendar"><span>📅</span> Spaced Calendar</button>
-    <button class="nav-btn" data-page="tracker"><span>📊</span> Analytics & Heatmap</button>
+    <button class="nav-btn" data-page="calendar"><span>📅</span> Study Calendar</button>
+    <button class="nav-btn" data-page="tracker"><span>📊</span> Stats & Badges</button>
   </nav>
 
   <div class="sidebar-footer">
     <div class="ambient-box">
       <div class="ambient-header">
         <div style="display:flex;align-items:center;gap:6px">
-          <div class="audio-bars" id="audioBars"><span></span><span></span><span></span><span></span></div>
-          <span>Audio Studio</span>
+          <div class="audio-bars" id="audioBars"><span></span><span></span><span></span></div>
+          <span>Study Synth</span>
         </div>
-        <button id="btnDark" style="background:none;color:#fff;font-size:1.1rem" title="Toggle Dark Theme">🌙</button>
+        <button id="btnDark" style="background:none;color:#fff;font-size:1.1rem" title="Dark Theme">🌙</button>
       </div>
       <div class="ambient-grid">
         <button class="amb-btn" id="ambLofi">🎵 Lo-Fi</button>
-        <button class="amb-btn" id="ambAlpha">🧠 40Hz Wave</button>
-        <button class="amb-btn" id="ambRain">🌧️ Manila Rain</button>
-        <button class="amb-btn" id="ambCafe">☕ Cozy Cafe</button>
+        <button class="amb-btn" id="ambRain">🌧️ Rain</button>
       </div>
-      <input type="range" class="vol-slider" id="ambVolume" min="0" max="1" step="0.05" value="0.5" title="Volume">
     </div>
     <p style="font-size:0.74rem;color:#64748b;text-align:center">StudyBuddy PRO Suite 🇵🇭</p>
   </div>
 </aside>
 
-<!-- ===== MAIN WORKSPACE ===== -->
+<!-- MAIN WORKSPACE -->
 <main class="main">
 
   <!-- HOME PAGE -->
   <section class="page active" id="page-home">
     <div class="hero">
-      <h1>Mag-aral nang may <span class="highlight">Superpowers</span>! ⚡</h1>
-      <p>Your all-in-one AI study partner. Upload massive 200+ page textbook PDFs, get auto-generated Leitner flashcards, smart memory mnemonics, and timed mock exams.</p>
+      <h1>Mag-review nang may <span class="highlight">Superpowers</span>! ⚡</h1>
+      <p>Your all-in-one smart reviewer generator. Type or paste your lesson terms in bullet form, get instant Anki-grade flashcards, mock practice quizzes, and spaced review schedules.</p>
       <div class="hero-badges">
         <span id="homeStreak" class="hero-badge streak-badge">🔥 0-day streak</span>
         <span id="homeXp" class="hero-badge xp-badge">⚡ 0 XP</span>
         <span id="homeRank" class="hero-badge rank-badge">🌟 Cum Laude Scholar</span>
       </div>
-      <button class="btn btn-primary big" data-page="upload">📤 Extract Lesson from PDF / Notes →</button>
+      <button class="btn btn-primary big" data-page="upload">📝 Create New Reviewer & Cards →</button>
     </div>
     <div class="hero-cards">
-      <div class="mini-card" data-page="upload"><span>📚</span><h4>200+ Page AI Reader</h4><p>Extracts exact terms without freezing</p></div>
-      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Anki Spaced Repetition</h4><p>Leitner Box 1–5 adaptive cards</p></div>
-      <div class="mini-card" data-page="quiz"><span>📝</span><h4>Adaptive Mock Exam</h4><p>Pinpoints weak memory areas</p></div>
-      <div class="mini-card" data-page="match"><span>⚡</span><h4>Speed Match Combo</h4><p>Race with 2x, 3x XP score multipliers</p></div>
+      <div class="mini-card" data-page="upload"><span>📝</span><h4>Bullet Creator</h4><p>Paste bullet notes to generate cards</p></div>
+      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Leitner Flashcards</h4><p>Spaced repetition boxes 1 to 3</p></div>
+      <div class="mini-card" data-page="quiz"><span>📝</span><h4>Smart Quiz</h4><p>Retries your weak terms</p></div>
+      <div class="mini-card" data-page="match"><span>⚡</span><h4>Speed Match</h4><p>Race the clock to connect terms</p></div>
     </div>
   </section>
 
-  <!-- UPLOAD & AI EXTRACTOR PAGE -->
+  <!-- CREATE REVIEWER (BULLET FORM) -->
   <section class="page" id="page-upload">
-    <h2 class="page-title">📤 200+ Page AI Lesson Extractor</h2>
-    <p class="page-sub">Client-side streaming chunk parser handles massive PDF slides, Word syllabi, or raw notes.</p>
-    
-    <div class="upload-grid">
-      <div>
-        <div class="dropzone" id="dropzone">
-          <div class="dz-icon">📖</div>
-          <p><strong>Drag & drop PDF, Word, or Notes file here</strong><br><small>Streaming batch reader prevents tab freezing on 200+ pages</small></p>
-          <label class="btn btn-outline" for="fileInput" style="margin-top:14px">Browse Local File</label>
-          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" hidden>
-          <p class="file-name" id="fileName">No file chosen yet</p>
-        </div>
+    <h2 class="page-title">📝 Create Reviewer & Insert Terms</h2>
+    <p class="page-sub">Enter your course details and paste your terms in bullet form.</p>
 
-        <div class="upload-progress-container" id="uploadProgressBox">
-          <div class="up-status-text">
-            <span id="upStatusTitle">Reading Document...</span>
-            <span id="upStatusPercent">0%</span>
-          </div>
-          <div class="up-progress-bar">
-            <div class="up-progress-fill" id="upProgressFill"></div>
-          </div>
-          <div class="up-details" id="upDetails">Processing chunked pages...</div>
+    <div class="create-card">
+      <div class="form-row">
+        <div>
+          <label class="field-label">Subject / Course Name <span class="req">*</span></label>
+          <input type="text" id="subjectInput" class="input-text" placeholder="e.g. Biology 101, PH History, Calculus">
         </div>
-
-        <div class="samples-bar">
-          <span style="font-size:0.85rem;font-weight:800;color:var(--text-muted)">1-Click Pre-loaded Lessons:</span>
-          <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
-          <button class="sample-btn" data-sample="hist">🇵🇭 PH History & Rizal</button>
-          <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
+        <div>
+          <label class="field-label">Target Exam Date <span class="req">*</span></label>
+          <input type="date" id="examDate" class="input-text">
         </div>
       </div>
 
-      <div class="upload-form">
-        <label class="field-label">Subject / Course Name <span class="req">*</span></label>
-        <input type="text" id="subjectInput" placeholder="e.g. Organic Chemistry, PH Constitution">
-        
-        <label class="field-label">Target Exam / Goal Date <span class="req">*</span></label>
-        <input type="date" id="examDate">
-        
-        <label class="field-label" style="margin-top:14px">Extracted Text Content (or Paste Notes):</label>
-        <textarea id="pasteText" rows="6" placeholder="Extracted textbook content will appear here..."></textarea>
-        
-        <button class="btn btn-primary full" id="btnGenerate" style="margin-top:18px">✨ Generate PRO Reviewer & Cards</button>
+      <div class="bullet-hint-box">
+        <strong>💡 Easy Bullet Form Formats Supported:</strong><br>
+        • <code>• Term: Definition</code><br>
+        • <code>- Term - Definition</code><br>
+        • <code>1. Term :: Definition</code><br>
+        • <code>Term &rarr; Definition</code>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <label class="field-label" style="margin:0">
+            Terms & Definitions (Bullet Form) <span class="req">*</span>
+            <span class="counter-live-badge" id="liveTermCount">0 terms detected</span>
+          </label>
+        </div>
+        <textarea id="pasteText" class="input-textarea" rows="8" placeholder="• Photosynthesis: The process where plants convert sunlight into chemical energy&#10;• Mitochondria: The powerhouse of the cell producing ATP&#10;• Cell Membrane: Semi-permeable lipid bilayer controlling entry and exit"></textarea>
+      </div>
+
+      <button class="btn btn-primary big full" id="btnGenerate" style="margin-top:20px">✨ Generate Reviewer & Flashcards</button>
+
+      <div class="samples-bar">
+        <span style="font-size:0.85rem;font-weight:800;color:var(--text-muted)">Or load a 1-Click sample:</span>
+        <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
+        <button class="sample-btn" data-sample="hist">🇵🇭 PH History</button>
+        <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
       </div>
     </div>
 
-    <div class="result-box" id="resultBox" style="display:none">
-      <h3 style="color:var(--green);margin-bottom:8px">✅ AI Reviewer & Flashcards Ready!</h3>
+    <div class="result-box" id="resultBox" style="display:none;max-width:800px;margin:24px auto 0">
+      <h3 style="color:var(--green);margin-bottom:8px">✅ Reviewer & Flashcards Ready!</h3>
       <p>Subject: <strong id="detectSubject">-</strong></p>
-      <p>Extracted: <strong id="termCount">0</strong> concepts & definitions.</p>
-      <p>🗓️ Leitner spaced review sessions scheduled until exam on <strong id="examDateShow">-</strong>.</p>
-      <button class="btn btn-primary" data-page="reviewer" style="margin-top:10px">📖 Open Reviewer Guide →</button>
+      <p>Added: <strong id="termCount">0</strong> flashcard concepts & definitions.</p>
+      <p>🗓️ Study sessions scheduled until exam on <strong id="examDateShow">-</strong>.</p>
+      <button class="btn btn-primary" data-page="reviewer" style="margin-top:12px">📖 Open Reviewer Guide →</button>
     </div>
   </section>
 
-  <!-- REVIEWER GUIDE & CHEATSHEET -->
+  <!-- REVIEWER GUIDE -->
   <section class="page" id="page-reviewer">
     <div class="page-head-flex">
       <div>
@@ -649,19 +618,19 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     </div>
 
     <div class="filter-bar">
-      <input type="text" id="reviewerSearch" class="filter-input" placeholder="🔍 Search extracted terms, definitions, or mnemonics...">
-      <button class="btn btn-primary btn-sm" id="btnAddTermModal">+ Add Concept</button>
+      <input type="text" id="reviewerSearch" class="filter-input" placeholder="🔍 Search terms or definitions...">
+      <button class="btn btn-primary btn-sm" id="btnAddTermModal">+ Add Term</button>
     </div>
 
     <div id="reviewerContent" class="reviewer-content">
-      <p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded. Upload a lesson or select a sample!</p>
+      <p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded yet. Create a reviewer first!</p>
     </div>
   </section>
 
   <!-- LEITNER FLASHCARDS -->
   <section class="page" id="page-flashcards">
-    <h2 class="page-title">🃏 Leitner Spaced Flashcards</h2>
-    <p class="page-sub">Rate your confidence after flipping to auto-sort cards into Anki Leitner boxes.</p>
+    <h2 class="page-title">🃏 Spaced Leitner Flashcards</h2>
+    <p class="page-sub">Rate your confidence after flipping to sort cards into Leitner review boxes.</p>
 
     <div class="leitner-nav" id="leitnerNav">
       <button class="leitner-pill active" data-box="all">All Cards (<span id="boxCountAll">0</span>)</button>
@@ -682,8 +651,7 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
           <div class="fc-face fc-back">
             <span class="fc-tag">Definition</span>
             <span class="fc-box-indicator" id="fcBackBoxNum">Box 1</span>
-            <div class="fc-text" id="fcDef">Upload notes to generate flashcards</div>
-            <div id="fcMnemonic" style="margin-top:12px;font-size:0.85rem;color:var(--blue);font-weight:700"></div>
+            <div class="fc-text" id="fcDef">Create a reviewer to start studying</div>
           </div>
         </div>
       </div>
@@ -704,13 +672,13 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     </div>
   </section>
 
-  <!-- PRACTICE MOCK EXAM -->
+  <!-- PRACTICE QUIZ -->
   <section class="page" id="page-quiz">
-    <h2 class="page-title">📝 Adaptive Practice Mock Exam</h2>
+    <h2 class="page-title">📝 Practice Quiz</h2>
     <div id="quizArea">
-      <p class="page-sub">Timed exam simulation. Wrong answers are tagged into weak areas for focused re-testing.</p>
-      <button class="btn btn-primary big" id="btnStartQuiz">▶️ Start Full Mock Exam</button>
-      <button class="btn btn-outline big" id="btnRetryWeak" style="margin-left:10px">🎯 Retry Weak Concepts</button>
+      <p class="page-sub">Adaptive multiple-choice test. Incorrect answers are tagged as weak areas for smart retrying.</p>
+      <button class="btn btn-primary big" id="btnStartQuiz">▶️ Start Quiz</button>
+      <button class="btn btn-outline big" id="btnRetryWeak" style="margin-left:10px">🎯 Retry Weak Areas</button>
     </div>
 
     <div class="quiz-question" id="quizQuestion" style="display:none">
@@ -727,11 +695,11 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     <div id="quizResult" style="display:none;text-align:center;padding:30px 0"></div>
   </section>
 
-  <!-- SPEED MATCH PRO -->
+  <!-- SPEED MATCH -->
   <section class="page" id="page-match">
-    <h2 class="page-title">🧩 Speed Match PRO</h2>
+    <h2 class="page-title">🧩 Speed Match Game</h2>
     <p class="page-sub">Connect terms with their definitions as fast as possible to build XP streak combos!</p>
-    <div id="matchGame"><button class="btn btn-primary big" id="btnStartMatch">▶️ Start Speed Match</button></div>
+    <div id="matchGame"><button class="btn btn-primary big" id="btnStartMatch">▶️ Start Match Game</button></div>
     <div id="matchBoard" style="display:none">
       <div class="match-stats">
         <span>Matches: <strong id="matchScore" style="color:var(--green)">0</strong></span>
@@ -751,8 +719,8 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
 
   <!-- POMODORO -->
   <section class="page" id="page-pomodoro">
-    <h2 class="page-title">⏱️ Focus Sprint Pomodoro</h2>
-    <p class="page-sub">Scientific interval study timer to maximize focus and avoid burnout.</p>
+    <h2 class="page-title">⏱️ Focus Pomodoro</h2>
+    <p class="page-sub">Study in blocks of 25 minutes with short refreshing breaks.</p>
     <div class="pomodoro-box" id="pomoBox">
       <div class="pomo-mode-tabs">
         <button class="pomo-tab active" data-mode="focus">📚 Focus (25m)</button>
@@ -782,23 +750,17 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
     <div class="cal-grid" id="calGrid"></div>
   </section>
 
-  <!-- TRACKER & HEATMAP -->
+  <!-- STATS -->
   <section class="page" id="page-tracker">
     <h2 class="page-title">📊 Analytics & Milestones</h2>
     
     <div class="stats-grid">
       <div class="stat-card"><span class="stat-num" id="statTerms">0</span><p>Terms Memorized</p></div>
-      <div class="stat-card"><span class="stat-num" id="statQuiz">0</span><p>Exams Passed</p></div>
+      <div class="stat-card"><span class="stat-num" id="statQuiz">0</span><p>Quizzes Passed</p></div>
       <div class="stat-card"><span class="stat-num" id="statWeak">0</span><p>Weak Spots</p></div>
       <div class="stat-card"><span class="stat-num" id="statDays">0</span><p>Days to Exam</p></div>
       <div class="stat-card"><span class="stat-num" id="statStreak">0</span><p>🔥 Day Streak</p></div>
       <div class="stat-card"><span class="stat-num" id="statXp">0</span><p>⚡ Total XP</p></div>
-    </div>
-
-    <!-- 30-Day Activity Heatmap -->
-    <div class="heatmap-block">
-      <h4 style="font-weight:800">🔥 30-Day Study Consistency Heatmap</h4>
-      <div class="heatmap-grid" id="heatmapGrid"></div>
     </div>
 
     <div class="progress-block">
@@ -807,11 +769,11 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
         <span id="rankTitle" style="font-weight:800;color:var(--primary-dark)">Scholar</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" id="masteryBar" style="width:0%"></div></div>
-      <p id="masteryText" style="margin-top:10px;color:var(--text-muted);font-size:0.92rem">Complete flashcard repetitions to build mastery.</p>
+      <p id="masteryText" style="margin-top:10px;color:var(--text-muted);font-size:0.92rem">Complete flashcards and take quizzes to build subject mastery.</p>
     </div>
 
     <div class="progress-block">
-      <h4 style="font-weight:800">🏆 VIP Badges & Achievements</h4>
+      <h4 style="font-weight:800">🏆 Badges & Achievements</h4>
       <div id="achievements" class="achievements"></div>
     </div>
   </section>
@@ -824,10 +786,10 @@ body.dark-mode .achievement-badge.unlocked { background: #26384D; }
 "use strict";
 
 /* ============================================================
-   1. DATA STORAGE & SUITE STATE
+   1. STORAGE & STATE
    ============================================================ */
 const Store = {
-  KEY: "studybuddy_pro_v5",
+  KEY: "studybuddy_bullet_v6",
   defaultData: () => ({
     terms: [],
     subject: "",
@@ -842,8 +804,7 @@ const Store = {
     pomodoroCount: 0,
     matchCount: 0,
     achievedAchs: [],
-    bestQuizScore: 0,
-    studyDays: {}
+    bestQuizScore: 0
   }),
   get() {
     try {
@@ -896,7 +857,7 @@ function esc(s) {
 }
 
 /* ============================================================
-   2. PROCEDURAL MULTI-CHANNEL AUDIO SUITE (Web Audio API)
+   2. PROCEDURAL SOUND FX & AMBIENT (Web Audio API)
    ============================================================ */
 let audioCtx = null;
 function getAudioCtx() {
@@ -932,7 +893,6 @@ const failSfx = () => {
   setTimeout(() => playBeep(220, 0.2, "triangle"), 110);
 };
 
-// Ambient Studio Generators
 let currentAmbient = null;
 let ambientNodes = [];
 
@@ -949,10 +909,6 @@ function playAmbient(type) {
   stopAmbient();
   currentAmbient = type;
   const ctx = getAudioCtx();
-  const masterGain = ctx.createGain();
-  masterGain.gain.value = parseFloat($("ambVolume").value);
-  masterGain.connect(ctx.destination);
-  ambientNodes.push(masterGain);
 
   if (type === "lofi") {
     const chords = [
@@ -971,11 +927,11 @@ function playAmbient(type) {
         const g = ctx.createGain();
         osc.type = "sine";
         osc.frequency.value = f;
-        g.gain.setValueAtTime(0.015, ctx.currentTime);
-        g.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 1);
+        g.gain.setValueAtTime(0.02, ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 1);
         g.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 3.8);
         osc.connect(g);
-        g.connect(masterGain);
+        g.connect(ctx.destination);
         osc.start();
         osc.stop(ctx.currentTime + 4);
       });
@@ -983,22 +939,8 @@ function playAmbient(type) {
     playCh();
     const interval = setInterval(playCh, 4000);
     ambientNodes.push({ stop: () => clearInterval(interval) });
-  } else if (type === "alpha") {
-    // 40Hz Binaural Beat over 200Hz base carrier
-    const leftOsc = ctx.createOscillator();
-    const rightOsc = ctx.createOscillator();
-    leftOsc.frequency.value = 200;
-    rightOsc.frequency.value = 240;
-    const g = ctx.createGain();
-    g.gain.value = 0.04;
-    leftOsc.connect(g);
-    rightOsc.connect(g);
-    g.connect(masterGain);
-    leftOsc.start();
-    rightOsc.start();
-    ambientNodes.push(leftOsc, rightOsc);
   } else {
-    // Rain & Cafe Noise Synthesizer
+    // Rain
     const bufferSize = ctx.sampleRate * 2;
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
@@ -1008,28 +950,26 @@ function playAmbient(type) {
     whiteNoise.loop = true;
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
-    filter.frequency.value = (type === "rain") ? 800 : 1200;
+    filter.frequency.value = 800;
     const g = ctx.createGain();
     g.gain.value = 0.05;
     whiteNoise.connect(filter);
     filter.connect(g);
-    g.connect(masterGain);
+    g.connect(ctx.destination);
     whiteNoise.start();
     ambientNodes.push(whiteNoise);
   }
 
   $(`amb${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add("active");
   $("audioBars").classList.add("playing");
-  showToast(`🎧 Audio Studio: ${type.toUpperCase()} active`);
+  showToast(`🎧 Audio Studio: ${type.toUpperCase()} playing`);
 }
 
 $("ambLofi").addEventListener("click", () => playAmbient("lofi"));
-$("ambAlpha").addEventListener("click", () => playAmbient("alpha"));
 $("ambRain").addEventListener("click", () => playAmbient("rain"));
-$("ambCafe").addEventListener("click", () => playAmbient("cafe"));
 
 /* ============================================================
-   3. THEME, XP, AND RANK PROGRESSION
+   3. THEME, XP, AND STREAKS
    ============================================================ */
 $("btnDark").addEventListener("click", () => {
   uiClick();
@@ -1060,19 +1000,9 @@ function getRank(xp) {
   return rank;
 }
 
-function recordTodayActivity() {
-  const today = formatDate(new Date());
-  Store.update(s => {
-    if (!s.studyDays) s.studyDays = {};
-    s.studyDays[today] = (s.studyDays[today] || 0) + 1;
-    return s;
-  });
-}
-
 function addXP(amount) {
   const prevRank = getRank(Store.get().xp);
   Store.update(s => { s.xp = (s.xp || 0) + amount; return s; });
-  recordTodayActivity();
   const newRank = getRank(Store.get().xp);
   if (prevRank !== newRank) {
     showToast(`🎉 Level Up! You achieved ${newRank}!`);
@@ -1134,36 +1064,36 @@ document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
 });
 
 /* ============================================================
-   5. SMART 200+ PAGE NLP ENGINE & MNEMONICS GENERATOR
+   5. BULLET-FORM PARSER & SAMPLES
    ============================================================ */
 const SAMPLES = {
   bio: {
     subject: "General Biology 101",
-    text: `Photosynthesis :: Process by which plants use sunlight to synthesize nutrients from CO2 and water. (Mnemonic: Photo = Light, Synthesis = Making food)
-Mitochondria :: The powerhouse of the cell responsible for cellular ATP energy production.
-Cell Membrane :: Phospholipid bilayer that regulates what enters and exits the cell.
-Ribosome :: Cellular organelle that synthesizes proteins by translating mRNA instructions.
-Chloroplast :: Organelle found in plant cells where chlorophyll captures light energy.
-DNA :: Deoxyribonucleic acid carrying genetic hereditary instructions in all living organisms.
-Enzyme :: Biological protein catalyst that accelerates biochemical reactions in organisms.`
+    text: `• Photosynthesis: The biochemical process by which plants use sunlight to synthesize nutrients from CO2 and water.
+• Mitochondria: The powerhouse of the cell responsible for cellular ATP energy production.
+• Cell Membrane: Phospholipid bilayer that regulates substances entering and exiting the cell.
+• Ribosome: Cellular structure that synthesizes proteins by translating mRNA genetic codes.
+• Chloroplast: Organelle found in plant cells where photosynthesis occurs.
+• DNA: Deoxyribonucleic acid carrying hereditary instructions for development and function.
+• Enzyme: Biological protein catalyst that accelerates chemical reactions in living organisms.`
   },
   hist: {
     subject: "Philippine History & Rizal",
-    text: `Noli Me Tangere :: Novel written by Jose Rizal exposing the abuses of Spanish friars.
-Kilusang Propaganda :: Peaceful reform movement in Spain advocating for Philippine representation.
-Katipunan (KKK) :: Secret revolutionary society founded by Andres Bonifacio in 1892.
-Cry of Pugad Lawin :: Historic event in August 1896 where Katipuneros tore their cedulas in defiance.
-La Liga Filipina :: Civic association founded by Jose Rizal in 1892 before his exile to Dapitan.
-Treaty of Paris :: 1898 treaty where Spain ceded the Philippines to the United States for $20 million.`
+    text: `• Noli Me Tangere: Seminal novel written by Jose Rizal exposing the abuses of Spanish friars.
+• Kilusang Propaganda: Peaceful reform movement in Spain advocating for Philippine equality and representation.
+• Katipunan (KKK): Secret revolutionary society founded by Andres Bonifacio in 1892 to gain independence.
+• Cry of Pugad Lawin: Historic event in August 1896 where Katipuneros tore their cedulas in defiance.
+• La Liga Filipina: Civic association founded by Jose Rizal in 1892 before his exile to Dapitan.
+• Treaty of Paris: 1898 agreement where Spain ceded the Philippines to the United States for $20 million.`
   },
   cs: {
     subject: "Computer Science Fundamentals",
-    text: `Algorithm :: A finite, step-by-step set of instructions to solve a specific computational problem.
-Data Structure :: A specialized format for organizing, storing, and accessing data efficiently.
-Recursion :: A programming technique where a function calls itself to solve smaller subproblems.
-Binary Search :: An O(log n) search algorithm that repeatedly divides a sorted array in half.
-API :: Application Programming Interface enabling software applications to communicate.
-Stack :: A Last-In First-Out (LIFO) linear data structure.`
+    text: `• Algorithm: A finite, step-by-step set of instructions to solve a specific computational problem.
+• Data Structure: A specialized format for organizing, storing, and accessing data efficiently.
+• Recursion: A programming technique where a function calls itself to solve smaller instances of a problem.
+• Binary Search: An efficient O(log n) search algorithm that repeatedly divides a sorted array in half.
+• API: Application Programming Interface allowing different software applications to communicate.
+• Stack: A Last-In First-Out (LIFO) linear data structure.`
   }
 };
 
@@ -1176,162 +1106,75 @@ document.querySelectorAll(".sample-btn").forEach(btn => {
       const d = new Date();
       d.setDate(d.getDate() + 14);
       $("examDate").value = formatDate(d);
-      showToast(`✨ Loaded ${SAMPLES[key].subject} sample! Click Generate.`);
+      updateLiveCounter();
+      showToast(`✨ Loaded ${SAMPLES[key].subject} sample!`);
     }
   });
 });
 
-function smartExtractTerms(text) {
+// ROBUST BULLET PARSER
+function parseBulletTerms(text) {
+  const lines = (text || "").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
   const terms = [];
   const seen = new Set();
 
-  function addTerm(t, d) {
-    const cleanT = t.replace(/^[\s•\-\*\d\.\)]+/, "").replace(/[:\-\—\–]$/, "").trim();
-    let cleanD = d.replace(/^[:\-\—\–\s]+/, "").trim();
-    let mnemonic = "";
-    
-    // Auto-detect or generate mnemonics
-    const mMatch = cleanD.match(/\((?:Mnemonic|Memory Hook):\s*([^)]+)\)/i);
-    if (mMatch) {
-      mnemonic = mMatch[1];
-      cleanD = cleanD.replace(mMatch[0], "").trim();
-    } else if (cleanT.length <= 6 && cleanT === cleanT.toUpperCase()) {
-      mnemonic = `Acronym for: ${cleanT}`;
-    }
-
-    if (cleanT.length >= 2 && cleanT.length <= 80 && cleanD.length >= 8 && !seen.has(cleanT.toLowerCase())) {
-      seen.add(cleanT.toLowerCase());
-      terms.push({ term: cleanT, def: cleanD, mnemonic, box: 1, id: terms.length });
-    }
-  }
-
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
   for (const line of lines) {
-    for (const sep of ["::", " — ", " – ", " - ", " : ", "=>", "→", "\t"]) {
-      const idx = line.indexOf(sep);
+    // Remove leading bullet symbols: •, -, *, 1., etc.
+    const cleanLine = line.replace(/^[\s•\-\*\d\.\)]+/, "").trim();
+    let parts = null;
+
+    for (const sep of ["::", " - ", " — ", " – ", " : ", ":", "=>", "→", "\t"]) {
+      const idx = cleanLine.indexOf(sep);
       if (idx !== -1) {
-        const t = line.slice(0, idx).trim();
-        const d = line.slice(idx + sep.length).trim();
-        if (t.length > 1 && d.length > 5) {
-          addTerm(t, d);
-          break;
-        }
+        parts = [cleanLine.slice(0, idx).trim(), cleanLine.slice(idx + sep.length).trim()];
+        break;
       }
     }
-  }
 
-  // NLP Heuristics
-  const sentences = text.replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split("|");
-  const defPatterns = [
-    /^(?:An?|The)?\s*([A-Z][a-zA-Z0-9\s\-]{2,50})\s+(?:is defined as|refers to|is known as|pertains to)\s+(.+)$/i,
-    /^(?:An?|The)?\s*([A-Z][a-zA-Z0-9\s\-]{2,50})\s+is\s+(?:a|an|the)\s+(?:process|method|system|concept|structure|device|technique|organelle|law)\s+(?:that|which|used to)\s+(.+)$/i
-  ];
-  for (const sent of sentences) {
-    for (const pat of defPatterns) {
-      const m = sent.trim().match(pat);
-      if (m && m[1] && m[2]) addTerm(m[1], m[2]);
+    if (parts && parts[0] && parts[1]) {
+      const t = parts[0];
+      const d = parts[1];
+      if (t.length >= 1 && d.length >= 2 && !seen.has(t.toLowerCase())) {
+        seen.add(t.toLowerCase());
+        terms.push({ term: t, def: d, box: 1, id: terms.length });
+      }
     }
   }
 
   return terms;
 }
 
-/* Streaming 200+ Page Batch Reader */
-$("fileInput").addEventListener("change", e => handleFile(e.target.files[0]));
-const dz = $("dropzone");
-["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("hover"); }));
-["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("hover"); }));
-dz.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
-
-async function handleFile(file) {
-  if (!file) return;
-  $("fileName").textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
-  const ext = file.name.split(".").pop().toLowerCase();
-
-  $("uploadProgressBox").style.display = "block";
-  $("upProgressFill").style.width = "5%";
-  $("upStatusTitle").textContent = "Parsing Document...";
-  $("upStatusPercent").textContent = "5%";
-
-  if (ext === "txt") {
-    const r = new FileReader();
-    r.onload = ev => finalizeFileText(ev.target.result);
-    r.readAsText(file);
-    return;
-  }
-
-  if (ext === "docx") {
-    const r = new FileReader();
-    r.onload = ev => {
-      mammoth.extractRawText({ arrayBuffer: ev.target.result })
-        .then(result => finalizeFileText(result.value))
-        .catch(() => showToast("⚠️ Error reading DOCX."));
-    };
-    r.readAsArrayBuffer(file);
-    return;
-  }
-
-  if (ext === "pdf") {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-    const r = new FileReader();
-    r.onload = async ev => {
-      try {
-        const loadingTask = pdfjsLib.getDocument({ data: ev.target.result });
-        const pdf = await loadingTask.promise;
-        const totalPages = pdf.numPages;
-        let fullText = "";
-
-        for (let i = 1; i <= totalPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          fullText += textContent.items.map(it => it.str).join(" ") + "\n";
-          page.cleanup();
-
-          if (i % 4 === 0 || i === totalPages) {
-            const pct = Math.round((i / totalPages) * 100);
-            $("upProgressFill").style.width = pct + "%";
-            $("upStatusPercent").textContent = pct + "%";
-            $("upStatusTitle").textContent = `Streaming Page ${i} of ${totalPages}...`;
-            $("upDetails").textContent = `Extracted ${(fullText.length / 1000).toFixed(1)}k text in background.`;
-            await new Promise(r => setTimeout(r, 0));
-          }
-        }
-        finalizeFileText(fullText);
-      } catch (err) {
-        showToast("⚠️ Could not parse PDF.");
-        $("uploadProgressBox").style.display = "none";
-      }
-    };
-    r.readAsArrayBuffer(file);
-  }
+function updateLiveCounter() {
+  const t = parseBulletTerms($("pasteText").value);
+  $("liveTermCount").textContent = `${t.length} term${t.length === 1 ? "" : "s"} detected`;
 }
 
-function finalizeFileText(raw) {
-  $("pasteText").value = raw;
-  $("uploadProgressBox").style.display = "none";
-  if (!$("subjectInput").value.trim()) $("subjectInput").value = "Generated Subject";
-  showToast(`✅ Loaded ${(raw.length / 1000).toFixed(1)}k text characters!`);
-}
+$("pasteText").addEventListener("input", updateLiveCounter);
 
+// GENERATE REVIEWER
 $("btnGenerate").addEventListener("click", () => {
   uiClick();
   const d = Store.get();
-  const subject = $("subjectInput").value.trim() || "My Reviewer";
+  const subject = $("subjectInput").value.trim();
   const exam = $("examDate").value;
   const rawText = $("pasteText").value.trim();
 
-  if (!exam) { showToast("⚠️ Please pick your target exam date."); return; }
-  if (!rawText) { showToast("⚠️ No text content provided."); return; }
+  if (!subject) { showToast("⚠️ Please enter a Subject / Course Name."); return; }
+  if (!exam) { showToast("⚠️ Please pick your Target Exam Date."); return; }
+  if (!rawText) { showToast("⚠️ Please paste your terms in bullet form."); return; }
 
-  const terms = smartExtractTerms(rawText);
-  if (terms.length === 0) { showToast("⚠️ No terms found. Format as: Term :: Definition"); return; }
+  const terms = parseBulletTerms(rawText);
+  if (terms.length === 0) {
+    showToast("⚠️ Could not detect terms. Use format: • Term: Definition");
+    return;
+  }
 
   d.subject = subject;
   d.examDate = exam;
   d.terms = terms;
   d.quizHistory = [];
   
-  // Spaced Calendar Intervals
+  // Build Spaced Calendar Schedule
   const examDt = new Date(exam + "T23:59:59");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -1351,7 +1194,7 @@ $("btnGenerate").addEventListener("click", () => {
   $("detectSubject").textContent = d.subject;
   $("termCount").textContent = d.terms.length;
   $("examDateShow").textContent = new Date(d.examDate).toDateString();
-  addXP(35);
+  addXP(30);
   renderReviewer();
   renderTracker();
 });
@@ -1366,11 +1209,11 @@ function renderReviewer() {
   const q = ($("reviewerSearch") ? $("reviewerSearch").value.toLowerCase() : "");
 
   if (!d.terms || d.terms.length === 0) {
-    box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded. Upload a lesson or select a sample!</p>';
+    box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No terms loaded yet. Create a reviewer first!</p>';
     return;
   }
 
-  const filtered = d.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q) || (t.mnemonic && t.mnemonic.toLowerCase().includes(q)));
+  const filtered = d.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q));
   if (filtered.length === 0) {
     box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:50px;color:var(--text-muted)">No matching terms found in search.</p>';
     return;
@@ -1383,7 +1226,6 @@ function renderReviewer() {
       </div>
       <div class="term">${esc(t.term)}</div>
       <div class="def">${esc(t.def)}</div>
-      ${t.mnemonic ? `<div class="mnemonic-pill">💡 Mnemonic: ${esc(t.mnemonic)}</div>` : ""}
     </div>
   `).join("");
 }
@@ -1422,11 +1264,11 @@ $("btnAddTermModal").addEventListener("click", () => {
     return s;
   });
   renderReviewer();
-  showToast("✅ Concept added!");
+  showToast("✅ Term added!");
 });
 
 /* ============================================================
-   7. LEITNER SPACED FLASHCARDS (BOXES 1-5)
+   7. LEITNER FLASHCARDS (BOXES 1-3)
    ============================================================ */
 let fcDeck = [], fcIdx = 0, currentLeitnerBox = "all";
 
@@ -1434,7 +1276,7 @@ function initFlashcards() {
   const d = Store.get();
   if (!d.terms || d.terms.length === 0) {
     $("fcTerm").textContent = "No terms loaded";
-    $("fcDef").textContent = "Upload a lesson to generate flashcards.";
+    $("fcDef").textContent = "Create a reviewer to start studying.";
     $("fcCounter").textContent = "0 / 0";
     return;
   }
@@ -1481,7 +1323,6 @@ function showFc() {
   $("flashcard").classList.remove("flip");
   $("fcTerm").textContent = t.term;
   $("fcDef").textContent = t.def;
-  $("fcMnemonic").textContent = t.mnemonic ? `💡 Mnemonic: ${t.mnemonic}` : "";
   $("fcBoxNum").textContent = `Box ${t.box || 1}`;
   $("fcBackBoxNum").textContent = `Box ${t.box || 1}`;
   $("fcCounter").textContent = `${fcIdx + 1} / ${fcDeck.length}`;
@@ -1542,8 +1383,17 @@ $("fcAudio").addEventListener("click", () => {
   speechSynthesis.speak(u);
 });
 
+// Keyboard controls
+window.addEventListener("keydown", e => {
+  const activePage = document.querySelector(".page.active");
+  if (!activePage || activePage.id !== "page-flashcards") return;
+  if (e.code === "Space") { e.preventDefault(); $("flashcard").click(); }
+  if (e.code === "ArrowLeft") { $("fcPrev").click(); }
+  if (e.code === "ArrowRight") { $("fcNext").click(); }
+});
+
 /* ============================================================
-   8. ADAPTIVE PRACTICE MOCK EXAM
+   8. ADAPTIVE PRACTICE QUIZ
    ============================================================ */
 let quizTerms = [], quizIdx = 0, quizCorrect = 0;
 
@@ -1554,7 +1404,7 @@ function initQuizScreen() {
   $("quizResult").style.display = "none";
   if (d.terms.length === 0) {
     $("quizResult").style.display = "block";
-    $("quizResult").innerHTML = '<p style="color:var(--text-muted)">No terms available. Upload a lesson to take quizzes!</p>';
+    $("quizResult").innerHTML = '<p style="color:var(--text-muted)">No terms available. Create a reviewer to take quizzes!</p>';
     return;
   }
   $("btnRetryWeak").style.display = (d.quizHistory && d.quizHistory.length) ? "inline-block" : "none";
@@ -1646,12 +1496,12 @@ $("btnNextQ").addEventListener("click", () => {
   if (scorePercent >= 80 && typeof confetti === "function") confetti({ particleCount: 100, spread: 70 });
 
   $("quizResult").innerHTML = `
-    <h2 style="font-size:2rem;margin-bottom:12px">🎉 Exam Complete!</h2>
+    <h2 style="font-size:2rem;margin-bottom:12px">🎉 Quiz Complete!</h2>
     <p style="font-size:1.25rem;color:var(--text);font-weight:800">Score: ${scorePercent}% (${quizCorrect}/${quizTerms.length})</p>
-    <p style="color:var(--text-muted);margin:8px 0 20px">${scorePercent >= 100 ? "🌟 Perfect Score! Summa Cum Laude Tier!" : scorePercent >= 75 ? "👍 Solid performance! Ready for exam day." : "💪 Keep practicing your weak areas!"}</p>
+    <p style="color:var(--text-muted);margin:8px 0 20px">${scorePercent >= 100 ? "🌟 Perfect Score! Astig!" : scorePercent >= 75 ? "👍 Good job! Ready for your exam." : "💪 Keep practicing your weak areas!"}</p>
     <div style="display:flex;gap:10px;justify-content:center">
-      <button class="btn btn-primary" id="btnQuizRestart">🔄 Retake Exam</button>
-      <button class="btn btn-outline" id="btnQuizToStats">📊 View Analytics</button>
+      <button class="btn btn-primary" id="btnQuizRestart">🔄 Retake Quiz</button>
+      <button class="btn btn-outline" id="btnQuizToStats">📊 View Stats</button>
     </div>
   `;
   $("btnQuizRestart").addEventListener("click", () => startQuiz());
@@ -1660,7 +1510,7 @@ $("btnNextQ").addEventListener("click", () => {
 });
 
 /* ============================================================
-   9. SPEED MATCH PRO WITH COMBO STREAKS
+   9. SPEED MATCH
    ============================================================ */
 let matchPairs = [], matchSel = null, matchMiss = 0, matchTimer = null, matchSec = 0, matchedIds = new Set(), comboMultiplier = 1;
 
@@ -1716,7 +1566,7 @@ function onMatchClick(chip) {
 
       if (matchedIds.size === matchPairs.length) {
         clearInterval(matchTimer);
-        const earnedXP = 40 * comboMultiplier;
+        const earnedXP = 30 * comboMultiplier;
         Store.update(s => {
           s.matchCount = (s.matchCount || 0) + 1;
           s.xp = (s.xp || 0) + earnedXP;
@@ -1792,8 +1642,8 @@ $("btnPomoStart").addEventListener("click", () => {
       pomoInt = null;
       successSfx();
       if (pomoMode === "focus") {
-        Store.update(s => { s.pomodoroCount = (s.pomodoroCount || 0) + 1; s.xp = (s.xp || 0) + 30; return s; });
-        showToast("🍅 Focus session complete! +30 XP");
+        Store.update(s => { s.pomodoroCount = (s.pomodoroCount || 0) + 1; s.xp = (s.xp || 0) + 25; return s; });
+        showToast("🍅 Focus session complete! +25 XP");
         switchPomoMode("short");
       } else {
         showToast("☕ Break ended — ready for the next sprint!");
@@ -1861,15 +1711,15 @@ $("calNext").addEventListener("click", () => { uiClick(); calView.setMonth(calVi
 renderCalendar(calView);
 
 /* ============================================================
-   12. TRACKER, HEATMAP & ACHIEVEMENTS
+   12. TRACKER & ACHIEVEMENTS
    ============================================================ */
 const ACHS = [
-  { id: "first", icon: "🚀", name: "First Steps", desc: "Upload 1st lesson", cond: d => d.terms.length >= 1 },
+  { id: "first", icon: "🚀", name: "First Steps", desc: "Create 1st reviewer", cond: d => d.terms.length >= 1 },
   { id: "terms10", icon: "📚", name: "10 Terms", desc: "Memorize 10 terms", cond: d => d.terms.length >= 10 },
   { id: "terms30", icon: "🏛️", name: "Study Master", desc: "Memorize 30 terms", cond: d => d.terms.length >= 30 },
-  { id: "quiz1", icon: "📝", name: "First Exam", desc: "Complete 1 practice exam", cond: d => d.quizCount >= 1 },
-  { id: "quiz5", icon: "🎯", name: "Exam Streak", desc: "Complete 5 exams", cond: d => d.quizCount >= 5 },
-  { id: "perfect", icon: "💯", name: "Perfect Score", desc: "Score 100% on an exam", cond: d => d.bestQuizScore >= 100 },
+  { id: "quiz1", icon: "📝", name: "First Quiz", desc: "Complete 1 practice quiz", cond: d => d.quizCount >= 1 },
+  { id: "quiz5", icon: "🎯", name: "Quiz Streak", desc: "Complete 5 quizzes", cond: d => d.quizCount >= 5 },
+  { id: "perfect", icon: "💯", name: "Perfect Score", desc: "Score 100% on a quiz", cond: d => d.bestQuizScore >= 100 },
   { id: "match1", icon: "🧩", name: "Speed Matcher", desc: "Win 1 match game", cond: d => d.matchCount >= 1 },
   { id: "pomo3", icon: "🍅", name: "Deep Focus", desc: "Complete 3 Pomodoro sessions", cond: d => d.pomodoroCount >= 3 },
   { id: "xp100", icon: "⚡", name: "Centurion", desc: "Reach 100 total XP", cond: d => d.xp >= 100 },
@@ -1900,26 +1750,6 @@ function renderAchievements() {
   }).join("");
 }
 
-function renderHeatmap() {
-  const d = Store.get();
-  const grid = $("heatmapGrid");
-  if (!grid) return;
-  const days = d.studyDays || {};
-  let html = "";
-  for (let i = 29; i >= 0; i--) {
-    const dt = new Date(Date.now() - i * 86400000);
-    const dstr = formatDate(dt);
-    const count = days[dstr] || 0;
-    let lvl = "";
-    if (count >= 4) lvl = "lvl-4";
-    else if (count >= 3) lvl = "lvl-3";
-    else if (count >= 2) lvl = "lvl-2";
-    else if (count >= 1) lvl = "lvl-1";
-    html += `<div class="heat-cell ${lvl}" title="${dstr}: ${count} study sessions"></div>`;
-  }
-  grid.innerHTML = html;
-}
-
 function renderTracker() {
   const d = Store.get();
   $("statTerms").textContent = d.terms.length;
@@ -1942,7 +1772,6 @@ function renderTracker() {
     ? "🏆 Summa Cum Laude Tier reached — ready to ace your exam!"
     : `Current subject mastery: ${pct}%. Review flashcards and take more quizzes!`;
 
-  renderHeatmap();
   renderAchievements();
 }
 
