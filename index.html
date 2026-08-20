@@ -3,1365 +3,2164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>STUDYBUDDY PRO // INDUSTRIAL ACADEMIC WORKSTATION</title>
+<title>StudyBuddy PRO 🇵🇭 — Intelligent Study & Flashcard System</title>
 <!-- Confetti Celebration CDN -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<!-- QRCode.js for instant deck sharing -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<!-- QR Code Generator CDN -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 
 <style>
+/* ============================================================
+   ZENITH FOCUS DESIGN SYSTEM — NATURAL EYE-COMFORT THEME
+   ============================================================ */
 :root {
-  --bg-core: #090B10;
-  --bg-panel: #0F131C;
-  --bg-surface: #151A26;
-  --bg-surface-hover: #1C2333;
-  --bg-inset: #0B0E14;
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --primary-light: #EFF6FF;
+  --primary-glow: rgba(59, 130, 246, 0.25);
   
-  --border-subtle: #1E2638;
-  --border-strong: #2B364E;
-  --border-glow: #3E4F73;
+  --accent: #F59E0B;
+  --accent-light: #FEF3C7;
   
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-tertiary: #52607A;
+  --bg: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-hover: #F1F5F9;
+  --surface-subtle: #F8FAFC;
   
-  --signal-amber: #F59E0B;
-  --signal-amber-glow: rgba(245, 158, 11, 0.2);
-  --signal-cyan: #06B6D4;
-  --signal-cyan-glow: rgba(6, 182, 212, 0.2);
-  --signal-green: #10B981;
-  --signal-red: #EF4444;
-  --signal-violet: #8B5CF6;
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-subtle: #94A3B8;
+  --text-inverse: #FFFFFF;
   
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Roboto Mono', Menlo, monospace;
+  --border: #E2E8F0;
+  --border-focus: #3B82F6;
   
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --success: #10B981;
+  --success-light: #ECFDF5;
+  --danger: #EF4444;
+  --danger-light: #FEF2F2;
+  --purple: #8B5CF6;
+  
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 9999px;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 20px -3px rgba(15, 23, 42, 0.08);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { min-height: 100vh; background: var(--bg-core); color: var(--text-primary); }
-body { font-family: var(--font-sans); display: flex; flex-direction: column; overflow-x: hidden; }
+html, body { min-height: 100vh; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  display: flex;
+  transition: background 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
 
 button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 input, textarea, select { font-family: inherit; }
 
-/* ===== 1. TOP COMMAND HUD ===== */
-.command-hud {
-  height: 52px;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--border-subtle);
+/* ===== APP HEADER BAR ===== */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 260px;
+  right: 0;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
+  padding: 0 24px;
+  z-index: 90;
+  transition: left 0.3s ease;
 }
 
-.hud-group { display: flex; align-items: center; gap: 10px; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
 
-.hud-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: #fff;
-}
-.hud-logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--signal-cyan); box-shadow: 0 0 8px var(--signal-cyan); }
-
-.hud-telemetry {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-inset);
-  padding: 4px 10px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-subtle);
-}
-.hud-label { color: var(--text-tertiary); text-transform: uppercase; font-size: 0.68rem; }
-.hud-value { color: var(--signal-amber); font-weight: 700; }
-
-.hud-btn {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
-  padding: 5px 10px;
-  border-radius: var(--radius-xs);
-  font-size: 0.75rem;
-  font-weight: 600;
+.status-badge {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+.status-badge.online { background: var(--success-light); color: var(--success); border-color: #A7F3D0; }
+.status-badge.offline { background: var(--accent-light); color: #B45309; border-color: #FDE68A; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.cmd-k-trigger {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
   transition: all 0.15s;
 }
-.hud-btn:hover { background: var(--bg-surface-hover); border-color: var(--border-strong); }
-.hud-btn.active { border-color: var(--signal-cyan); color: var(--signal-cyan); background: var(--signal-cyan-glow); }
+.cmd-k-trigger:hover { border-color: var(--primary); color: var(--text-main); }
+.cmd-kbd { background: var(--surface); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
 
-.keycap {
-  background: #000;
-  border: 1px solid var(--border-strong);
-  border-radius: 3px;
-  padding: 1px 5px;
-  font-size: 0.65rem;
-  color: var(--text-secondary);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.1);
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.82rem;
+  transition: all 0.15s;
+}
+.user-profile-btn:hover { background: var(--surface-hover); }
+.user-avatar-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
-/* ===== 2. APP SHELL LAYOUT ===== */
-.app-shell { display: flex; flex: 1; min-height: calc(100vh - 52px); }
-
-/* SIDEBAR RAIL */
-.tactical-rail {
-  width: 220px;
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border-subtle);
+/* ===== SIDEBAR NAVIGATION ===== */
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: #0F172A;
+  color: #94A3B8;
   display: flex;
   flex-direction: column;
-  padding: 10px 8px;
-  gap: 3px;
-  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  border-right: 1px solid #1E293B;
+  transition: transform 0.3s ease;
+}
+.sidebar-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #1E293B;
+}
+.logo-icon { font-size: 1.5rem; }
+.logo-text { font-size: 1.1rem; font-weight: 800; color: #FFFFFF; }
+.logo-text em { color: var(--accent); font-style: normal; }
+
+.deck-selector-box {
+  padding: 10px 14px;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+}
+.deck-select-dropdown {
+  width: 100%;
+  padding: 7px 10px;
+  background: #0F172A;
+  color: #FFFFFF;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
 }
 
-.rail-section-tag {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 8px 10px 4px;
-}
-
-.rail-btn {
+.nav { display: flex; flex-direction: column; padding: 10px 8px; flex: 1; gap: 2px; overflow-y: auto; }
+.nav-btn {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
+  background: transparent;
+  color: #94A3B8;
+  font-size: 0.86rem;
+  font-weight: 600;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.84rem;
-  font-weight: 600;
-  transition: all 0.15s;
+  transition: all .15s;
   text-align: left;
-  border: 1px solid transparent;
 }
-.rail-btn:hover { background: var(--bg-surface); color: var(--text-primary); }
-.rail-btn.active {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-  border-left: 3px solid var(--signal-amber);
-}
+.nav-btn:hover { background: #1E293B; color: #FFFFFF; }
+.nav-btn.active { background: var(--primary); color: #FFFFFF; font-weight: 700; }
 
-.rail-deck-box {
-  margin-top: auto;
-  padding: 10px;
-  background: var(--bg-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-}
-
-/* MAIN WORKBENCH STAGE */
-.workbench-stage {
-  flex: 1;
-  padding: 24px 28px;
-  max-width: 1140px;
-  margin: 0 auto;
-  width: 100%;
-}
-.panel-view { display: none; }
-.panel-view.active { display: block; animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-@keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-/* COMMON TACTICAL CARDS */
-.tactical-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-.tactical-card-header {
+.sidebar-footer { padding: 12px; border-top: 1px solid #1E293B; }
+.ambient-box { background: #1E293B; border-radius: 8px; padding: 10px; }
+.ambient-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.tactical-card-title {
-  font-size: 0.92rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-}
-
-/* TACTICAL INPUTS & BUTTONS */
-.input-rig {
-  width: 100%;
-  background: var(--bg-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  padding: 9px 12px;
-  font-size: 0.88rem;
-  font-family: var(--font-mono);
-  transition: border 0.15s;
-}
-.input-rig:focus { outline: none; border-color: var(--signal-cyan); box-shadow: 0 0 0 2px var(--signal-cyan-glow); }
-
-.btn-tactical {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-size: 0.82rem;
+  font-size: .76rem;
   font-weight: 700;
-  font-family: var(--font-mono);
+  color: #E2E8F0;
+  cursor: pointer;
+}
+.ambient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; }
+.amb-btn {
+  background: #0F172A;
+  color: #CBD5E1;
+  font-size: 0.72rem;
+  padding: 6px 3px;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.amb-btn.active { background: var(--accent); color: #000; font-weight: 700; }
+
+/* ===== MAIN CONTENT ===== */
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 80px 32px 40px;
+  max-width: 1060px;
+  width: 100%;
+}
+.page { display: none; }
+.page.active { display: block; animation: pageFadeIn .2s ease; }
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.page-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
+.page-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+
+/* BUTTONS */
+.btn {
+  background: var(--text-main);
+  color: var(--text-inverse);
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all .15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all 0.15s;
+  gap: 7px;
 }
-.btn-tactical:hover { background: var(--bg-surface-hover); border-color: var(--border-glow); }
-.btn-tactical.primary { background: var(--signal-amber); color: #000; border-color: var(--signal-amber); }
-.btn-tactical.primary:hover { background: #d97706; }
-.btn-tactical.full { width: 100%; }
+.btn:hover { opacity: 0.94; transform: translateY(-1px); }
+.btn.big { font-size: 0.96rem; padding: 12px 22px; }
+.btn-primary { background: var(--primary); color: #FFFFFF; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-outline { background: var(--surface); color: var(--text-main); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--surface-hover); border-color: var(--border-focus); }
+.btn-round { width: 36px; height: 36px; border-radius: 50%; padding: 0; }
+.btn.full { width: 100%; }
+.btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; }
 
-/* ===== 3. DASHBOARD / TELEMETRY OVERVIEW ===== */
-.telemetry-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
+/* MASCOT & QUEST CARD */
+.mascot-quest-grid { display: grid; grid-template-columns: 240px 1fr; gap: 14px; margin-bottom: 20px; }
+@media(max-width:800px){ .mascot-quest-grid { grid-template-columns: 1fr; } }
+.mascot-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
 }
-.metric-box {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-}
-.metric-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-tertiary); text-transform: uppercase; }
-.metric-num { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 900; color: #fff; margin-top: 4px; }
+.mascot-avatar { font-size: 3rem; line-height: 1; margin: 6px 0; }
+.mascot-name { font-weight: 700; font-size: 1rem; }
+.mascot-tier { font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase; }
 
-/* MASCOT COMPANION MODULE */
-.mascot-core-unit {
-  background: linear-gradient(135deg, #101522 0%, #0B0E17 100%);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-md);
-  padding: 20px;
+.quest-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.quest-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 20px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.86rem;
 }
-.mascot-avatar-circle {
-  width: 60px;
-  height: 60px;
+.quest-item:last-child { border-bottom: none; }
+
+/* HERO CARDS */
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.mini-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all .15s ease;
+  cursor: pointer;
+}
+.mini-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--primary); }
+.mini-card span { font-size: 1.7rem; display: block; margin-bottom: 4px; }
+.mini-card h4 { font-size: 0.95rem; margin-bottom: 2px; font-weight: 700; }
+.mini-card p { color: var(--text-muted); font-size: .8rem; }
+
+/* CREATOR */
+.create-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  max-width: 800px;
+  margin: 0 auto;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.field-label { display: block; font-weight: 700; margin-bottom: 5px; font-size: .84rem; color: var(--text-main); }
+.req { color: var(--danger); }
+.input-text, .input-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  transition: all .15s;
+  background: var(--surface);
+  color: var(--text-main);
+}
+.input-text:focus, .input-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+.collapsible-details {
+  background: var(--surface-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+.collapsible-details summary {
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  user-select: none;
+}
+.collapsible-details .details-content {
+  padding: 0 12px 10px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.counter-live-badge {
+  display: inline-block;
+  background: var(--success-light);
+  color: var(--success);
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  margin-left: 6px;
+}
+.samples-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sample-btn { background: var(--surface); border: 1px solid var(--border); padding: 5px 10px; border-radius: 14px; font-size: 0.78rem; font-weight: 600; }
+.sample-btn:hover { background: var(--surface-hover); border-color: var(--text-main); }
+
+/* REVIEWER GUIDE */
+.page-head-flex { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; width: 100%; }
+.filter-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.88rem;
+}
+.reviewer-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.reviewer-item {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.reviewer-item .term { font-weight: 700; font-size: 0.98rem; margin-bottom: 3px; color: var(--text-main); }
+.reviewer-item .def { color: var(--text-muted); font-size: .86rem; line-height: 1.45; }
+.reviewer-actions { position: absolute; top: 8px; right: 8px; }
+.icon-btn { background: none; border: none; font-size: 0.95rem; padding: 3px 5px; border-radius: 4px; color: var(--text-muted); }
+.icon-btn:hover { background: var(--surface-hover); color: var(--text-main); }
+
+/* MIND MAP GRAPH */
+.mindmap-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  min-height: 440px;
+  display: flex;
+  flex-direction: column;
+}
+.mindmap-svg { width: 100%; height: 390px; border-radius: 8px; background: var(--surface-subtle); }
+
+/* ORAL RECITATION */
+.oral-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; max-width: 660px; margin: 0 auto; text-align: center; }
+.oral-mic-btn {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: var(--bg-surface);
-  border: 2px solid var(--signal-cyan);
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.7rem;
+  margin: 16px auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 0 16px var(--signal-cyan-glow);
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px var(--primary-glow);
 }
+.oral-mic-btn.listening { background: var(--danger); animation: pulse 1.2s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
-/* ===== 4. SPATIAL FLASHCARD RIG ===== */
-.flashcard-stage { display: flex; flex-direction: column; align-items: center; margin: 10px 0; }
-.card-hardware-frame {
-  width: 100%;
-  max-width: 520px;
-  height: 270px;
-  perspective: 1200px;
-  cursor: pointer;
-}
-.card-hardware-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.4s cubic-bezier(0.4, 0.2, 0.2, 1);
-  transform-style: preserve-3d;
-}
-.card-hardware-frame.flipped .card-hardware-inner { transform: rotateY(180deg); }
+/* BLURTING */
+.blurt-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; max-width: 700px; margin: 0 auto; }
+.blurt-results { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
 
-.card-face {
+/* FLASHCARDS */
+.leitner-nav { display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+.leitner-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.leitner-pill.active { background: var(--text-main); color: #fff; border-color: var(--text-main); }
+.card-deck { display: flex; justify-content: center; margin: 8px 0 12px; flex-direction: column; align-items: center; }
+.flashcard { width: 100%; max-width: 440px; height: 230px; perspective: 1000px; cursor: pointer; }
+.fc-inner { position: relative; width: 100%; height: 100%; transition: transform .4s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+.flashcard.flip .fc-inner { transform: rotateY(180deg); }
+.fc-face {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
-  background: var(--bg-panel);
+  border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 30px;
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
-.card-face.front { border-top: 3px solid var(--signal-amber); }
-.card-face.back { transform: rotateY(180deg); border-top: 3px solid var(--signal-cyan); background: #0c1017; }
+.fc-front { background: #0F172A; color: #fff; border-color: #1E293B; }
+.fc-front .fc-text { font-size: 1.3rem; font-weight: 700; line-height: 1.3; }
+.fc-back { background: var(--surface); color: var(--text-main); transform: rotateY(180deg); border-color: var(--primary); }
+.fc-back .fc-text { font-size: 1rem; line-height: 1.45; }
+.fc-tag { position: absolute; top: 10px; left: 12px; font-size: 0.65rem; text-transform: uppercase; font-weight: 800; opacity: 0.6; }
+.fc-box-indicator { position: absolute; top: 10px; right: 12px; font-size: 0.65rem; font-weight: 700; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 6px; }
+.fc-back .fc-box-indicator { background: var(--surface-subtle); color: var(--text-main); }
+.fc-hint { position: absolute; bottom: 10px; font-size: 0.72rem; opacity: 0.6; }
 
-.card-term-text { font-size: 1.45rem; font-weight: 800; line-height: 1.3; color: #fff; }
-.card-def-text { font-size: 1.05rem; line-height: 1.5; color: var(--text-secondary); }
+.fc-controls { display: flex; align-items: center; gap: 12px; justify-content: center; margin: 10px 0 6px; }
+.fc-controls span { font-weight: 700; font-size: 0.95rem; min-width: 70px; text-align: center; }
 
-.card-hud-badge {
-  position: absolute;
-  top: 12px;
-  left: 14px;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-}
-.card-box-badge {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  background: var(--bg-surface);
-  padding: 2px 7px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--border-subtle);
-  color: var(--signal-amber);
-}
+.spaced-rating-bar { display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+.rate-btn { padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 0.78rem; }
+.rate-again { background: var(--danger-light); color: var(--danger); border: 1px solid #FECACA; }
+.rate-hard { background: #FFF7ED; color: #EA580C; border: 1px solid #FED7AA; }
+.rate-good { background: var(--success-light); color: var(--success); border: 1px solid #A7F3D0; }
+.rate-easy { background: var(--primary-light); color: var(--primary); border: 1px solid #BFDBFE; }
 
-.hotkey-rating-bar {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 18px;
-  flex-wrap: wrap;
-}
-.rating-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.15s;
-}
-.rating-btn:hover { border-color: var(--border-strong); }
-.rating-btn.again { border-color: var(--signal-red); color: var(--signal-red); }
-.rating-btn.hard { border-color: #EA580C; color: #EA580C; }
-.rating-btn.good { border-color: var(--signal-green); color: var(--signal-green); }
-.rating-btn.easy { border-color: var(--signal-cyan); color: var(--signal-cyan); }
-
-/* ===== 5. MIND MAP ===== */
-.mindmap-viewport {
-  width: 100%;
-  height: 480px;
-  background: #080A0E;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  position: relative;
-  overflow: hidden;
-}
-#mindMapCanvas { width: 100%; height: 100%; }
-
-/* ===== 6. EXAM ARENA ===== */
-.exam-options-grid { display: grid; gap: 8px; margin-top: 14px; }
-.exam-opt-btn {
-  background: var(--bg-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 13px 16px;
-  text-align: left;
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  font-weight: 500;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.exam-opt-btn:hover:not(:disabled) { border-color: var(--signal-amber); background: var(--bg-surface); }
-.exam-opt-btn.correct { border-color: var(--signal-green); background: rgba(16, 185, 129, 0.15); color: var(--signal-green); font-weight: 700; }
-.exam-opt-btn.wrong { border-color: var(--signal-red); background: rgba(239, 68, 68, 0.15); color: var(--signal-red); }
-
-/* ===== 7. BLURTING & VOICE ORAL ===== */
-.blurt-terminal {
-  width: 100%;
-  background: var(--bg-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: #fff;
-  padding: 14px;
-  font-family: var(--font-mono);
-  font-size: 0.88rem;
-  line-height: 1.5;
-  resize: vertical;
-}
-.mic-orb {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: var(--bg-surface);
-  border: 2px solid var(--signal-cyan);
-  color: var(--signal-cyan);
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 18px auto;
-  box-shadow: 0 0 20px var(--signal-cyan-glow);
-  transition: all 0.2s;
-}
-.mic-orb.recording { border-color: var(--signal-red); color: var(--signal-red); animation: pulseRecord 1.2s infinite; box-shadow: 0 0 24px rgba(239,68,68,0.5); }
-@keyframes pulseRecord { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-
-/* ===== 8. REVIEWER TABLE ===== */
-.reviewer-table {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 10px;
-}
-.reviewer-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  position: relative;
-}
-.reviewer-card .term { font-weight: 800; font-size: 0.95rem; color: #fff; margin-bottom: 4px; font-family: var(--font-mono); }
-.reviewer-card .def { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.45; }
-
-/* MODAL */
-.modal-backdrop {
+/* ZEN FOCUS MODE */
+.zen-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(4px);
-  z-index: 999;
+  background: #060911;
+  color: #fff;
+  z-index: 5000;
   display: none;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-}
-.modal-backdrop.open { display: flex; }
-.tactical-modal {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-md);
   padding: 24px;
-  width: 100%;
-  max-width: 420px;
-  position: relative;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
 }
+.zen-overlay.active { display: flex; animation: pageFadeIn .25s ease; }
+.zen-header { position: absolute; top: 20px; left: 24px; right: 24px; display: flex; justify-content: space-between; align-items: center; }
+.zen-exit-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+.zen-time-glow { font-size: 4rem; font-weight: 800; color: #60A5FA; letter-spacing: 2px; }
+
+/* COMMAND PALETTE */
+.cmd-palette-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 6000;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 100px;
+}
+.cmd-palette-overlay.show { display: flex; animation: pageFadeIn .15s ease; }
+.cmd-palette-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 540px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.cmd-input { width: 100%; padding: 14px 18px; font-size: 1rem; border: none; border-bottom: 1px solid var(--border); outline: none; background: transparent; color: var(--text-main); }
+.cmd-list { max-height: 280px; overflow-y: auto; padding: 6px; }
+.cmd-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 6px; font-size: 0.88rem; cursor: pointer; color: var(--text-main); font-weight: 500; }
+.cmd-item:hover { background: var(--primary-light); color: var(--primary); font-weight: 700; }
 
 /* TOAST */
-.toast-bar {
+.toast {
   position: fixed;
-  bottom: 20px;
+  bottom: 24px;
   left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-strong);
+  transform: translateX(-50%) translateY(100px);
+  background: #0F172A;
   color: #fff;
-  padding: 8px 18px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-weight: 700;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
   opacity: 0;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 1000;
+  transition: all .2s ease;
+  z-index: 9999;
+  font-weight: 600;
+  font-size: 0.84rem;
+  box-shadow: var(--shadow-lg);
   pointer-events: none;
 }
-.toast-bar.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-@media(max-width: 860px) {
-  .app-shell { flex-direction: column; }
-  .tactical-rail { width: 100%; border-right: none; border-bottom: 1px solid var(--border-subtle); overflow-x: auto; flex-direction: row; }
-  .rail-section-tag { display: none; }
-  .rail-deck-box { display: none; }
-  .workbench-stage { padding: 16px; }
-  .hud-telemetry { display: none; }
+/* DARK THEME */
+body.dark-mode {
+  --bg: #090D16;
+  --surface: #111827;
+  --surface-hover: #1F2937;
+  --surface-subtle: #0B101D;
+  --text-main: #F1F5F9;
+  --text-muted: #94A3B8;
+  --border: #1F2937;
+  --border-focus: #3B82F6;
+}
+body.dark-mode .app-header { background: rgba(17, 24, 39, 0.9); border-color: #1F2937; }
+body.dark-mode .fc-back { background: #111827; color: #fff; }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 820px) {
+  .app-header { left: 0; padding: 0 14px; }
+  #btnToggleMobileMenu { display: inline-flex !important; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 74px 14px 24px; }
+  .form-row { grid-template-columns: 1fr; gap: 8px; }
+  .blurt-results { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
-<!-- 1. TOP COMMAND HUD -->
-<header class="command-hud">
-  <div class="hud-group">
-    <div class="hud-logo">
-      <div class="hud-logo-dot"></div>
-      <span>STUDYBUDDY // OS</span>
+<!-- APP TOP HEADER -->
+<header class="app-header">
+  <div class="header-left">
+    <button class="btn btn-outline btn-sm" id="btnToggleMobileMenu" style="display:none">☰</button>
+    <div class="status-badge online" id="networkStatusBadge">
+      <span class="status-dot"></span>
+      <span id="networkStatusText">Online Sync</span>
     </div>
-    <div class="hud-telemetry">
-      <span class="hud-label">DECK:</span>
-      <span class="hud-value" id="hudDeckName">BIO_101</span>
-    </div>
-    <div class="hud-telemetry">
-      <span class="hud-label">RETENTION:</span>
-      <span class="hud-value" id="hudRetention">94.2%</span>
-    </div>
+    <button class="cmd-k-trigger" id="btnOpenCmdPalette">
+      <span>🔍 Search & Jump</span>
+      <span class="cmd-kbd">Ctrl K</span>
+    </button>
   </div>
-
-  <div class="hud-group">
-    <button class="hud-btn" id="btnAudioToggle">
-      <span>🎧 SYNTH</span>
-      <span class="keycap">OFF</span>
-    </button>
-    <button class="hud-btn" id="btnQrShare">
-      <span>📲 QR SYNC</span>
-    </button>
-    <button class="hud-btn" id="btnUserAuth">
-      <span id="hudUserName">GUEST // AUTH</span>
+  <div class="header-right">
+    <button class="btn btn-primary btn-sm" id="btnEnterZenMode">🧘 Zen Mode</button>
+    <button class="btn btn-outline btn-sm" id="btnShareDeckModal">📲 Share / Import QR</button>
+    <button class="btn btn-outline btn-sm" id="btnToggleDark">🌙</button>
+    <button class="user-profile-btn" id="btnUserMenu">
+      <div class="user-avatar-circle" id="userAvatarIcon">G</div>
+      <span id="userDisplayName">Guest Account</span>
     </button>
   </div>
 </header>
 
-<!-- 2. APP SHELL -->
-<div class="app-shell">
-
-  <!-- LEFT TACTICAL RAIL -->
-  <aside class="tactical-rail">
-    <div class="rail-section-tag">Modules</div>
-    <button class="rail-btn active" data-view="dashboard"><span>📊</span> Dashboard</button>
-    <button class="rail-btn" data-view="mindmap"><span>🧠</span> Mind Map</button>
-    <button class="rail-btn" data-view="flashcards"><span>🃏</span> Leitner Rig</button>
-    <button class="rail-btn" data-view="exam"><span>🎯</span> Exam Arena</button>
-    <button class="rail-btn" data-view="blurting"><span>✍️</span> Blurting Pad</button>
-    <button class="rail-btn" data-view="oral"><span>🎙️</span> Voice Oral</button>
-    
-    <div class="rail-section-tag">Repository</div>
-    <button class="rail-btn" data-view="creator"><span>📝</span> Deck Creator</button>
-    <button class="rail-btn" data-view="reviewer"><span>📖</span> Reviewer DB</button>
-    <button class="rail-btn" data-view="pomodoro"><span>⏱️</span> Pomodoro</button>
-    <button class="rail-btn" data-view="calendar"><span>📅</span> Schedule</button>
-
-    <div class="rail-deck-box">
-      <div style="font-size:0.65rem;color:var(--text-tertiary);font-family:var(--font-mono);margin-bottom:4px">SELECT DECK</div>
-      <select id="railDeckSelect" class="input-rig" style="padding:4px 6px;font-size:0.75rem"></select>
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="logo-icon">🎓</span>
+    <div>
+      <div style="display:flex;align-items:center">
+        <span class="logo-text">StudyBuddy</span>
+        <span style="font-size:0.65rem;background:var(--accent);color:#000;font-weight:900;padding:2px 6px;border-radius:12px;margin-left:5px">PRO</span>
+      </div>
+      <span style="font-size:0.68rem;color:#64748B">Intelligent Study OS</span>
     </div>
-  </aside>
+  </div>
 
-  <!-- WORKBENCH MAIN STAGE -->
-  <main class="workbench-stage">
+  <div class="deck-selector-box">
+    <label style="font-size:0.68rem;font-weight:700;color:#94A3B8;display:block;margin-bottom:3px">CURRENT ACTIVE DECK</label>
+    <select class="deck-select-dropdown" id="activeDeckSelect"></select>
+  </div>
 
-    <!-- VIEW 1: DASHBOARD -->
-    <section class="panel-view active" id="view-dashboard">
-      <div class="mascot-core-unit">
-        <div style="display:flex;align-items:center;gap:16px">
-          <div class="mascot-avatar-circle" id="mascotIcon">🦅</div>
-          <div>
-            <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--signal-cyan);font-weight:700">STUDY COMPANION // ONLINE</div>
-            <h2 id="mascotRankName" style="font-size:1.3rem;font-weight:800;color:#fff">Agila — Young Falcon</h2>
-            <p id="mascotQuote" style="color:var(--text-secondary);font-size:0.86rem;margin-top:2px">"All systems operational. Space repetition intervals loaded for peak retention."</p>
-          </div>
-        </div>
-        <button class="btn-tactical primary" data-view="flashcards">▶️ START RIG</button>
+  <nav class="nav">
+    <button class="nav-btn active" data-page="home"><span>🏠</span> Dashboard</button>
+    <button class="nav-btn" data-page="upload"><span>📝</span> Creator & Decks</button>
+    <button class="nav-btn" data-page="mindmap"><span>🗺️</span> Concept Mind Map</button>
+    <button class="nav-btn" data-page="oral"><span>🎙️</span> AI Voice Recitation</button>
+    <button class="nav-btn" data-page="blurt"><span>✍️</span> Blurting Recall</button>
+    <button class="nav-btn" data-page="reviewer"><span>📖</span> Reviewer Guide</button>
+    <button class="nav-btn" data-page="flashcards"><span>🃏</span> Leitner Cards</button>
+    <button class="nav-btn" data-page="quiz"><span>🎯</span> Exam Arena</button>
+    <button class="nav-btn" data-page="feynman"><span>🧠</span> Feynman Studio</button>
+    <button class="nav-btn" data-page="tutor"><span>🤖</span> PareBot AI Tutor</button>
+    <button class="nav-btn" data-page="match"><span>⚡</span> Speed Match</button>
+    <button class="nav-btn" data-page="pomodoro"><span>⏱️</span> Pomodoro Focus</button>
+    <button class="nav-btn" data-page="calendar"><span>📅</span> Study Calendar</button>
+    <button class="nav-btn" data-page="tracker"><span>📊</span> Analytics</button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="ambient-box">
+      <div class="ambient-header" id="ambientToggleHeader">
+        <span>🎧 Lo-Fi Audio Studio</span>
+        <span id="ambChevron">▼</span>
       </div>
-
-      <div class="telemetry-grid">
-        <div class="metric-box">
-          <div class="metric-label">Total Terms</div>
-          <div class="metric-num" id="statTotalTerms">0</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-label">Mastered (Box 3)</div>
-          <div class="metric-num" style="color:var(--signal-green)" id="statMastered">0</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-label">Streak Days</div>
-          <div class="metric-num" style="color:var(--signal-amber)" id="statStreak">0</div>
-        </div>
-        <div class="metric-box">
-          <div class="metric-label">Accumulated XP</div>
-          <div class="metric-num" style="color:var(--signal-cyan)" id="statXp">0</div>
-        </div>
+      <div class="ambient-grid" id="ambientGrid">
+        <button class="amb-btn" id="ambLofi">🎵 Lo-Fi</button>
+        <button class="amb-btn" id="ambAlpha">🧠 40Hz</button>
+        <button class="amb-btn" id="ambRain">🌧️ Rain</button>
+        <button class="amb-btn" id="ambCafe">☕ Cafe</button>
       </div>
-
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">📜 Daily Study Objectives</span>
-          <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary)">RESET_CYCLE: 24H</span>
-        </div>
-        <div id="dashboardQuestList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px"></div>
-      </div>
-    </section>
-
-    <!-- VIEW 2: FLASHCARD RIG -->
-    <section class="panel-view" id="view-flashcards">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">🃏 3D Leitner Interval Rig</span>
-          <span id="fcProgressCounter" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--signal-amber)">0 / 0</span>
-        </div>
-
-        <div class="flashcard-stage">
-          <div class="card-hardware-frame" id="cardRig">
-            <div class="card-hardware-inner">
-              <div class="card-face front">
-                <span class="card-hud-badge">CONCEPT // TERM</span>
-                <span class="card-box-badge" id="fcFrontBox">BOX 1</span>
-                <div class="card-term-text" id="fcTermText">No cards loaded</div>
-                <span style="position:absolute;bottom:14px;font-size:0.75rem;color:var(--text-tertiary);font-family:var(--font-mono)">PRESS <span class="keycap">SPACE</span> TO FLIP</span>
-              </div>
-              <div class="card-face back">
-                <span class="card-hud-badge">DEFINITION // ARCHIVE</span>
-                <span class="card-box-badge" id="fcBackBox">BOX 1</span>
-                <div class="card-def-text" id="fcDefText">Insert terms in Creator tab</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hotkey-rating-bar">
-          <button class="rating-btn again" id="btnRate1"><span class="keycap">1</span> Again (&lt;1m)</button>
-          <button class="rating-btn hard" id="btnRate2"><span class="keycap">2</span> Hard (1d)</button>
-          <button class="rating-btn good" id="btnRate3"><span class="keycap">3</span> Good (3d)</button>
-          <button class="rating-btn easy" id="btnRate4"><span class="keycap">4</span> Easy (7d)</button>
-          <button class="btn-tactical" id="btnTtsSpeak" style="padding:6px 10px">🔊 Speak</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 3: MIND MAP -->
-    <section class="panel-view" id="view-mindmap">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">🧠 Neural Concept Mind Map</span>
-          <button class="btn-tactical" id="btnResetMindMap">🔄 Re-align Nodes</button>
-        </div>
-        <div class="mindmap-viewport">
-          <svg id="mindMapCanvas"></svg>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 4: EXAM ARENA -->
-    <section class="panel-view" id="view-exam">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">🎯 Exam Simulation Arena</span>
-          <span id="examScoreLive" style="font-family:var(--font-mono);font-size:0.82rem;color:var(--signal-cyan)">SCORE: 0</span>
-        </div>
-        <div id="examPrompt" style="font-size:1.15rem;font-weight:700;margin-bottom:12px;line-height:1.4">Loading question...</div>
-        <div class="exam-options-grid" id="examOptionsGrid"></div>
-        <div id="examFeedback" style="font-family:var(--font-mono);font-size:0.86rem;margin-top:12px;min-height:22px"></div>
-        <button class="btn-tactical primary" id="btnNextExamQ" style="display:none;margin-top:12px">NEXT QUESTION →</button>
-      </div>
-    </section>
-
-    <!-- VIEW 5: BLURTING PAD -->
-    <section class="panel-view" id="view-blurting">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">✍️ Active Recall Blurting Terminal</span>
-          <span id="blurtCountdown" style="font-family:var(--font-mono);font-size:1.2rem;font-weight:900;color:var(--signal-amber)">02:00</span>
-        </div>
-        <textarea id="blurtInputText" class="blurt-terminal" rows="7" placeholder="Type all terms and relationships from memory..."></textarea>
-        <div style="display:flex;gap:10px;margin-top:12px">
-          <button class="btn-tactical primary" id="btnStartBlurtTimer">▶️ START 2-MIN RUN</button>
-          <button class="btn-tactical" id="btnGradeBlurt">🔍 EVALUATE RECALL</button>
-        </div>
-        <div id="blurtResultsBox" style="display:none;margin-top:16px;border-top:1px solid var(--border-subtle);padding-top:14px">
-          <div id="blurtScoreText" style="font-family:var(--font-mono);font-size:0.95rem;font-weight:700;margin-bottom:8px"></div>
-          <div id="blurtHitsList"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 6: VOICE ORAL EXAM -->
-    <section class="panel-view" id="view-oral">
-      <div class="tactical-card" style="text-align:center">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">🎙️ AI Oral Examination Unit</span>
-          <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--signal-cyan)">SPEECH_ENGINE: READY</span>
-        </div>
-        <div id="oralPromptHeadline" style="font-size:1.25rem;font-weight:800;margin:10px 0">Tap button to start verbal recitation</div>
-        <button class="mic-orb" id="btnMicOrb">🎤</button>
-        <div style="background:var(--bg-inset);padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);font-family:var(--font-mono);font-size:0.85rem;color:var(--text-secondary);min-height:42px;margin:10px auto;max-width:500px">
-          <span id="oralLiveTranscript">...</span>
-        </div>
-        <button class="btn-tactical" id="btnNextOral">NEXT VERBAL QUESTION</button>
-      </div>
-    </section>
-
-    <!-- VIEW 7: DECK CREATOR -->
-    <section class="panel-view" id="view-creator">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">📝 Bullet Form Deck Compiler</span>
-          <span id="creatorTermBadge" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--signal-green)">0 TERMS PARSED</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-          <div>
-            <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">SUBJECT IDENTIFIER</label>
-            <input type="text" id="inputSubject" class="input-rig" placeholder="e.g. ORGANIC_CHEMISTRY_2">
-          </div>
-          <div>
-            <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">EXAM TARGET DATE</label>
-            <input type="date" id="inputExamDate" class="input-rig">
-          </div>
-        </div>
-        <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">BULLET TERMS (• Term: Definition)</label>
-        <textarea id="inputRawBullets" class="blurt-terminal" rows="8" placeholder="• Photosynthesis: Biochemical conversion of sunlight into chemical glucose&#10;• Mitochondria: The powerhouse organelle generating ATP cellular energy&#10;• Cell Membrane: Semipermeable phospholipid bilayer controlling molecular flow"></textarea>
-        <button class="btn-tactical primary full" id="btnSaveDeck" style="margin-top:12px">⚡ COMPILE & INGEST DECK</button>
-      </div>
-    </section>
-
-    <!-- VIEW 8: REVIEWER DB -->
-    <section class="panel-view" id="view-reviewer">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">📖 Repository Index</span>
-          <div style="display:flex;gap:6px">
-            <button class="btn-tactical" id="btnExportAnki">💾 Export Anki</button>
-            <button class="btn-tactical" onclick="window.print()">🖨️ Print</button>
-          </div>
-        </div>
-        <input type="text" id="searchReviewer" class="input-rig" placeholder="Search repository terms..." style="margin-bottom:14px">
-        <div class="reviewer-table" id="reviewerContainer"></div>
-      </div>
-    </section>
-
-    <!-- VIEW 9: POMODORO -->
-    <section class="panel-view" id="view-pomodoro">
-      <div class="tactical-card" style="text-align:center;max-width:480px;margin:0 auto">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">⏱️ Tactical Focus Timer</span>
-        </div>
-        <div style="font-family:var(--font-mono);font-size:4.8rem;font-weight:900;color:var(--signal-amber);letter-spacing:2px" id="pomoDisplay">25:00</div>
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
-          <button class="btn-tactical primary" id="btnPomoToggle">▶️ START</button>
-          <button class="btn-tactical" id="btnPomoReset">🔄 RESET</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- VIEW 10: SCHEDULE CALENDAR -->
-    <section class="panel-view" id="view-calendar">
-      <div class="tactical-card">
-        <div class="tactical-card-header">
-          <span class="tactical-card-title">📅 Ebbinghaus Spaced Matrix</span>
-          <div style="display:flex;align-items:center;gap:10px">
-            <button class="btn-tactical" id="btnCalPrev">⬅️</button>
-            <span id="calMonthLabel" style="font-family:var(--font-mono);font-size:0.85rem;color:var(--signal-cyan)"></span>
-            <button class="btn-tactical" id="btnCalNext">➡️</button>
-          </div>
-        </div>
-        <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<!-- QR SYNC MODAL -->
-<div class="modal-backdrop" id="qrModal">
-  <div class="tactical-modal">
-    <div class="tactical-card-header">
-      <span class="tactical-card-title">📲 Hardware Deck Sync</span>
-      <button onclick="$('qrModal').classList.remove('open')" style="background:none;color:#fff;font-size:1.1rem">✕</button>
     </div>
-    <div style="text-align:center;padding:10px 0">
-      <canvas id="qrCanvas"></canvas>
+  </div>
+</aside>
+
+<!-- MAIN APP -->
+<main class="main">
+
+  <!-- DASHBOARD & MASCOT -->
+  <section class="page active" id="page-home">
+    <div class="mascot-quest-grid">
+      <div class="mascot-card">
+        <div class="mascot-tier" id="mascotTier">Tier 1 Companion</div>
+        <div class="mascot-avatar" id="mascotAvatar">🐣</div>
+        <div class="mascot-name" id="mascotName">Agila Eaglet</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin:4px 0 8px" id="mascotLevelText">Level 1 • 0 / 100 XP</p>
+        <button class="btn btn-outline btn-sm full" id="btnFeedMascot">⚡ Feed XP</button>
+      </div>
+
+      <div class="quest-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h4 style="font-weight:700;font-size:0.95rem">📜 Daily Study Quests</h4>
+          <span style="font-size:0.72rem;color:var(--success);font-weight:700">Refreshes Daily</span>
+        </div>
+        <div id="questList">
+          <div class="quest-item">
+            <div><strong>Review 5 Flashcards</strong><br><small style="color:var(--text-muted)">Practice Leitner boxes</small></div>
+            <button class="btn btn-sm btn-primary" id="btnClaimQuest1">Claim +25 XP</button>
+          </div>
+          <div class="quest-item">
+            <div><strong>Pass 1 Practice Exam</strong><br><small style="color:var(--text-muted)">Score at least 80%</small></div>
+            <button class="btn btn-sm btn-outline" id="btnClaimQuest2">Claim +40 XP</button>
+          </div>
+          <div class="quest-item">
+            <div><strong>Run 1 Pomodoro Focus</strong><br><small style="color:var(--text-muted)">Complete 25m sprint</small></div>
+            <button class="btn btn-sm btn-outline" id="btnClaimQuest3">Claim +30 XP</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <button class="btn-tactical full" id="btnCopyJson">📋 COPY RAW DECK JSON</button>
+
+    <div class="hero-cards">
+      <div class="mini-card" data-page="mindmap"><span>🗺️</span><h4>Concept Mind Map</h4><p>Visual relationship graph</p></div>
+      <div class="mini-card" data-page="oral"><span>🎙️</span><h4>AI Voice Recitation</h4><p>Spoken verbal oral exam</p></div>
+      <div class="mini-card" data-page="blurt"><span>✍️</span><h4>Blurting Recall</h4><p>Free-writing memory test</p></div>
+      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Leitner Cards</h4><p>Spaced repetition boxes</p></div>
+    </div>
+  </section>
+
+  <!-- CONCEPT MIND MAP -->
+  <section class="page" id="page-mindmap">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🗺️ Concept Mind Map</h2>
+        <p class="page-sub" style="margin-bottom:0">Visual node hierarchy linking core terms and definitions.</p>
+      </div>
+      <button class="btn btn-outline btn-sm" id="btnRegenMindmap">🔄 Redraw Graph</button>
+    </div>
+    <div class="mindmap-container">
+      <svg class="mindmap-svg" id="mindmapSvg"></svg>
+    </div>
+  </section>
+
+  <!-- AI VOICE ORAL EXAM -->
+  <section class="page" id="page-oral">
+    <h2 class="page-title">🎙️ AI Voice Recitation (Oral Exam)</h2>
+    <p class="page-sub">The AI examiner prompts terms aloud. Tap the microphone and recite your definition.</p>
+    <div class="oral-box">
+      <h3 id="oralTermPrompt" style="font-size:1.3rem;margin-bottom:6px">Ready for Oral Recitation</h3>
+      <p style="color:var(--text-muted);font-size:0.86rem" id="oralStatusText">Click below to hear your first question.</p>
+      <button class="oral-mic-btn" id="btnOralMic">🎙️</button>
+      <div id="oralSpokenText" style="min-height:32px;font-weight:600;margin:10px 0;color:var(--primary)"></div>
+      <div id="oralFeedback" style="font-weight:700;font-size:0.92rem"></div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:14px">
+        <button class="btn btn-primary" id="btnStartOralExam">▶️ Next Question</button>
+        <button class="btn btn-outline" id="btnRepeatQuestion">🔊 Repeat</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLURTING SCRATCHPAD -->
+  <section class="page" id="page-blurt">
+    <h2 class="page-title">✍️ Blurting Active Recall Scratchpad</h2>
+    <p class="page-sub">Write down everything you remember from memory. The engine scores retention and missed points.</p>
+    <div class="blurt-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>⏱️ Timed Blurting Sprint</strong>
+        <span id="blurtTimer" style="font-weight:800;color:var(--danger)">02:00</span>
+      </div>
+      <textarea id="blurtInput" class="input-textarea" rows="7" placeholder="Type all terms, definitions, and concepts you remember from memory..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" id="btnEvaluateBlurt">🔍 Score Retention</button>
+        <button class="btn btn-outline" id="btnStartBlurtTimer">▶️ Start 2m Timer</button>
+      </div>
+      <div class="blurt-results" id="blurtResults" style="display:none">
+        <div style="background:var(--success-light);padding:12px;border-radius:8px;border:1px solid #A7F3D0">
+          <strong style="color:var(--success)">✅ Remembered Terms (<span id="blurtMatchedCount">0</span>)</strong>
+          <ul id="blurtMatchedList" style="margin:6px 0 0 14px;font-size:0.82rem"></ul>
+        </div>
+        <div style="background:var(--danger-light);padding:12px;border-radius:8px;border:1px solid #FECACA">
+          <strong style="color:var(--danger)">❌ Missed Terms (<span id="blurtMissedCount">0</span>)</strong>
+          <ul id="blurtMissedList" style="margin:6px 0 0 14px;font-size:0.82rem"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATOR -->
+  <section class="page" id="page-upload">
+    <h2 class="page-title">📝 Bullet Creator & Deck Manager</h2>
+    <p class="page-sub">Type or paste terms in bullet format to create or update your active deck.</p>
+    <div class="create-card">
+      <div class="form-row">
+        <div>
+          <label class="field-label">Subject / Course Name <span class="req">*</span></label>
+          <input type="text" id="subjectInput" class="input-text" placeholder="e.g. Biology 101, Philippine History">
+        </div>
+        <div>
+          <label class="field-label">Target Exam Date <span class="req">*</span></label>
+          <input type="date" id="examDate" class="input-text">
+        </div>
+      </div>
+
+      <details class="collapsible-details">
+        <summary>💡 Tap to view supported bullet formats</summary>
+        <div class="details-content">
+          • <code>• Term: Definition</code><br>
+          • <code>- Term - Definition</code><br>
+          • <code>1. Term :: Definition</code><br>
+          • <code>Term &rarr; Definition</code>
+        </div>
+      </details>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <label class="field-label" style="margin:0">
+            Terms & Definitions <span class="req">*</span>
+            <span class="counter-live-badge" id="liveTermCount">0 terms</span>
+          </label>
+        </div>
+        <textarea id="pasteText" class="input-textarea" rows="7" placeholder="• Photosynthesis: Process where plants convert sunlight into chemical energy&#10;• Mitochondria: The powerhouse of the cell producing ATP energy&#10;• Ribosome: Cellular structure that synthesizes proteins"></textarea>
+      </div>
+
+      <button class="btn btn-primary big full" id="btnGenerate" style="margin-top:12px">✨ Save Deck & Build Reviewer</button>
+
+      <details class="collapsible-details" style="margin-top:10px">
+        <summary>📚 Load Pre-loaded Deck Samples</summary>
+        <div class="details-content samples-bar" style="margin-top:6px">
+          <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
+          <button class="sample-btn" data-sample="hist">🇵🇭 PH History & Rizal</button>
+          <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- REVIEWER GUIDE -->
+  <section class="page" id="page-reviewer">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">📖 Reviewer Guide</h2>
+        <p class="page-sub" id="reviewerSubject" style="margin-bottom:0">Subject: —</p>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" id="btnExportCsv">💾 Export Anki</button>
+        <button class="btn btn-outline btn-sm" id="btnPrintReviewer">🖨️ Print PDF</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="reviewerSearch" class="filter-input" placeholder="🔍 Search terms or definitions...">
+      <button class="btn btn-primary btn-sm" id="btnAddTermModal">+ Add Term</button>
+    </div>
+    <div id="reviewerContent" class="reviewer-content"></div>
+  </section>
+
+  <!-- LEITNER FLASHCARDS -->
+  <section class="page" id="page-flashcards">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🃏 Spaced Leitner Flashcards</h2>
+        <p class="page-sub" style="margin-bottom:0">Rate confidence after flipping to sort cards into Leitner review boxes.</p>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btnCramWeakSpots">⚡ Cram Weak Spots (Box 1)</button>
+    </div>
+
+    <div class="leitner-nav" id="leitnerNav">
+      <button class="leitner-pill active" data-box="all">All (<span id="boxCountAll">0</span>)</button>
+      <button class="leitner-pill" data-box="1">Box 1 (<span id="boxCount1">0</span>)</button>
+      <button class="leitner-pill" data-box="2">Box 2 (<span id="boxCount2">0</span>)</button>
+      <button class="leitner-pill" data-box="3">Box 3 (<span id="boxCount3">0</span>)</button>
+    </div>
+
+    <div class="card-deck">
+      <div class="flashcard" id="flashcard">
+        <div class="fc-inner">
+          <div class="fc-face fc-front">
+            <span class="fc-tag">Term</span>
+            <span class="fc-box-indicator" id="fcBoxNum">Box 1</span>
+            <div class="fc-text" id="fcTerm">No terms loaded</div>
+            <span class="fc-hint">💡 Tap card or press Space to flip</span>
+          </div>
+          <div class="fc-face fc-back">
+            <span class="fc-tag">Definition</span>
+            <span class="fc-box-indicator" id="fcBackBoxNum">Box 1</span>
+            <div class="fc-text" id="fcDef">Add terms in the Creator tab to start studying</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fc-controls">
+      <button class="btn btn-round" id="fcPrev">⬅️</button>
+      <span id="fcCounter">0 / 0</span>
+      <button class="btn btn-round" id="fcNext">➡️</button>
+    </div>
+
+    <div class="spaced-rating-bar">
+      <button class="rate-btn rate-again" id="btnRateAgain">🔴 Again (<1m)</button>
+      <button class="rate-btn rate-hard" id="btnRateHard">🟠 Hard (1d)</button>
+      <button class="rate-btn rate-good" id="btnRateGood">🟢 Good (3d)</button>
+      <button class="rate-btn rate-easy" id="btnRateEasy">🔵 Easy (7d)</button>
+      <button class="btn btn-outline btn-sm" id="fcAudio" style="margin-left:4px">🔊</button>
+    </div>
+  </section>
+
+  <!-- EXAM ARENA -->
+  <section class="page" id="page-quiz">
+    <h2 class="page-title">🎯 Multi-Mode Exam Arena</h2>
+    <p class="page-sub">Choose your test mode to validate knowledge and eliminate weak memory spots.</p>
+
+    <div id="quizModeSelectArea" class="quiz-mode-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px">
+      <div class="mini-card" data-mode="mc"><h4>📝 Multiple Choice</h4><p>4-option adaptive test</p></div>
+      <div class="mini-card" data-mode="tf"><h4>⚡ True / False</h4><p>Rapid statement verification</p></div>
+      <div class="mini-card" data-mode="id"><h4>✍️ Active Recall ID</h4><p>Type the exact term</p></div>
+      <div class="mini-card" data-mode="time"><h4>⏱️ 60s Sudden Death</h4><p>Score against the clock</p></div>
+    </div>
+
+    <div class="quiz-question" id="quizQuestion" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:660px;margin:0 auto">
+      <div class="q-meta" style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.84rem;margin-bottom:12px">
+        <span id="qProgress">Question 1 of 5</span>
+        <span id="qScoreLive">Score: 0</span>
+      </div>
+      <p id="qText" style="font-size:1.15rem;font-weight:700;margin-bottom:14px"></p>
+      <div id="qOptions" style="display:grid;gap:8px"></div>
+      <div id="qIdentificationBox" style="display:none;margin-top:12px">
+        <input type="text" id="qIdInput" class="input-text" placeholder="Type term name here...">
+        <button class="btn btn-primary full" id="btnSubmitId" style="margin-top:8px">Submit Answer</button>
+      </div>
+      <div id="qFeedback" style="margin-top:12px;font-weight:700"></div>
+      <button class="btn btn-primary full" id="btnNextQ" style="display:none;margin-top:12px">Next Question →</button>
+    </div>
+
+    <div id="quizResult" style="display:none;text-align:center;padding:24px 0"></div>
+  </section>
+
+  <!-- FEYNMAN STUDIO -->
+  <section class="page" id="page-feynman">
+    <h2 class="page-title">🧠 Feynman Teach-Back Studio</h2>
+    <p class="page-sub">Explain concepts in your own simple words to test retention.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:700px;margin:0 auto">
+      <div id="feynmanTermPrompt" style="font-size:1.1rem;font-weight:700;margin-bottom:8px">Pick a term</div>
+      <textarea id="feynmanUserText" class="input-textarea" rows="4" placeholder="Explain this concept in your own words..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" id="btnEvalFeynman">🔍 Evaluate</button>
+        <button class="btn btn-outline" id="btnNextFeynman">➡️ Next Term</button>
+      </div>
+      <div id="feynmanEvalBox" style="display:none;margin-top:12px;padding:12px;background:var(--surface-subtle);border-radius:8px;border:1px solid var(--border)">
+        <h4 id="feynmanScoreText"></h4>
+        <p id="feynmanFeedbackText" style="font-size:0.88rem;margin-top:4px"></p>
+        <div id="feynmanOfficialDef" style="margin-top:6px;font-size:0.8rem;color:var(--text-muted)"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAREBOT AI TUTOR -->
+  <section class="page" id="page-tutor">
+    <h2 class="page-title">🤖 PareBot AI Socratic Tutor</h2>
+    <p class="page-sub">Ask for mnemonics, simple breakdowns, or real-world Filipino analogies.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:700px;margin:0 auto">
+      <div class="samples-bar" style="margin-bottom:10px">
+        <button class="sample-btn" data-ask="mnemonic">💡 Mnemonic</button>
+        <button class="sample-btn" data-ask="eli5">👶 Explain Like I'm 10</button>
+        <button class="sample-btn" data-ask="ph">🇵🇭 Pinoy Analogy</button>
+      </div>
+      <div id="tutorChatLog" style="background:var(--surface-subtle);border:1px solid var(--border);border-radius:8px;padding:12px;max-height:240px;overflow-y:auto;margin-bottom:10px;font-size:0.88rem;line-height:1.5">
+        <strong>PareBot 🤖:</strong> Kamusta, Ka-Buddy! Ask me about any concept in your active deck.
+      </div>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="tutorInput" class="input-text" placeholder="Ask PareBot...">
+        <button class="btn btn-primary" id="btnSendTutor">Ask</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPEED MATCH -->
+  <section class="page" id="page-match">
+    <h2 class="page-title">⚡ Speed Match PRO</h2>
+    <p class="page-sub">Connect terms with their definitions as fast as possible to build combos!</p>
+    <div id="matchGame"><button class="btn btn-primary big" id="btnStartMatch">▶️ Start Match Game</button></div>
+    <div id="matchBoard" style="display:none">
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;font-size:0.9rem">
+        <span>Matches: <strong id="matchScore" style="color:var(--success)">0</strong></span>
+        <span>Misses: <strong id="matchMiss" style="color:var(--danger)">0</strong></span>
+        <span>🔥 <strong id="matchCombo">1x</strong></span>
+        <span>⏱️ <strong id="matchTime">0</strong>s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div id="matchTermCol" style="display:flex;flex-direction:column;gap:8px"></div>
+        <div id="matchDefCol" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn btn-outline btn-sm" id="btnMatchReset">🔄 Reset Game</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- POMODORO -->
+  <section class="page" id="page-pomodoro">
+    <h2 class="page-title">⏱️ Focus Sprint Pomodoro</h2>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 20px;max-width:420px;margin:20px auto 0;text-align:center">
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px">
+        <button class="pomo-tab active" data-mode="focus">📚 Focus (25m)</button>
+        <button class="pomo-tab" data-mode="short">☕ Break (5m)</button>
+        <button class="pomo-tab" data-mode="long">🌴 Long (15m)</button>
+      </div>
+      <div id="pomoTime" style="font-size:4.2rem;font-weight:800;margin:14px 0;line-height:1;font-variant-numeric:tabular-nums">25:00</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-primary big" id="btnPomoStart">▶️ Start</button>
+        <button class="btn btn-outline" id="btnPomoReset">🔄 Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="page" id="page-calendar">
+    <h2 class="page-title">📅 Spaced Study Calendar</h2>
+    <div class="cal-head" style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px">
+      <button class="btn btn-round" id="calPrev">⬅️</button>
+      <h3 id="calMonthYear" style="font-size:1.15rem;font-weight:700"></h3>
+      <button class="btn btn-round" id="calNext">➡️</button>
+    </div>
+    <div class="cal-week" style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-weight:700;color:var(--text-muted);font-size:0.78rem;margin-bottom:6px">
+      <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
+    <div class="cal-grid" id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="page" id="page-tracker">
+    <h2 class="page-title">📊 Analytics & Retention Matrix</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statTerms" style="font-size:1.7rem;font-weight:800;color:var(--primary);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">Terms in Deck</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statQuiz" style="font-size:1.7rem;font-weight:800;color:var(--primary);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">Exams Taken</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statStreak" style="font-size:1.7rem;font-weight:800;color:var(--accent);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">🔥 Day Streak</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+        <span id="statXp" style="font-size:1.7rem;font-weight:800;color:var(--purple);display:block">0</span>
+        <p style="font-size:0.72rem;color:var(--text-muted);font-weight:600">⚡ Total XP</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FULLSCREEN ZEN FOCUS MODE HUD -->
+<div class="zen-overlay" id="zenOverlay">
+  <div class="zen-header">
+    <div style="font-weight:800;letter-spacing:1px;font-size:0.9rem">🧘 ZEN FOCUS SANCTUM</div>
+    <button class="zen-exit-btn" id="btnExitZenMode">✕ Exit Zen (Esc)</button>
+  </div>
+  <div class="zen-time-glow" id="zenTimeDisplay">25:00</div>
+  <div style="max-width:460px;width:100%;margin-top:24px;text-align:center">
+    <div id="zenCardTerm" style="font-size:1.8rem;font-weight:800;margin-bottom:12px">Mitochondria</div>
+    <div id="zenCardDef" style="font-size:1.1rem;color:#94A3B8;line-height:1.5">Powerhouse of the cell producing ATP energy.</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:24px">
+      <button class="btn btn-primary" id="btnZenNextCard">Next Concept →</button>
+      <button class="btn btn-outline" id="btnZenToggleAudio">🎵 Toggle Lofi</button>
+    </div>
   </div>
 </div>
 
-<!-- USER AUTH MODAL -->
-<div class="modal-backdrop" id="authModal">
-  <div class="tactical-modal">
-    <div class="tactical-card-header">
-      <span class="tactical-card-title">🔐 Identity Authentication</span>
-      <button onclick="$('authModal').classList.remove('open')" style="background:none;color:#fff;font-size:1.1rem">✕</button>
+<!-- COMMAND PALETTE MODAL -->
+<div class="cmd-palette-overlay" id="cmdPaletteOverlay">
+  <div class="cmd-palette-card">
+    <input type="text" id="cmdPaletteInput" class="cmd-input" placeholder="Type a command or jump to feature...">
+    <div class="cmd-list" id="cmdPaletteList">
+      <div class="cmd-item" data-action="nav:flashcards"><span>🃏 Practice Leitner Flashcards</span> <span class="cmd-kbd">1</span></div>
+      <div class="cmd-item" data-action="nav:quiz"><span>🎯 Start Practice Exam</span> <span class="cmd-kbd">2</span></div>
+      <div class="cmd-item" data-action="nav:mindmap"><span>🗺️ Open Concept Mind Map</span> <span class="cmd-kbd">3</span></div>
+      <div class="cmd-item" data-action="nav:oral"><span>🎙️ Start Spoken AI Recitation</span> <span class="cmd-kbd">4</span></div>
+      <div class="cmd-item" data-action="zen"><span>🧘 Enter Zen Focus Mode</span> <span class="cmd-kbd">Z</span></div>
+      <div class="cmd-item" data-action="audio:lofi"><span>🎵 Toggle Lo-Fi Audio</span> <span class="cmd-kbd">A</span></div>
+      <div class="cmd-item" data-action="dark"><span>🌙 Toggle Theme</span> <span class="cmd-kbd">T</span></div>
     </div>
-    <form id="authForm" onsubmit="event.preventDefault(); handleAuthSubmit();">
-      <div style="margin-bottom:12px">
-        <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">OPERATOR NAME</label>
-        <input type="text" id="authNameInput" class="input-rig" placeholder="e.g. Maria Santos" required>
-      </div>
-      <div style="margin-bottom:16px">
-        <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-tertiary);display:block;margin-bottom:4px">ACCESS EMAIL</label>
-        <input type="email" id="authEmailInput" class="input-rig" placeholder="student@university.edu" required>
-      </div>
-      <button type="submit" class="btn-tactical primary full">⚡ AUTHORIZE & SYNC PROFILE</button>
+  </div>
+</div>
+
+<!-- SHARE / IMPORT QR MODAL -->
+<div class="modal-overlay" id="qrModal">
+  <div class="auth-modal-card" style="text-align:center">
+    <button class="modal-close-btn" id="btnCloseQrModal">✕</button>
+    <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:4px">📲 Share or Import Deck</h3>
+    <div class="auth-tabs" style="justify-content:center;margin-top:10px">
+      <button class="auth-tab active" id="tabQrExport">Export QR</button>
+      <button class="auth-tab" id="tabQrImport">Import Code</button>
+    </div>
+
+    <div id="qrExportSection">
+      <p style="color:var(--text-muted);font-size:0.85rem">Scan this QR code with any phone to transfer this deck.</p>
+      <div id="qrCodeTarget"></div>
+      <textarea id="qrJsonPayload" class="input-textarea" rows="3" readonly style="font-size:0.75rem;margin-top:8px"></textarea>
+      <button class="btn btn-primary full btn-sm" id="btnCopyJsonPayload" style="margin-top:8px">📋 Copy Deck Code</button>
+    </div>
+
+    <div id="qrImportSection" style="display:none">
+      <p style="color:var(--text-muted);font-size:0.85rem">Paste a deck code JSON from a classmate:</p>
+      <textarea id="qrImportInput" class="input-textarea" rows="5" placeholder='{"subject":"History","terms":[{"term":"...","def":"..."}]}' style="font-size:0.8rem;margin-top:8px"></textarea>
+      <button class="btn btn-primary full btn-sm" id="btnExecuteImport" style="margin-top:8px">📥 Import into Library</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="auth-modal-card">
+    <button class="modal-close-btn" id="btnCloseAuthModal">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignIn">Sign In</button>
+      <button class="auth-tab" id="tabSignUp">Register</button>
+    </div>
+    <button class="google-btn" id="btnGoogleAuth">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84a4.14 4.14 0 0 1-1.8 2.71v2.26h2.92a8.78 8.78 0 0 0 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.83.86-3.04.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A8.99 8.99 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.96 10.71A5.4 5.4 0 0 1 3.68 9c0-.59.1-1.17.28-1.71V4.96H.96A8.99 8.99 0 0 0 0 9c0 1.45.35 2.82.96 4.04l3-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.59C13.46.89 11.43 0 9 0A8.99 8.99 0 0 0 .96 4.96l3 2.33c.71-2.13 2.7-3.71 5.04-3.71z"/></svg>
+      Continue with Google
+    </button>
+    <div class="auth-divider"><span>OR EMAIL</span></div>
+    <form id="signInForm" onsubmit="event.preventDefault(); handleEmailSignIn();">
+      <div style="margin-bottom:10px"><label class="field-label">Email</label><input type="email" id="signInEmail" class="input-text" placeholder="student@university.edu" required></div>
+      <div style="margin-bottom:12px"><label class="field-label">Password</label><input type="password" id="signInPassword" class="input-text" placeholder="••••••••" required></div>
+      <button type="submit" class="btn btn-primary full big">Sign In</button>
     </form>
-    <div style="margin-top:14px;text-align:center">
-      <button class="btn-tactical full" id="btnGoogleOneTap">🌐 CONTINUE WITH GOOGLE</button>
-    </div>
+    <form id="signUpForm" style="display:none" onsubmit="event.preventDefault(); handleEmailSignUp();">
+      <div style="margin-bottom:8px"><label class="field-label">Full Name</label><input type="text" id="signUpName" class="input-text" placeholder="Maria Santos" required></div>
+      <div style="margin-bottom:8px"><label class="field-label">Email</label><input type="email" id="signUpEmail" class="input-text" placeholder="student@university.edu" required></div>
+      <div style="margin-bottom:12px"><label class="field-label">Password</label><input type="password" id="signUpPassword" class="input-text" placeholder="Min. 6 chars" minlength="6" required></div>
+      <button type="submit" class="btn btn-primary full big">Register</button>
+    </form>
   </div>
 </div>
 
-<div class="toast-bar" id="toastBar"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 "use strict";
 
 /* ============================================================
-   1. INDUSTRIAL DATABASE ENGINE
+   1. AUTHENTICATION & MULTI-USER STORAGE
    ============================================================ */
-const Storage = {
-  KEY: "studybuddy_industrial_v10",
-  defaultData: () => ({
-    activeDeck: "deck_bio",
-    user: { name: "GUEST // OPERATOR", email: "" },
-    decks: {
-      "deck_bio": {
-        id: "deck_bio",
-        subject: "General Biology 101",
-        examDate: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
-        terms: [
-          { id: 0, term: "Photosynthesis", def: "Biochemical conversion of light energy into ATP and glucose.", box: 1 },
-          { id: 1, term: "Mitochondria", def: "Membrane-bound organelle generating cellular ATP through oxidative phosphorylation.", box: 2 },
-          { id: 2, term: "Cell Membrane", def: "Semipermeable phospholipid bilayer governing molecular homeostasis.", box: 1 },
-          { id: 3, term: "Ribosome", def: "Catalytic ribonucleoprotein complex synthesizing polypeptide chains.", box: 3 }
-        ]
-      }
-    },
-    xp: 140, streak: 3, lastCheckin: null,
-    quests: [
-      { id: "q1", label: "Review 8 Flashcards", target: 8, count: 0, reward: 30 },
-      { id: "q2", label: "Complete 1 Exam Simulation", target: 1, count: 0, reward: 50 }
-    ]
-  }),
+const Auth = {
+  USERS_KEY: "studybuddy_users_db_v13",
+  SESSION_KEY: "studybuddy_session_v13",
+  getUsers() { try { return JSON.parse(localStorage.getItem(this.USERS_KEY)) || {}; } catch { return {}; } },
+  saveUsers(users) { localStorage.setItem(this.USERS_KEY, JSON.stringify(users)); },
+  getSession() { try { return JSON.parse(localStorage.getItem(this.SESSION_KEY)); } catch { return null; } },
+  setSession(user) { localStorage.setItem(this.SESSION_KEY, JSON.stringify(user)); this.updateUserHeader(); },
+  logout() {
+    localStorage.removeItem(this.SESSION_KEY);
+    showToast("👋 Switched to Guest Mode.");
+    this.updateUserHeader();
+    renderActiveDeckUI();
+  },
+  updateUserHeader() {
+    const session = this.getSession();
+    if (session) {
+      $("userDisplayName").textContent = session.name;
+      $("userAvatarIcon").textContent = session.name.charAt(0).toUpperCase();
+      $("userAvatarIcon").style.background = "var(--primary)";
+    } else {
+      $("userDisplayName").textContent = "Guest Mode";
+      $("userAvatarIcon").textContent = "G";
+      $("userAvatarIcon").style.background = "#64748B";
+    }
+  }
+};
+
+const Store = {
+  getStorageKey() {
+    const session = Auth.getSession();
+    return session ? `studybuddy_data_${session.email}` : "studybuddy_data_guest";
+  },
+  defaultData() {
+    return {
+      activeDeckId: "deck_bio",
+      decks: {
+        "deck_bio": {
+          id: "deck_bio",
+          subject: "General Biology 101",
+          examDate: formatDate(new Date(Date.now() + 14 * 86400000)),
+          terms: [
+            { id: 0, term: "Photosynthesis", def: "Process where plants convert sunlight into chemical energy.", box: 1 },
+            { id: 1, term: "Mitochondria", def: "The powerhouse of the cell producing ATP energy.", box: 2 },
+            { id: 2, term: "Cell Membrane", def: "Phospholipid bilayer regulating entry and exit of molecules.", box: 1 },
+            { id: 3, term: "Ribosome", def: "Cellular organelle that synthesizes proteins translating mRNA.", box: 1 },
+            { id: 4, term: "Chloroplast", def: "Plant organelle containing chlorophyll where light absorption occurs.", box: 3 }
+          ],
+          quizHistory: []
+        }
+      },
+      xp: 0,
+      streak: 0,
+      lastCheckin: null,
+      darkMode: false,
+      quizCount: 0
+    };
+  },
   get() {
-    try { return Object.assign(this.defaultData(), JSON.parse(localStorage.getItem(this.KEY)) || {}); }
+    try { return Object.assign(this.defaultData(), JSON.parse(localStorage.getItem(this.getStorageKey())) || {}); }
     catch { return this.defaultData(); }
   },
-  set(d) { localStorage.setItem(this.KEY, JSON.stringify(d)); },
+  set(d) { try { localStorage.setItem(this.getStorageKey(), JSON.stringify(d)); } catch(e){} },
   update(fn) { const u = fn(this.get()); this.set(u); return u; },
-  currentDeck() { const d = this.get(); return d.decks[d.activeDeck] || Object.values(d.decks)[0]; }
+  getActiveDeck() { const d = this.get(); return d.decks[d.activeDeckId] || Object.values(d.decks)[0]; }
 };
 
 const $ = id => document.getElementById(id);
-function showToast(msg) {
-  const t = $("toastBar");
-  t.textContent = `[SYS] ${msg}`;
+const pad = n => String(n).padStart(2, "0");
+const formatDate = d => { const dt = new Date(d); return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`; };
+
+function showToast(m) {
+  const t = $("toast");
+  if (!t) return;
+  t.textContent = m;
   t.classList.add("show");
   clearTimeout(t._t);
-  t._t = setTimeout(() => t.classList.remove("show"), 2400);
+  t._t = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+function shuffle(arr) {
+  const r = [...arr];
+  for (let i = r.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [r[i], r[j]] = [r[j], r[i]];
+  }
+  return r;
+}
+
+function esc(s) {
+  return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
 
 /* ============================================================
-   2. PROCEDURAL CHERRY MX SWITCH SYNTHESIZER
+   2. MOBILE DRAWER & NAVIGATION
+   ============================================================ */
+const sidebar = $("sidebar");
+const btnToggleMobileMenu = $("btnToggleMobileMenu");
+
+btnToggleMobileMenu.addEventListener("click", () => {
+  sidebar.classList.toggle("mobile-open");
+});
+
+document.addEventListener("click", e => {
+  if (sidebar.classList.contains("mobile-open") && !sidebar.contains(e.target) && !btnToggleMobileMenu.contains(e.target)) {
+    sidebar.classList.remove("mobile-open");
+  }
+});
+
+/* ============================================================
+   3. ZEN FOCUS SANCTUM & COMMAND PALETTE
+   ============================================================ */
+let zenDeck = [], zenIdx = 0;
+function enterZenMode() {
+  const deck = Store.getActiveDeck();
+  zenDeck = deck.terms.length ? shuffle([...deck.terms]) : [{ term: "Deep Focus", def: "Immerse yourself in active study." }];
+  zenIdx = 0;
+  updateZenCard();
+  $("zenOverlay").classList.add("active");
+  playAmbient("lofi");
+}
+
+function updateZenCard() {
+  if (!zenDeck.length) return;
+  const c = zenDeck[zenIdx % zenDeck.length];
+  $("zenCardTerm").textContent = c.term;
+  $("zenCardDef").textContent = c.def;
+}
+
+$("btnEnterZenMode").addEventListener("click", enterZenMode);
+$("btnExitZenMode").addEventListener("click", () => {
+  $("zenOverlay").classList.remove("active");
+  stopAmbient();
+});
+$("btnZenNextCard").addEventListener("click", () => { zenIdx++; updateZenCard(); });
+$("btnZenToggleAudio").addEventListener("click", () => playAmbient("lofi"));
+
+// Command Palette
+const cmdOverlay = $("cmdPaletteOverlay");
+const cmdInput = $("cmdPaletteInput");
+
+function toggleCmdPalette(open = true) {
+  cmdOverlay.classList.toggle("show", open);
+  if (open) { cmdInput.value = ""; cmdInput.focus(); }
+}
+$("btnOpenCmdPalette").addEventListener("click", () => toggleCmdPalette(true));
+cmdOverlay.addEventListener("click", e => { if (e.target === cmdOverlay) toggleCmdPalette(false); });
+
+document.querySelectorAll(".cmd-item").forEach(item => {
+  item.addEventListener("click", () => {
+    const action = item.dataset.action;
+    toggleCmdPalette(false);
+    if (action.startsWith("nav:")) navigateTo(action.replace("nav:", ""));
+    else if (action === "zen") enterZenMode();
+    else if (action === "audio:lofi") playAmbient("lofi");
+    else if (action === "dark") $("btnToggleDark").click();
+  });
+});
+
+window.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    toggleCmdPalette(!cmdOverlay.classList.contains("show"));
+  }
+  if (e.key === "Escape") {
+    if (cmdOverlay.classList.contains("show")) toggleCmdPalette(false);
+    if ($("zenOverlay").classList.contains("active")) $("btnExitZenMode").click();
+  }
+  if (e.key.toLowerCase() === "z" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+    enterZenMode();
+  }
+});
+
+/* ============================================================
+   4. MASCOT EVOLUTION & QUESTS
+   ============================================================ */
+const MASCOT_TIERS = [
+  { xp: 0, name: "Agila Egg", avatar: "🥚", tier: "Tier 1 Companion" },
+  { xp: 80, name: "Agila Eaglet", avatar: "🐣", tier: "Tier 2 Companion" },
+  { xp: 250, name: "Novice Flyer", avatar: "🦅", tier: "Tier 3 Companion" },
+  { xp: 600, name: "Sky Soarer", avatar: "⚡🦅", tier: "Tier 4 Companion" },
+  { xp: 1200, name: "Master Agila 👑", avatar: "👑🦅", tier: "Tier 5 Companion" }
+];
+
+function updateMascot() {
+  const xp = Store.get().xp || 0;
+  let currentTier = MASCOT_TIERS[0];
+  let nextTier = MASCOT_TIERS[1];
+  for (let i = 0; i < MASCOT_TIERS.length; i++) {
+    if (xp >= MASCOT_TIERS[i].xp) {
+      currentTier = MASCOT_TIERS[i];
+      nextTier = MASCOT_TIERS[i + 1] || null;
+    }
+  }
+  $("mascotAvatar").textContent = currentTier.avatar;
+  $("mascotName").textContent = currentTier.name;
+  $("mascotTier").textContent = currentTier.tier;
+  $("mascotLevelText").textContent = nextTier ? `${xp} / ${nextTier.xp} XP` : `Max (${xp} XP)`;
+}
+
+$("btnFeedMascot").addEventListener("click", () => {
+  addXP(15);
+  updateMascot();
+  if (typeof confetti === "function") confetti({ particleCount: 30, spread: 40 });
+});
+
+$("btnClaimQuest1").addEventListener("click", () => { addXP(25); $("btnClaimQuest1").disabled = true; $("btnClaimQuest1").textContent = "Claimed ✅"; });
+$("btnClaimQuest2").addEventListener("click", () => { addXP(40); $("btnClaimQuest2").disabled = true; $("btnClaimQuest2").textContent = "Claimed ✅"; });
+$("btnClaimQuest3").addEventListener("click", () => { addXP(30); $("btnClaimQuest3").disabled = true; $("btnClaimQuest3").textContent = "Claimed ✅"; });
+
+/* ============================================================
+   5. CONCEPT MIND MAP GRAPH
+   ============================================================ */
+function renderMindMap() {
+  const deck = Store.getActiveDeck();
+  const svg = $("mindmapSvg");
+  if (!svg) return;
+  svg.innerHTML = "";
+  const terms = deck.terms || [];
+  if (terms.length === 0) return;
+
+  const w = svg.clientWidth || svg.parentElement.clientWidth || 700;
+  const h = svg.clientHeight || 390;
+  const cx = w / 2, cy = h / 2;
+
+  let svgHtml = "";
+  svgHtml += `<circle cx="${cx}" cy="${cy}" r="38" fill="#3B82F6" stroke="#2563EB" stroke-width="2"/>`;
+  svgHtml += `<text x="${cx}" y="${cy}" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10" dy=".3em">${esc(deck.subject.slice(0, 13))}</text>`;
+
+  const radius = Math.min(cx, cy) - 60;
+  terms.forEach((t, i) => {
+    const angle = (i / terms.length) * 2 * Math.PI;
+    const nx = cx + radius * Math.cos(angle);
+    const ny = cy + radius * Math.sin(angle);
+    svgHtml += `<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="#CBD5E1" stroke-width="1.5"/>`;
+    svgHtml += `<circle cx="${nx}" cy="${ny}" r="26" fill="#FFFFFF" stroke="#3B82F6" stroke-width="2" style="cursor:pointer" onclick="showToast('${esc(t.term)}: ${esc(t.def)}')"/>`;
+    svgHtml += `<text x="${nx}" y="${ny}" text-anchor="middle" fill="#0F172A" font-weight="600" font-size="8.5" dy=".3em">${esc(t.term.slice(0, 8))}</text>`;
+  });
+  svg.innerHTML = svgHtml;
+}
+$("btnRegenMindmap").addEventListener("click", renderMindMap);
+window.addEventListener("resize", () => {
+  if (document.getElementById("page-mindmap").classList.contains("active")) renderMindMap();
+});
+
+/* ============================================================
+   6. AI VOICE ORAL EXAM
+   ============================================================ */
+let oralCurrentTerm = null;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.lang = "en-US";
+  recognition.onresult = e => {
+    const transcript = e.results[0][0].transcript;
+    $("oralSpokenText").textContent = `You: "${transcript}"`;
+    gradeOral(transcript);
+    $("btnOralMic").classList.remove("listening");
+  };
+  recognition.onerror = () => $("btnOralMic").classList.remove("listening");
+}
+
+function promptOral() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) return;
+  oralCurrentTerm = shuffle([...deck.terms])[0];
+  $("oralTermPrompt").textContent = `Recite: "${oralCurrentTerm.term}"`;
+  $("oralStatusText").textContent = "Tap the microphone and speak your definition.";
+  $("oralFeedback").textContent = "";
+  $("oralSpokenText").textContent = "";
+  const u = new SpeechSynthesisUtterance(`Define: ${oralCurrentTerm.term}`);
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+$("btnStartOralExam").addEventListener("click", promptOral);
+$("btnRepeatQuestion").addEventListener("click", () => {
+  if (oralCurrentTerm) window.speechSynthesis.speak(new SpeechSynthesisUtterance(`Define: ${oralCurrentTerm.term}`));
+});
+$("btnOralMic").addEventListener("click", () => {
+  if (!recognition) { showToast("⚠️ Speech Recognition not supported in this browser."); return; }
+  $("btnOralMic").classList.add("listening");
+  recognition.start();
+});
+
+function gradeOral(spoken) {
+  if (!oralCurrentTerm) return;
+  const words = oralCurrentTerm.def.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+  let matches = 0;
+  words.forEach(w => { if (spoken.toLowerCase().includes(w)) matches++; });
+  const score = Math.round((matches / Math.max(1, words.length)) * 100);
+  if (score >= 40) {
+    successSfx();
+    $("oralFeedback").innerHTML = `<span style="color:var(--success)">🌟 Great Recitation! Score: ${score}% (+20 XP)</span>`;
+    addXP(20);
+  } else {
+    failSfx();
+    $("oralFeedback").innerHTML = `<span style="color:var(--danger)">Official Definition: "${esc(oralCurrentTerm.def)}"</span>`;
+  }
+}
+
+/* ============================================================
+   7. BLURTING RECALL
+   ============================================================ */
+let blurtTimerInt = null, blurtSec = 120;
+$("btnStartBlurtTimer").addEventListener("click", () => {
+  blurtSec = 120;
+  clearInterval(blurtTimerInt);
+  blurtTimerInt = setInterval(() => {
+    blurtSec--;
+    $("blurtTimer").textContent = `${pad(Math.floor(blurtSec/60))}:${pad(blurtSec%60)}`;
+    if (blurtSec <= 0) { clearInterval(blurtTimerInt); $("btnEvaluateBlurt").click(); }
+  }, 1000);
+});
+
+$("btnEvaluateBlurt").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  const text = $("blurtInput").value.toLowerCase();
+  if (!text) { showToast("⚠️ Write some terms first."); return; }
+  const matched = [], missed = [];
+  deck.terms.forEach(t => {
+    if (text.includes(t.term.toLowerCase())) matched.push(t);
+    else missed.push(t);
+  });
+  $("blurtResults").style.display = "grid";
+  $("blurtMatchedCount").textContent = matched.length;
+  $("blurtMissedCount").textContent = missed.length;
+  $("blurtMatchedList").innerHTML = matched.map(m => `<li>${esc(m.term)}</li>`).join("") || "<li>None</li>";
+  $("blurtMissedList").innerHTML = missed.map(m => `<li>${esc(m.term)}</li>`).join("") || "<li>None</li>";
+  const pct = Math.round((matched.length / Math.max(1, deck.terms.length)) * 100);
+  addXP(pct);
+  showToast(`📊 Blurting Recall: ${pct}% (+${pct} XP)`);
+});
+
+/* ============================================================
+   8. PROCEDURAL AMBIENT & SOUND
    ============================================================ */
 let audioCtx = null;
-function getAudio() {
+function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === "suspended") audioCtx.resume();
   return audioCtx;
 }
-
-function clickSfx(pitch = 900) {
+function playBeep(freq = 520, dur = 0.1, type = "sine") {
   try {
-    const ctx = getAudio();
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(pitch, ctx.currentTime);
-    g.gain.setValueAtTime(0.08, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + 0.04);
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + dur);
   } catch(e){}
 }
+const uiClick = () => playBeep(600, 0.05);
+const successSfx = () => { playBeep(523.25, 0.1); setTimeout(() => playBeep(659.25, 0.1), 90); setTimeout(() => playBeep(783.99, 0.15), 180); };
+const failSfx = () => { playBeep(260, 0.15, "triangle"); };
 
-let synthRunning = false, synthNodes = [];
-function toggleChordSynth() {
-  const ctx = getAudio();
-  synthRunning = !synthRunning;
-  if (!synthRunning) {
-    synthNodes.forEach(n => { try { n.stop(); } catch(e){} });
-    synthNodes = [];
-    $("btnAudioToggle").classList.remove("active");
-    $("btnAudioToggle").querySelector(".keycap").textContent = "OFF";
-    showToast("CHORD SYNTH DISABLED");
-    return;
-  }
-  
-  [220, 261.63, 329.63, 392].forEach(f => {
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = f;
-    g.gain.value = 0.015;
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start();
-    synthNodes.push(osc);
-  });
-  $("btnAudioToggle").classList.add("active");
-  $("btnAudioToggle").querySelector(".keycap").textContent = "ACTIVE";
-  showToast("40HZ CHORD SYNTH ENGAGED");
+let currentAmbient = null, ambientNodes = [];
+function stopAmbient() {
+  ambientNodes.forEach(n => { try { n.stop ? n.stop() : n.disconnect(); } catch(e){} });
+  ambientNodes = [];
+  document.querySelectorAll(".amb-btn").forEach(b => b.classList.remove("active"));
+  currentAmbient = null;
 }
-$("btnAudioToggle").addEventListener("click", toggleChordSynth);
+function playAmbient(type) {
+  if (currentAmbient === type) { stopAmbient(); return; }
+  stopAmbient();
+  currentAmbient = type;
+  const ctx = getAudioCtx();
+
+  if (type === "lofi") {
+    const chords = [[261.63, 329.63, 392.00], [220.00, 261.63, 329.63], [174.61, 220.00, 261.63]];
+    let cIdx = 0;
+    const playCh = () => {
+      if (currentAmbient !== "lofi") return;
+      const notes = chords[cIdx % chords.length];
+      cIdx++;
+      notes.forEach(f => {
+        const osc = ctx.createOscillator(); const g = ctx.createGain();
+        osc.type = "sine"; osc.frequency.value = f;
+        g.gain.setValueAtTime(0.015, ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 1);
+        g.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 3.8);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 4);
+      });
+    };
+    playCh();
+    const interval = setInterval(playCh, 4000);
+    ambientNodes.push({ stop: () => clearInterval(interval) });
+  } else if (type === "alpha") {
+    const left = ctx.createOscillator(), right = ctx.createOscillator(), g = ctx.createGain();
+    left.frequency.value = 200; right.frequency.value = 240; g.gain.value = 0.03;
+    left.connect(g); right.connect(g); g.connect(ctx.destination);
+    left.start(); right.start();
+    ambientNodes.push(left, right);
+  } else {
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+    const whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer; whiteNoise.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass"; filter.frequency.value = (type === "rain") ? 800 : 1200;
+    const g = ctx.createGain(); g.gain.value = 0.03;
+    whiteNoise.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    whiteNoise.start();
+    ambientNodes.push(whiteNoise);
+  }
+  $(`amb${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add("active");
+  showToast(`🎧 Lo-Fi Audio: ${type.toUpperCase()}`);
+}
+
+$("ambLofi").addEventListener("click", () => playAmbient("lofi"));
+$("ambAlpha").addEventListener("click", () => playAmbient("alpha"));
+$("ambRain").addEventListener("click", () => playAmbient("rain"));
+$("ambCafe").addEventListener("click", () => playAmbient("cafe"));
 
 /* ============================================================
-   3. NAVIGATION & HUD TELEMETRY
+   9. THEME & CORE NAVIGATION
    ============================================================ */
-function navigate(viewId) {
-  clickSfx(1100);
-  document.querySelectorAll(".rail-btn").forEach(b => b.classList.toggle("active", b.dataset.view === viewId));
-  document.querySelectorAll(".panel-view").forEach(p => p.classList.remove("active"));
-  const target = $("view-" + viewId);
-  if (target) target.classList.add("active");
-
-  if (viewId === "mindmap") renderMindMap();
-  if (viewId === "flashcards") initCards();
-  if (viewId === "exam") initExam();
-  if (viewId === "reviewer") renderReviewer();
-  if (viewId === "calendar") renderCalendar();
-}
-
-document.querySelectorAll("[data-view]").forEach(b => {
-  b.addEventListener("click", () => navigate(b.dataset.view));
+$("btnToggleDark").addEventListener("click", () => {
+  uiClick();
+  const isDark = document.body.classList.toggle("dark-mode");
+  $("btnToggleDark").textContent = isDark ? "☀️" : "🌙";
+  Store.update(s => { s.darkMode = isDark; return s; });
 });
+if (Store.get().darkMode) { document.body.classList.add("dark-mode"); $("btnToggleDark").textContent = "☀️"; }
 
-function updateTelemetry() {
-  const d = Storage.get();
-  const deck = Storage.currentDeck();
-  $("hudDeckName").textContent = deck.subject.toUpperCase().replace(/\s+/g, "_").slice(0, 14);
-  $("hudUserName").textContent = (d.user && d.user.name) ? d.user.name.toUpperCase().slice(0, 14) : "GUEST // AUTH";
-  $("statTotalTerms").textContent = deck.terms.length;
-  $("statMastered").textContent = deck.terms.filter(t => t.box >= 3).length;
-  $("statStreak").textContent = d.streak;
-  $("statXp").textContent = d.xp;
-  $("hudRetention").textContent = `${Math.min(99.4, 75 + (d.streak * 3) + (d.xp * 0.05)).toFixed(1)}%`;
-  renderQuests();
+function addXP(amount) {
+  Store.update(s => { s.xp = (s.xp || 0) + amount; return s; });
+  showToast(`⚡ +${amount} XP!`);
+  updateHomeHeader();
 }
 
-function renderQuests() {
-  const d = Storage.get();
-  $("dashboardQuestList").innerHTML = d.quests.map(q => `
-    <div style="background:var(--bg-inset);padding:10px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle)">
-      <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.75rem;font-weight:700">
-        <span>${q.label}</span>
-        <span style="color:var(--signal-amber)">+${q.reward}XP</span>
-      </div>
-      <div style="height:4px;background:var(--border-subtle);border-radius:2px;margin:6px 0">
-        <div style="height:100%;width:${Math.min(100, (q.count/q.target)*100)}%;background:var(--signal-cyan)"></div>
-      </div>
-    </div>
+function updateHomeHeader() {
+  updateMascot();
+}
+
+function renderDeckSelector() {
+  const d = Store.get();
+  const select = $("activeDeckSelect");
+  select.innerHTML = Object.values(d.decks).map(deck => `
+    <option value="${deck.id}" ${deck.id === d.activeDeckId ? "selected" : ""}>${esc(deck.subject)} (${deck.terms.length})</option>
   `).join("");
 }
 
-/* ============================================================
-   4. 3D LEITNER INTERVAL RIG
-   ============================================================ */
-let cardIndex = 0;
-function initCards() {
-  cardIndex = 0;
-  showCard();
-}
-
-function showCard() {
-  const deck = Storage.currentDeck();
-  if (!deck.terms.length) {
-    $("fcTermText").textContent = "No terms in this deck";
-    $("fcDefText").textContent = "Add terms in the Creator tab to begin studying.";
-    $("fcProgressCounter").textContent = "0 / 0";
-    return;
-  }
-  const card = deck.terms[cardIndex % deck.terms.length];
-  $("cardRig").classList.remove("flipped");
-  $("fcTermText").textContent = card.term;
-  $("fcDefText").textContent = card.def;
-  $("fcFrontBox").textContent = `BOX ${card.box || 1}`;
-  $("fcBackBox").textContent = `BOX ${card.box || 1}`;
-  $("fcProgressCounter").textContent = `${(cardIndex % deck.terms.length) + 1} / ${deck.terms.length}`;
-}
-
-$("cardRig").addEventListener("click", () => {
-  clickSfx(800);
-  $("cardRig").classList.toggle("flipped");
+$("activeDeckSelect").addEventListener("change", e => {
+  Store.update(s => { s.activeDeckId = e.target.value; return s; });
+  showToast(`📂 Active deck: ${Store.getActiveDeck().subject}`);
+  renderActiveDeckUI();
 });
 
-function rateCard(boxDelta) {
-  clickSfx(1200);
-  const deck = Storage.currentDeck();
-  if (!deck.terms.length) return;
-  const card = deck.terms[cardIndex % deck.terms.length];
-  Storage.update(s => {
-    const target = s.decks[s.activeDeck].terms.find(t => t.id === card.id);
-    if (target) target.box = Math.max(1, Math.min(3, (target.box || 1) + boxDelta));
-    s.xp += 10;
-    return s;
+function renderActiveDeckUI() {
+  const deck = Store.getActiveDeck();
+  $("reviewerSubject").textContent = "Subject: " + (deck.subject || "Not Set");
+  $("subjectInput").value = deck.subject || "";
+  $("examDate").value = deck.examDate || "";
+  $("pasteText").value = deck.terms.map(t => `• ${t.term}: ${t.def}`).join("\n");
+  updateLiveCounter();
+  renderReviewer();
+  initFlashcards();
+  renderTracker();
+  renderCalendar(calView);
+  renderMindMap();
+  setupFeynmanTerm();
+  renderDeckSelector();
+  updateMascot();
+}
+
+function navigateTo(page) {
+  if (!page) return;
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === page));
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const target = $("page-" + page);
+  if (target) target.classList.add("active");
+  sidebar.classList.remove("mobile-open");
+
+  if (page === "mindmap") renderMindMap();
+  if (page === "reviewer") renderReviewer();
+  if (page === "flashcards") initFlashcards();
+  if (page === "tracker") renderTracker();
+  if (page === "calendar") renderCalendar(calView);
+  if (page === "quiz") initQuizScreen();
+  if (page === "feynman") setupFeynmanTerm();
+}
+
+document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const p = btn.dataset.page;
+    if (btn.classList.contains("nav-btn")) uiClick();
+    navigateTo(p);
   });
-  updateTelemetry();
-  cardIndex++;
-  showCard();
-}
-
-$("btnRate1").addEventListener("click", () => rateCard(-1));
-$("btnRate2").addEventListener("click", () => rateCard(0));
-$("btnRate3").addEventListener("click", () => rateCard(1));
-$("btnRate4").addEventListener("click", () => rateCard(2));
-
-window.addEventListener("keydown", e => {
-  const activePanel = document.querySelector(".panel-view.active");
-  if (!activePanel || activePanel.id !== "view-flashcards") return;
-  if (e.code === "Space") { e.preventDefault(); $("cardRig").click(); }
-  if (e.key === "1") rateCard(-1);
-  if (e.key === "2") rateCard(0);
-  if (e.key === "3") rateCard(1);
-  if (e.key === "4") rateCard(2);
-});
-
-$("btnTtsSpeak").addEventListener("click", () => {
-  const deck = Storage.currentDeck();
-  if (!deck.terms.length) return;
-  const card = deck.terms[cardIndex % deck.terms.length];
-  const u = new SpeechSynthesisUtterance(card.term);
-  speechSynthesis.speak(u);
 });
 
 /* ============================================================
-   5. NEURAL CONCEPT MIND MAP
+   10. BULLET PARSER & SAMPLES
    ============================================================ */
-function renderMindMap() {
-  const deck = Storage.currentDeck();
-  const svg = $("mindMapCanvas");
-  svg.innerHTML = "";
-  if (!deck.terms || !deck.terms.length) return;
-
-  const cx = 300, cy = 240;
-  const r = 140;
-  svg.setAttribute("viewBox", "0 0 600 480");
-
-  let html = `
-    <circle cx="${cx}" cy="${cy}" r="38" fill="var(--bg-surface)" stroke="var(--signal-amber)" stroke-width="2"/>
-    <text x="${cx}" y="${cy}" text-anchor="middle" dy="4" fill="#fff" font-family="var(--font-mono)" font-size="10" font-weight="700">${deck.subject.slice(0, 12)}</text>
-  `;
-
-  deck.terms.forEach((t, i) => {
-    const angle = (i / deck.terms.length) * 2 * Math.PI;
-    const nx = cx + r * Math.cos(angle), ny = cy + r * Math.sin(angle);
-    html += `
-      <line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="var(--border-strong)" stroke-width="1.5"/>
-      <circle cx="${nx}" cy="${ny}" r="22" fill="var(--bg-panel)" stroke="var(--signal-cyan)" stroke-width="1.5" style="cursor:pointer" onclick="showToast('${t.term.replace(/'/g, "\\'")}')"/>
-      <text x="${nx}" y="${ny}" text-anchor="middle" dy="4" fill="var(--text-primary)" font-family="var(--font-mono)" font-size="9">${t.term.slice(0, 8)}</text>
-    `;
-  });
-  svg.innerHTML = html;
-}
-$("btnResetMindMap").addEventListener("click", renderMindMap);
-
-/* ============================================================
-   6. EXAM ARENA UNIT
-   ============================================================ */
-let examIdx = 0, examScore = 0;
-function initExam() {
-  examIdx = 0; examScore = 0;
-  $("examScoreLive").textContent = `SCORE: ${examScore}`;
-  loadExamQ();
-}
-
-function loadExamQ() {
-  const deck = Storage.currentDeck();
-  if (!deck.terms || deck.terms.length < 2) {
-    $("examPrompt").textContent = "Need at least 2 terms in deck to run exam simulation.";
-    $("examOptionsGrid").innerHTML = "";
-    return;
+const SAMPLES = {
+  bio: {
+    subject: "General Biology 101",
+    text: `• Photosynthesis: Process where plants convert sunlight into chemical energy.
+• Mitochondria: The powerhouse of the cell producing ATP energy.
+• Cell Membrane: Phospholipid bilayer regulating entry and exit of molecules.
+• Ribosome: Cellular organelle that synthesizes proteins translating mRNA.
+• Chloroplast: Plant organelle containing chlorophyll where light absorption occurs.`
+  },
+  hist: {
+    subject: "Philippine History & Rizal",
+    text: `• Noli Me Tangere: Novel written by Jose Rizal exposing Spanish friar abuses.
+• Kilusang Propaganda: Reform movement advocating for Philippine equality.
+• Katipunan (KKK): Secret revolutionary society founded by Andres Bonifacio.
+• Cry of Pugad Lawin: Historic event in 1896 where Katipuneros tore their cedulas.`
+  },
+  cs: {
+    subject: "Computer Science Fundamentals",
+    text: `• Algorithm: Step-by-step instructions to solve a computational problem.
+• Data Structure: Format for organizing, storing, and accessing data efficiently.
+• Recursion: Technique where a function calls itself to solve smaller instances.
+• Binary Search: O(log n) search algorithm dividing a sorted array in half.`
   }
-  const q = deck.terms[examIdx % deck.terms.length];
-  $("examPrompt").textContent = `Identify definition for concept: "${q.term}"`;
-  $("examFeedback").textContent = "";
-  $("btnNextExamQ").style.display = "none";
+};
 
-  const distractors = deck.terms.filter(t => t.id !== q.id).map(t => t.def);
-  const opts = [q.def, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
-
-  const container = $("examOptionsGrid");
-  container.innerHTML = "";
-  opts.forEach(o => {
-    const btn = document.createElement("button");
-    btn.className = "exam-opt-btn";
-    btn.innerHTML = `<span>${o}</span><span class="keycap">SELECT</span>`;
-    btn.addEventListener("click", () => {
-      clickSfx(1400);
-      const isCorrect = (o === q.def);
-      if (isCorrect) {
-        examScore += 20;
-        btn.classList.add("correct");
-        $("examFeedback").innerHTML = `<span style="color:var(--signal-green)">✓ SYSTEM ACCURACY CONFIRMED (+20 XP)</span>`;
-        Storage.update(s => { s.xp += 20; return s; });
-        updateTelemetry();
-      } else {
-        btn.classList.add("wrong");
-        $("examFeedback").innerHTML = `<span style="color:var(--signal-red)">✗ ERROR IN EVALUATION</span>`;
-      }
-      container.querySelectorAll(".exam-opt-btn").forEach(b => b.disabled = true);
-      $("btnNextExamQ").style.display = "inline-block";
-    });
-    container.appendChild(btn);
-  });
-}
-
-$("btnNextExamQ").addEventListener("click", () => {
-  examIdx++;
-  loadExamQ();
-});
-
-/* ============================================================
-   7. BLURTING & VOICE ORAL
-   ============================================================ */
-let blurtSec = 120, blurtTimer = null;
-$("btnStartBlurtTimer").addEventListener("click", () => {
-  blurtSec = 120;
-  clearInterval(blurtTimer);
-  $("blurtInputText").value = "";
-  $("blurtResultsBox").style.display = "none";
-  blurtTimer = setInterval(() => {
-    blurtSec--;
-    $("blurtCountdown").textContent = `${String(Math.floor(blurtSec/60)).padStart(2, "0")}:${String(blurtSec%60).padStart(2, "0")}`;
-    if (blurtSec <= 0) { clearInterval(blurtTimer); gradeBlurt(); }
-  }, 1000);
-  showToast("BLURTING PROTOCOL STARTED");
-});
-
-function gradeBlurt() {
-  clearInterval(blurtTimer);
-  const deck = Storage.currentDeck();
-  const txt = $("blurtInputText").value.toLowerCase();
-  let hits = 0;
-  deck.terms.forEach(t => { if (txt.includes(t.term.toLowerCase())) hits++; });
-  $("blurtResultsBox").style.display = "block";
-  $("blurtScoreText").textContent = `SCORE: ${hits}/${deck.terms.length} CONCEPTS RECALLED`;
-}
-$("btnGradeBlurt").addEventListener("click", gradeBlurt);
-
-/* VOICE RECITATION */
-const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recEngine = null;
-if (SpeechRec) {
-  recEngine = new SpeechRec();
-  recEngine.onresult = e => {
-    const spoken = Array.from(e.results).map(r => r[0].transcript).join("");
-    $("oralLiveTranscript").textContent = spoken;
-    showToast("VOICE RECOGNIZED");
-  };
-  recEngine.onend = () => $("btnMicOrb").classList.remove("recording");
-}
-
-$("btnMicOrb").addEventListener("click", () => {
-  if (!recEngine) { showToast("SPEECH API NOT SUPPORTED"); return; }
-  $("btnMicOrb").classList.add("recording");
-  recEngine.start();
-});
-
-$("btnNextOral").addEventListener("click", () => {
-  const deck = Storage.currentDeck();
-  if (!deck.terms.length) return;
-  const q = deck.terms[Math.floor(Math.random() * deck.terms.length)];
-  $("oralPromptHeadline").textContent = `Recite definition: "${q.term}"`;
-  $("oralLiveTranscript").textContent = "...";
-  const u = new SpeechSynthesisUtterance(`Please explain: ${q.term}`);
-  speechSynthesis.speak(u);
-});
-
-/* ============================================================
-   8. POMODORO TIMER
-   ============================================================ */
-let pomoSec = 25 * 60, pomoInt = null;
-function updatePomoDisplay() {
-  const mm = String(Math.floor(pomoSec / 60)).padStart(2, "0");
-  const ss = String(pomoSec % 60).padStart(2, "0");
-  $("pomoDisplay").textContent = `${mm}:${ss}`;
-}
-$("btnPomoToggle").addEventListener("click", () => {
-  if (pomoInt) {
-    clearInterval(pomoInt);
-    pomoInt = null;
-    $("btnPomoToggle").textContent = "▶️ RESUME";
-    showToast("POMODORO PAUSED");
-  } else {
-    $("btnPomoToggle").textContent = "⏸️ PAUSE";
-    showToast("POMODORO RUNNING");
-    pomoInt = setInterval(() => {
-      pomoSec--;
-      updatePomoDisplay();
-      if (pomoSec <= 0) {
-        clearInterval(pomoInt);
-        pomoInt = null;
-        pomoSec = 25 * 60;
-        updatePomoDisplay();
-        $("btnPomoToggle").textContent = "▶️ START";
-        showToast("POMODORO COMPLETED (+25 XP)");
-        Storage.update(s => { s.xp += 25; return s; });
-        updateTelemetry();
-      }
-    }, 1000);
-  }
-});
-$("btnPomoReset").addEventListener("click", () => {
-  clearInterval(pomoInt);
-  pomoInt = null;
-  pomoSec = 25 * 60;
-  updatePomoDisplay();
-  $("btnPomoToggle").textContent = "▶️ START";
-  showToast("POMODORO RESET");
-});
-
-/* ============================================================
-   9. CALENDAR MODULE
-   ============================================================ */
-let calDate = new Date();
-function renderCalendar() {
-  const y = calDate.getFullYear(), m = calDate.getMonth();
-  const monthNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-  $("calMonthLabel").textContent = `${monthNames[m]} ${y}`;
-  
-  const first = new Date(y, m, 1).getDay();
-  const totalDays = new Date(y, m + 1, 0).getDate();
-  const deck = Storage.currentDeck();
-  const todayStr = new Date().toISOString().split("T")[0];
-
-  let html = "";
-  for (let i = 0; i < first; i++) html += '<div style="min-height:50px"></div>';
-  for (let d = 1; d <= totalDays; d++) {
-    const dStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-    const isToday = (dStr === todayStr);
-    const isExam = (deck.examDate === dStr);
-    html += `
-      <div style="background:var(--bg-inset);border:1px solid ${isToday ? 'var(--signal-amber)' : 'var(--border-subtle)'};border-radius:var(--radius-xs);padding:6px;min-height:54px;font-family:var(--font-mono);font-size:0.75rem">
-        <span style="font-weight:700;color:${isToday ? 'var(--signal-amber)' : 'var(--text-primary)'}">${d}</span>
-        ${isExam ? '<div style="margin-top:4px;background:var(--signal-red);color:#fff;font-size:0.6rem;padding:1px 3px;border-radius:2px">EXAM</div>' : ''}
-      </div>
-    `;
-  }
-  $("calendarGrid").innerHTML = html;
-}
-$("btnCalPrev").addEventListener("click", () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); });
-$("btnCalNext").addEventListener("click", () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); });
-
-/* ============================================================
-   10. DECK COMPILER & REPOSITORY
-   ============================================================ */
-$("btnSaveDeck").addEventListener("click", () => {
-  const subj = $("inputSubject").value.trim();
-  const raw = $("inputRawBullets").value.trim();
-  if (!subj || !raw) { showToast("INPUT REQUIRED"); return; }
-
-  const lines = raw.split("\n").map(l => l.trim()).filter(l => l.length > 0);
-  const terms = [];
-  lines.forEach((line, i) => {
-    const clean = line.replace(/^[\s•\-\*\d\.\)]+/, "").trim();
-    for (const sep of ["::", " - ", " — ", " – ", " : ", ":", "=>", "→"]) {
-      const idx = clean.indexOf(sep);
-      if (idx !== -1) {
-        terms.push({ id: i, term: clean.slice(0, idx).trim(), def: clean.slice(idx + sep.length).trim(), box: 1 });
-        break;
-      }
+document.querySelectorAll(".sample-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.sample;
+    if (SAMPLES[key]) {
+      $("subjectInput").value = SAMPLES[key].subject;
+      $("pasteText").value = SAMPLES[key].text;
+      const d = new Date(); d.setDate(d.getDate() + 14);
+      $("examDate").value = formatDate(d);
+      updateLiveCounter();
+      showToast(`✨ Loaded ${SAMPLES[key].subject}!`);
     }
   });
-
-  if (!terms.length) { showToast("NO TERMS PARSED (USE Term: Def)"); return; }
-
-  const deckId = "deck_" + subj.toLowerCase().replace(/[^a-z0-9]/g, "_");
-  Storage.update(s => {
-    s.decks[deckId] = { id: deckId, subject: subj, examDate: $("inputExamDate").value, terms };
-    s.activeDeck = deckId;
-    s.xp += 30;
-    return s;
-  });
-  renderDeckOptions();
-  updateTelemetry();
-  showToast(`INGESTED ${terms.length} TERMS INTO ${subj}`);
-  navigate("dashboard");
 });
 
+function parseBulletTerms(text) {
+  const lines = (text || "").split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+  const terms = [], seen = new Set();
+  for (const line of lines) {
+    const clean = line.replace(/^[\s•\-\*\d\.\)]+/, "").trim();
+    let parts = null;
+    for (const sep of ["::", " - ", " — ", " – ", " : ", ":", "=>", "→", "\t"]) {
+      const idx = clean.indexOf(sep);
+      if (idx !== -1) { parts = [clean.slice(0, idx).trim(), clean.slice(idx + sep.length).trim()]; break; }
+    }
+    if (parts && parts[0] && parts[1] && !seen.has(parts[0].toLowerCase())) {
+      seen.add(parts[0].toLowerCase());
+      terms.push({ term: parts[0], def: parts[1], box: 1, id: terms.length });
+    }
+  }
+  return terms;
+}
+
+function updateLiveCounter() {
+  const t = parseBulletTerms($("pasteText").value);
+  $("liveTermCount").textContent = `${t.length} terms`;
+}
+$("pasteText").addEventListener("input", updateLiveCounter);
+
+$("btnGenerate").addEventListener("click", () => {
+  uiClick();
+  const subject = $("subjectInput").value.trim(), exam = $("examDate").value, rawText = $("pasteText").value.trim();
+  if (!subject) { showToast("⚠️ Enter Subject Name."); return; }
+  if (!exam) { showToast("⚠️ Pick Exam Date."); return; }
+  const terms = parseBulletTerms(rawText);
+  if (!terms.length) { showToast("⚠️ No terms detected."); return; }
+  const deckId = "deck_" + subject.toLowerCase().replace(/[^a-z0-9]/g, "_");
+  Store.update(s => {
+    s.decks[deckId] = { id: deckId, subject, examDate: exam, terms, quizHistory: [] };
+    s.activeDeckId = deckId;
+    return s;
+  });
+  addXP(30);
+  renderActiveDeckUI();
+  showToast(`✅ Saved "${subject}" with ${terms.length} terms!`);
+  navigateTo("reviewer");
+});
+
+/* ============================================================
+   11. REVIEWER & FLASHCARDS
+   ============================================================ */
 function renderReviewer() {
-  const deck = Storage.currentDeck();
-  $("reviewerContainer").innerHTML = deck.terms.map(t => `
-    <div class="reviewer-card">
-      <div class="term">${t.term}</div>
-      <div class="def">${t.def}</div>
+  const deck = Store.getActiveDeck();
+  $("reviewerSubject").textContent = "Subject: " + (deck.subject || "Not Set");
+  const box = $("reviewerContent"), q = ($("reviewerSearch") ? $("reviewerSearch").value.toLowerCase() : "");
+  if (!deck.terms || !deck.terms.length) {
+    box.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted)">No terms loaded.</p>';
+    return;
+  }
+  const filtered = deck.terms.filter(t => t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q));
+  box.innerHTML = filtered.map(t => `
+    <div class="reviewer-item">
+      <div class="reviewer-actions"><button class="icon-btn" onclick="deleteTerm(${t.id})">🗑️</button></div>
+      <div class="term">${esc(t.term)}</div>
+      <div class="def">${esc(t.def)}</div>
     </div>
   `).join("");
 }
 
-function renderDeckOptions() {
-  const d = Storage.get();
-  $("railDeckSelect").innerHTML = Object.values(d.decks).map(deck => `
-    <option value="${deck.id}" ${deck.id === d.activeDeck ? "selected" : ""}>${deck.subject}</option>
-  `).join("");
-}
-$("railDeckSelect").addEventListener("change", e => {
-  Storage.update(s => { s.activeDeck = e.target.value; return s; });
-  updateTelemetry();
-  showToast("SWITCHED ACTIVE DECK");
-});
+window.deleteTerm = id => {
+  Store.update(s => {
+    const deck = s.decks[s.activeDeckId];
+    if (deck) deck.terms = deck.terms.filter(t => t.id !== id);
+    return s;
+  });
+  renderReviewer();
+  showToast("🗑️ Term removed");
+};
 
-/* ANKI CSV EXPORT */
-$("btnExportAnki").addEventListener("click", () => {
-  const deck = Storage.currentDeck();
+$("reviewerSearch").addEventListener("input", renderReviewer);
+$("btnPrintReviewer").addEventListener("click", () => { uiClick(); window.print(); });
+$("btnExportCsv").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) return;
   const csv = deck.terms.map(t => `"${t.term.replace(/"/g, '""')}","${t.def.replace(/"/g, '""')}"`).join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `${deck.subject}_Anki.csv`;
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  a.download = `${deck.subject || "deck"}_Anki.csv`;
   a.click();
-  showToast("ANKI CSV EXPORTED");
+  showToast("💾 Exported Anki CSV!");
 });
 
-/* QR SYNC */
-$("btnQrShare").addEventListener("click", () => {
-  const deck = Storage.currentDeck();
-  if (window.QRCode) {
-    QRCode.toCanvas($("qrCanvas"), JSON.stringify(deck), { width: 180, color: { dark: "#000", light: "#fff" } });
+$("btnAddTermModal").addEventListener("click", () => {
+  const t = prompt("Enter Term:"), def = prompt("Enter Definition:");
+  if (!t || !def) return;
+  Store.update(s => {
+    const deck = s.decks[s.activeDeckId];
+    if (deck) deck.terms.push({ term: t.trim(), def: def.trim(), box: 1, id: Date.now() });
+    return s;
+  });
+  renderReviewer();
+  showToast("✅ Term added!");
+});
+
+let fcDeck = [], fcIdx = 0, currentLeitnerBox = "all";
+function initFlashcards() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms || !deck.terms.length) {
+    $("fcTerm").textContent = "No terms loaded"; $("fcDef").textContent = "Create terms to start studying.";
+    $("fcCounter").textContent = "0 / 0";
+    return;
   }
-  $("qrModal").classList.add("open");
-});
-$("btnCopyJson").addEventListener("click", () => {
-  navigator.clipboard.writeText(JSON.stringify(Storage.currentDeck()));
-  showToast("DECK JSON COPIED");
-});
-
-/* AUTH MODAL */
-$("btnUserAuth").addEventListener("click", () => $("authModal").classList.add("open"));
-function handleAuthSubmit() {
-  const name = $("authNameInput").value.trim();
-  const email = $("authEmailInput").value.trim();
-  Storage.update(s => { s.user = { name, email }; return s; });
-  updateTelemetry();
-  $("authModal").classList.remove("open");
-  showToast(`OPERATOR AUTHORIZED: ${name}`);
+  updateLeitnerPills();
+  filterLeitnerDeck(currentLeitnerBox);
 }
-$("btnGoogleOneTap").addEventListener("click", () => {
-  Storage.update(s => { s.user = { name: "JUAN DELA CRUZ", email: "juan@ph.edu" }; return s; });
-  updateTelemetry();
-  $("authModal").classList.remove("open");
-  showToast("AUTHORIZED VIA GOOGLE");
+function updateLeitnerPills() {
+  const terms = Store.getActiveDeck().terms || [];
+  $("boxCountAll").textContent = terms.length;
+  $("boxCount1").textContent = terms.filter(t => (t.box || 1) === 1).length;
+  $("boxCount2").textContent = terms.filter(t => (t.box || 1) === 2).length;
+  $("boxCount3").textContent = terms.filter(t => (t.box || 1) >= 3).length;
+}
+function filterLeitnerDeck(box) {
+  currentLeitnerBox = box;
+  document.querySelectorAll(".leitner-pill").forEach(p => p.classList.toggle("active", p.dataset.box === String(box)));
+  const all = Store.getActiveDeck().terms || [];
+  if (box === "all") fcDeck = [...all];
+  else if (box === "3") fcDeck = all.filter(t => (t.box || 1) >= 3);
+  else fcDeck = all.filter(t => (t.box || 1) === parseInt(box));
+  fcIdx = 0; showFc();
+}
+document.querySelectorAll(".leitner-pill").forEach(p => p.addEventListener("click", () => filterLeitnerDeck(p.dataset.box)));
+$("btnCramWeakSpots").addEventListener("click", () => filterLeitnerDeck("1"));
+
+function showFc() {
+  if (!fcDeck.length) {
+    $("flashcard").classList.remove("flip");
+    $("fcTerm").textContent = "No cards in this box 🎉"; $("fcDef").textContent = "Switch boxes to continue.";
+    $("fcCounter").textContent = "0 / 0"; return;
+  }
+  const t = fcDeck[fcIdx];
+  $("flashcard").classList.remove("flip");
+  $("fcTerm").textContent = t.term; $("fcDef").textContent = t.def;
+  $("fcBoxNum").textContent = `Box ${t.box || 1}`; $("fcBackBoxNum").textContent = `Box ${t.box || 1}`;
+  $("fcCounter").textContent = `${fcIdx + 1} / ${fcDeck.length}`;
+}
+$("flashcard").addEventListener("click", () => $("flashcard").classList.toggle("flip"));
+$("fcPrev").addEventListener("click", () => { if (fcDeck.length) { fcIdx = (fcIdx - 1 + fcDeck.length) % fcDeck.length; showFc(); } });
+$("fcNext").addEventListener("click", () => { if (fcDeck.length) { fcIdx = (fcIdx + 1) % fcDeck.length; showFc(); } });
+
+function rateCard(boxDelta) {
+  if (!fcDeck.length) return;
+  const current = fcDeck[fcIdx];
+  Store.update(s => {
+    const deck = s.decks[s.activeDeckId];
+    if (deck) {
+      const target = deck.terms.find(t => t.id === current.id);
+      if (target) target.box = Math.max(1, Math.min(3, (target.box || 1) + boxDelta));
+    }
+    return s;
+  });
+  addXP(10); successSfx(); updateLeitnerPills();
+  fcDeck.splice(fcIdx, 1);
+  if (!fcDeck.length) { showFc(); return; }
+  fcIdx = Math.min(fcIdx, fcDeck.length - 1); showFc();
+}
+$("btnRateAgain").addEventListener("click", () => rateCard(-1));
+$("btnRateHard").addEventListener("click", () => rateCard(0));
+$("btnRateGood").addEventListener("click", () => rateCard(1));
+$("btnRateEasy").addEventListener("click", () => rateCard(2));
+$("fcAudio").addEventListener("click", () => {
+  if (!fcDeck.length) return;
+  const isFlipped = $("flashcard").classList.contains("flip");
+  window.speechSynthesis.speak(new SpeechSynthesisUtterance(isFlipped ? fcDeck[fcIdx].def : fcDeck[fcIdx].term));
 });
 
-// Boot Initializer
-renderDeckOptions();
-updateTelemetry();
+/* ============================================================
+   12. EXAM ARENA & PAREBOT
+   ============================================================ */
+let quizTerms = [], quizIdx = 0, quizCorrect = 0, quizCurrentMode = "mc", suddenDeathTimer = null, suddenSec = 60;
+function initQuizScreen() {
+  $("quizModeSelectArea").style.display = "grid";
+  $("quizQuestion").style.display = "none";
+  $("quizResult").style.display = "none";
+}
+document.querySelectorAll(".mini-card[data-mode]").forEach(card => card.addEventListener("click", () => startExam(card.dataset.mode)));
+
+function startExam(mode) {
+  const deck = Store.getActiveDeck();
+  if (deck.terms.length < 2) { showToast("⚠️ Need 2+ terms."); return; }
+  quizCurrentMode = mode; quizTerms = shuffle([...deck.terms]); quizIdx = 0; quizCorrect = 0;
+  $("quizModeSelectArea").style.display = "none";
+  $("quizQuestion").style.display = "block";
+  $("quizResult").style.display = "none";
+
+  if (mode === "time") {
+    suddenSec = 60; clearInterval(suddenDeathTimer);
+    suddenDeathTimer = setInterval(() => {
+      suddenSec--; $("qScoreLive").textContent = `⏱️ ${suddenSec}s | Score: ${quizCorrect}`;
+      if (suddenSec <= 0) { clearInterval(suddenDeathTimer); finishQuiz(); }
+    }, 1000);
+  }
+  showQuizQ();
+}
+
+function showQuizQ() {
+  const q = quizTerms[quizIdx % quizTerms.length], deck = Store.getActiveDeck();
+  if (quizCurrentMode !== "time") {
+    $("qProgress").textContent = `Question ${quizIdx + 1} of ${quizTerms.length}`;
+    $("qScoreLive").textContent = `Score: ${quizCorrect}`;
+  }
+  $("qFeedback").textContent = ""; $("btnNextQ").style.display = "none";
+
+  if (quizCurrentMode === "mc" || quizCurrentMode === "time") {
+    $("qText").textContent = `What is the definition of: "${q.term}"?`;
+    $("qIdentificationBox").style.display = "none"; $("qOptions").style.display = "grid";
+    const distractors = shuffle(deck.terms.filter(t => t.id !== q.id));
+    const opts = shuffle([...distractors.slice(0, 3).map(t => t.def), q.def]);
+    $("qOptions").innerHTML = opts.map(o => `<button class="btn btn-outline" style="text-align:left;padding:10px;font-size:0.88rem">${esc(o)}</button>`).join("");
+    document.querySelectorAll("#qOptions button").forEach(b => b.addEventListener("click", () => checkAns(b.textContent === q.def, b, q.def)));
+  } else if (quizCurrentMode === "tf") {
+    $("qIdentificationBox").style.display = "none"; $("qOptions").style.display = "grid";
+    const isTrue = Math.random() > 0.5;
+    const testDef = isTrue ? q.def : shuffle(deck.terms.filter(t => t.id !== q.id))[0].def;
+    $("qText").textContent = `Statement: "${q.term}" is "${testDef}".`;
+    $("qOptions").innerHTML = `<button class="btn btn-outline" data-ans="true">🟢 TRUE</button><button class="btn btn-outline" data-ans="false">🔴 FALSE</button>`;
+    document.querySelectorAll("#qOptions button").forEach(b => b.addEventListener("click", () => checkAns((b.dataset.ans === "true") === isTrue, b, isTrue ? "TRUE" : "FALSE")));
+  } else if (quizCurrentMode === "id") {
+    $("qText").textContent = `Definition: "${q.def}"`;
+    $("qOptions").style.display = "none"; $("qIdentificationBox").style.display = "block";
+    $("qIdInput").value = ""; $("qIdInput").focus();
+  }
+}
+
+$("btnSubmitId").addEventListener("click", () => {
+  const q = quizTerms[quizIdx];
+  checkAns($("qIdInput").value.trim().toLowerCase() === q.term.trim().toLowerCase(), null, q.term);
+});
+
+function checkAns(isCorrect, btnEl, correctStr) {
+  if (isCorrect) { quizCorrect++; successSfx(); $("qFeedback").innerHTML = '<span style="color:var(--success)">✅ Correct! +10 XP</span>'; addXP(10); }
+  else { failSfx(); $("qFeedback").innerHTML = `<span style="color:var(--danger)">❌ Correct: "${esc(correctStr)}"</span>`; }
+
+  if (btnEl) document.querySelectorAll("#qOptions button").forEach(b => { b.disabled = true; if (b === btnEl) b.style.borderColor = isCorrect ? "var(--success)" : "var(--danger)"; });
+  if (quizCurrentMode === "time") setTimeout(() => { quizIdx++; showQuizQ(); }, 500);
+  else { $("btnNextQ").style.display = "inline-block"; $("btnNextQ").textContent = (quizIdx < quizTerms.length - 1) ? "Next →" : "See Final Score"; }
+}
+
+$("btnNextQ").addEventListener("click", () => { quizIdx++; if (quizIdx < quizTerms.length) showQuizQ(); else finishQuiz(); });
+
+function finishQuiz() {
+  clearInterval(suddenDeathTimer);
+  const total = (quizCurrentMode === "time") ? Math.max(1, quizIdx) : quizTerms.length;
+  const scorePercent = Math.round((quizCorrect / total) * 100);
+  Store.update(s => { s.quizCount = (s.quizCount || 0) + 1; return s; });
+  $("quizQuestion").style.display = "none"; $("quizResult").style.display = "block";
+  if (scorePercent >= 80 && typeof confetti === "function") confetti({ particleCount: 80, spread: 60 });
+  $("quizResult").innerHTML = `
+    <h3 style="font-size:1.6rem;margin-bottom:8px">🎉 Exam Complete!</h3>
+    <p style="font-size:1.1rem;font-weight:700">Score: ${scorePercent}% (${quizCorrect}/${total})</p>
+    <button class="btn btn-primary" onclick="initQuizScreen()" style="margin-top:14px">🔄 Retake</button>
+  `;
+}
+
+// Feynman & Tutor
+let feynmanTerm = null;
+function setupFeynmanTerm() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms.length) return;
+  feynmanTerm = shuffle([...deck.terms])[0];
+  $("feynmanTermPrompt").textContent = `Explain: "${feynmanTerm.term}"`;
+  $("feynmanUserText").value = ""; $("feynmanEvalBox").style.display = "none";
+}
+$("btnNextFeynman").addEventListener("click", setupFeynmanTerm);
+$("btnEvalFeynman").addEventListener("click", () => {
+  if (!feynmanTerm) return;
+  const text = $("feynmanUserText").value.trim().toLowerCase();
+  if (!text) return;
+  const words = feynmanTerm.def.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+  let matches = 0; words.forEach(w => { if (text.includes(w)) matches++; });
+  const score = Math.min(100, Math.round((matches / Math.max(1, words.length)) * 100) + 20);
+  $("feynmanEvalBox").style.display = "block";
+  $("feynmanScoreText").textContent = `Score: ${score}%`;
+  $("feynmanFeedbackText").textContent = score >= 60 ? "Great job capturing core keywords!" : "Try to include key functional terms.";
+  $("feynmanOfficialDef").innerHTML = `<strong>Official:</strong> ${esc(feynmanTerm.def)}`;
+  if (score >= 60) addXP(20);
+});
+
+function pareBotRespond(userQuery, type = "normal") {
+  const deck = Store.getActiveDeck(), log = $("tutorChatLog");
+  const t = deck.terms.length ? shuffle([...deck.terms])[0] : { term: "Concept", def: "Idea" };
+  let reply = "";
+  if (type === "mnemonic") reply = `💡 <strong>Mnemonic for "${t.term}":</strong> Remember <em>${t.term.slice(0,3).toUpperCase()}</em> — "${t.def.slice(0,30)}..."`;
+  else if (type === "eli5") reply = `👶 <strong>ELI10:</strong> Imagine "${t.term}" is like a helper that ${t.def.toLowerCase().replace(/process|bilayer/g, "tool")}.`;
+  else if (type === "ph") reply = `🇵🇭 <strong>Pinoy Analogy:</strong> Think of "${t.term}" like the barangay traffic system — keeps everything flowing!`;
+  else reply = `Great question! For "${userQuery}", remember core definitions for exam day!`;
+  log.innerHTML += `<div style="margin-top:6px"><strong>You:</strong> ${esc(userQuery || type)}</div><div style="margin-top:2px"><strong>PareBot 🤖:</strong> ${reply}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+document.querySelectorAll(".samples-bar button[data-ask]").forEach(b => b.addEventListener("click", () => pareBotRespond("", b.dataset.ask)));
+$("btnSendTutor").addEventListener("click", () => { const q = $("tutorInput").value.trim(); if (q) { pareBotRespond(q); $("tutorInput").value = ""; } });
+
+// Match Game & Pomodoro
+let matchPairs = [], matchSel = null, matchMiss = 0, matchTimer = null, matchSec = 0, matchedIds = new Set(), comboMultiplier = 1;
+$("btnStartMatch").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  if (deck.terms.length < 2) return;
+  matchPairs = shuffle(deck.terms).slice(0, Math.min(6, deck.terms.length));
+  matchSel = null; matchMiss = 0; matchSec = 0; comboMultiplier = 1; matchedIds = new Set();
+  $("matchGame").style.display = "none"; $("matchBoard").style.display = "block";
+  clearInterval(matchTimer);
+  matchTimer = setInterval(() => { matchSec++; $("matchTime").textContent = matchSec; }, 1000);
+  renderMatch();
+});
+function renderMatch() {
+  $("matchScore").textContent = matchedIds.size; $("matchMiss").textContent = matchMiss; $("matchCombo").textContent = `${comboMultiplier}x`;
+  const terms = shuffle(matchPairs), defs = shuffle(matchPairs);
+  $("matchTermCol").innerHTML = terms.map(t => `<div class="btn btn-outline" data-id="${t.id}" data-role="term" style="font-size:0.85rem">${esc(t.term)}</div>`).join("");
+  $("matchDefCol").innerHTML = defs.map(t => `<div class="btn btn-outline" data-id="${t.id}" data-role="def" style="font-size:0.82rem">${esc(t.def)}</div>`).join("");
+  document.querySelectorAll("#matchBoard .btn").forEach(c => c.addEventListener("click", () => onMatchClick(c)));
+}
+function onMatchClick(chip) {
+  const role = chip.dataset.role, id = +chip.dataset.id;
+  if (matchedIds.has(id) || chip.classList.contains("done")) return;
+  if (role === "term") {
+    document.querySelectorAll('#matchTermCol .btn').forEach(c => c.style.background = "var(--surface)");
+    chip.style.background = "var(--primary-light)"; matchSel = chip; return;
+  }
+  if (matchSel) {
+    const termId = +matchSel.dataset.id;
+    if (termId === id) {
+      successSfx(); matchedIds.add(id);
+      chip.style.background = "var(--success-light)"; matchSel.style.background = "var(--success-light)";
+      chip.classList.add("done"); matchSel.classList.add("done"); matchSel = null;
+      comboMultiplier++;
+      $("matchScore").textContent = matchedIds.size; $("matchCombo").textContent = `${comboMultiplier}x`;
+      if (matchedIds.size === matchPairs.length) {
+        clearInterval(matchTimer); addXP(30 * comboMultiplier);
+        showToast(`🏁 Matched in ${matchSec}s! +${30 * comboMultiplier} XP`);
+      }
+    } else {
+      failSfx(); matchMiss++; comboMultiplier = 1; matchSel.style.background = "var(--surface)"; matchSel = null;
+      $("matchMiss").textContent = matchMiss; $("matchCombo").textContent = "1x";
+    }
+  }
+}
+$("btnMatchReset").addEventListener("click", () => $("btnStartMatch").click());
+
+const POMO = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+let pomoMode = "focus", pomoLeft = POMO.focus, pomoInt = null;
+function switchPomoMode(mode) {
+  pomoMode = mode; pomoLeft = POMO[mode];
+  document.querySelectorAll(".pomo-tab").forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
+  $("pomoTime").textContent = `${pad(Math.floor(pomoLeft/60))}:${pad(pomoLeft%60)}`;
+  $("zenTimeDisplay").textContent = $("pomoTime").textContent;
+}
+$("btnPomoStart").addEventListener("click", () => {
+  if (pomoInt) { clearInterval(pomoInt); pomoInt = null; $("btnPomoStart").textContent = "▶️ Resume"; return; }
+  $("btnPomoStart").textContent = "⏸️ Pause";
+  pomoInt = setInterval(() => {
+    pomoLeft--;
+    $("pomoTime").textContent = `${pad(Math.floor(pomoLeft/60))}:${pad(pomoLeft%60)}`;
+    $("zenTimeDisplay").textContent = $("pomoTime").textContent;
+    if (pomoLeft <= 0) {
+      clearInterval(pomoInt); pomoInt = null; successSfx(); addXP(25);
+      showToast("🍅 Focus session complete! +25 XP");
+      switchPomoMode("short");
+      $("btnPomoStart").textContent = "▶️ Start";
+    }
+  }, 1000);
+});
+$("btnPomoReset").addEventListener("click", () => { clearInterval(pomoInt); pomoInt = null; switchPomoMode(pomoMode); $("btnPomoStart").textContent = "▶️ Start"; });
+document.querySelectorAll(".pomo-tab").forEach(t => t.addEventListener("click", () => { clearInterval(pomoInt); pomoInt = null; $("btnPomoStart").textContent = "▶️ Start"; switchPomoMode(t.dataset.mode); }));
+
+// Calendar & Analytics
+let calView = new Date();
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function renderCalendar(date) {
+  const y = date.getFullYear(), m = date.getMonth();
+  $("calMonthYear").textContent = `${MONTHS[m]} ${y}`;
+  const first = new Date(y, m, 1).getDay(), daysIn = new Date(y, m + 1, 0).getDate();
+  const today = formatDate(new Date());
+  let html = "";
+  for (let i = 0; i < first; i++) html += '<div class="cal-day empty"></div>';
+  for (let day = 1; day <= daysIn; day++) {
+    const dstr = `${y}-${pad(m + 1)}-${pad(day)}`;
+    html += `<div class="cal-day ${dstr === today ? 'today' : ''}" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px;min-height:50px">${day}</div>`;
+  }
+  $("calGrid").innerHTML = html;
+}
+$("calPrev").addEventListener("click", () => { calView.setMonth(calView.getMonth() - 1); renderCalendar(calView); });
+$("calNext").addEventListener("click", () => { calView.setMonth(calView.getMonth() + 1); renderCalendar(calView); });
+
+function renderTracker() {
+  const d = Store.get(), deck = Store.getActiveDeck();
+  $("statTerms").textContent = deck.terms.length;
+  $("statQuiz").textContent = d.quizCount || 0;
+  $("statStreak").textContent = d.streak || 0;
+  $("statXp").textContent = d.xp || 0;
+}
+
+/* ============================================================
+   13. QR CODE 2-WAY SHARE & IMPORT SYSTEM
+   ============================================================ */
+$("btnShareDeckModal").addEventListener("click", () => {
+  const deck = Store.getActiveDeck();
+  const payload = JSON.stringify({ subject: deck.subject, terms: deck.terms.map(t => ({ term: t.term, def: t.def })) });
+  $("qrJsonPayload").value = payload;
+  if (window.qrcode) {
+    const qr = qrcode(4, 'L');
+    qr.addData(payload.slice(0, 300));
+    qr.make();
+    $("qrCodeTarget").innerHTML = qr.createImgTag(4);
+  }
+  $("qrModal").classList.add("show");
+});
+$("btnCloseQrModal").addEventListener("click", () => $("qrModal").classList.remove("show"));
+$("btnCopyJsonPayload").addEventListener("click", () => {
+  navigator.clipboard.writeText($("qrJsonPayload").value);
+  showToast("📋 Copied to clipboard!");
+});
+
+$("tabQrExport").addEventListener("click", () => {
+  $("tabQrExport").classList.add("active");
+  $("tabQrImport").classList.remove("active");
+  $("qrExportSection").style.display = "block";
+  $("qrImportSection").style.display = "none";
+});
+
+$("tabQrImport").addEventListener("click", () => {
+  $("tabQrImport").classList.add("active");
+  $("tabQrExport").classList.remove("active");
+  $("qrImportSection").style.display = "block";
+  $("qrExportSection").style.display = "none";
+});
+
+$("btnExecuteImport").addEventListener("click", () => {
+  try {
+    const jsonStr = $("qrImportInput").value.trim();
+    if (!jsonStr) { showToast("⚠️ Paste deck code first."); return; }
+    const imported = JSON.parse(jsonStr);
+    if (!imported.subject || !Array.isArray(imported.terms)) { throw new Error(); }
+
+    const deckId = "deck_" + imported.subject.toLowerCase().replace(/[^a-z0-9]/g, "_") + "_" + Date.now();
+    Store.update(s => {
+      s.decks[deckId] = {
+        id: deckId,
+        subject: imported.subject,
+        examDate: formatDate(new Date(Date.now() + 14 * 86400000)),
+        terms: imported.terms.map((t, idx) => ({ id: idx, term: t.term, def: t.def, box: 1 })),
+        quizHistory: []
+      };
+      s.activeDeckId = deckId;
+      return s;
+    });
+
+    addXP(50);
+    renderActiveDeckUI();
+    $("qrModal").classList.remove("show");
+    showToast(`🎉 Imported "${imported.subject}" with ${imported.terms.length} terms!`);
+    navigateTo("reviewer");
+  } catch (e) {
+    showToast("❌ Invalid deck JSON format.");
+  }
+});
+
+// Auth Modal
+$("btnUserMenu").addEventListener("click", () => {
+  if (Auth.getSession()) {
+    if (confirm(`Sign out of ${Auth.getSession().name}?`)) Auth.logout();
+  } else {
+    $("authModal").classList.add("show");
+  }
+});
+$("btnCloseAuthModal").addEventListener("click", () => $("authModal").classList.remove("show"));
+$("tabSignIn").addEventListener("click", () => { $("tabSignIn").classList.add("active"); $("tabSignUp").classList.remove("active"); $("signInForm").style.display = "block"; $("signUpForm").style.display = "none"; });
+$("tabSignUp").addEventListener("click", () => { $("tabSignUp").classList.add("active"); $("tabSignIn").classList.remove("active"); $("signUpForm").style.display = "block"; $("signInForm").style.display = "none"; });
+
+function handleEmailSignUp() {
+  const name = $("signUpName").value.trim(), email = $("signUpEmail").value.trim().toLowerCase(), password = $("signUpPassword").value;
+  const users = Auth.getUsers();
+  users[email] = { name, email, password };
+  Auth.saveUsers(users);
+  Auth.setSession(users[email]);
+  $("authModal").classList.remove("show");
+  showToast(`🎉 Welcome, ${name}!`);
+  renderActiveDeckUI();
+}
+function handleEmailSignIn() {
+  const email = $("signInEmail").value.trim().toLowerCase(), password = $("signInPassword").value;
+  const users = Auth.getUsers();
+  if (!users[email] || users[email].password !== password) { showToast("❌ Invalid email or password."); return; }
+  Auth.setSession(users[email]);
+  $("authModal").classList.remove("show");
+  showToast(`👋 Welcome back, ${users[email].name}!`);
+  renderActiveDeckUI();
+}
+$("btnGoogleAuth").addEventListener("click", () => {
+  const googleUser = { name: "Juan Dela Cruz", email: "juan@gmail.com" };
+  const users = Auth.getUsers();
+  users[googleUser.email] = googleUser;
+  Auth.saveUsers(users);
+  Auth.setSession(googleUser);
+  $("authModal").classList.remove("show");
+  showToast("✅ Signed in with Google!");
+  renderActiveDeckUI();
+});
+
+// Initial Boot
+renderDeckSelector();
+renderActiveDeckUI();
+Auth.updateUserHeader();
 </script>
 </body>
 </html>
