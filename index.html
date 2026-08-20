@@ -92,7 +92,7 @@ body.sidebar-collapsed .app-header {
   left: var(--sidebar-collapsed-w);
 }
 
-.header-left { display: flex; align-items: center; gap: 10px; }
+.header-left { display: flex; align-items: center; gap: 8px; }
 .header-right { display: flex; align-items: center; gap: 8px; }
 
 .status-badge {
@@ -221,7 +221,7 @@ body.sidebar-collapsed .deck-selector-box { display: none; }
   font-size: 0.8rem;
 }
 
-/* SIDEBAR ACCORDION GROUPS */
+/* SIDEBAR SCROLL & ACCORDION */
 .nav-scroll {
   flex: 1;
   overflow-y: auto;
@@ -389,6 +389,56 @@ body.sidebar-collapsed .main {
 .mini-card span { font-size: 1.7rem; display: block; margin-bottom: 4px; }
 .mini-card h4 { font-size: 0.95rem; margin-bottom: 2px; font-weight: 700; }
 .mini-card p { color: var(--text-muted); font-size: .8rem; }
+
+/* SELF-STUDY ROADMAP & DEMYSTIFIER */
+.pathway-banner {
+  background: linear-gradient(135deg, #1E293B, #0F172A);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 20px;
+  border: 1px solid #334155;
+  box-shadow: var(--shadow);
+}
+.pathway-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+.path-step-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  transition: all 0.2s;
+}
+.path-step-card:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
+.path-step-num { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+
+.demystifier-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+.demystify-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.demystify-analogy {
+  background: var(--accent-light);
+  color: #78350F;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  margin: 8px 0;
+  border: 1px solid #FDE68A;
+}
+.demystify-trap {
+  background: var(--danger-light);
+  color: #991B1B;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  border: 1px solid #FECACA;
+}
 
 /* CREATOR */
 .create-card {
@@ -606,7 +656,7 @@ body.sidebar-collapsed .main {
 .cmd-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 6px; font-size: 0.88rem; cursor: pointer; color: var(--text-main); font-weight: 500; }
 .cmd-item:hover { background: var(--primary-light); color: var(--primary); font-weight: 700; }
 
-/* ===== MODALS (AUTH & QR) ===== */
+/* ===== MODALS (AUTH, QR, DIAGNOSTIC) ===== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -766,7 +816,7 @@ body.dark-mode {
 body.dark-mode .app-header { background: rgba(17, 24, 39, 0.9); border-color: #1F2937; }
 body.dark-mode .fc-back { background: #111827; color: #fff; }
 
-/* MOBILE RESPONSIVE DRAWER & OVERLAYS */
+/* MOBILE RESPONSIVE DRAWER & FIXED TOP HEADER OVERFLOW */
 .mobile-backdrop {
   position: fixed;
   inset: 0;
@@ -777,14 +827,35 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
 .mobile-backdrop.active { display: block; }
 
 @media (max-width: 820px) {
-  .app-header { left: 0 !important; padding: 0 14px; }
-  #btnToggleMobileMenu { display: inline-flex !important; }
+  .app-header {
+    left: 0 !important;
+    padding: 0 10px;
+    height: 56px;
+  }
+  #btnToggleMobileMenu { display: inline-flex !important; font-size: 1.1rem; padding: 6px 10px; }
+  
+  /* Prevent Header Overflow on Phone */
+  #networkStatusText { display: none; }
+  .status-badge { padding: 4px; border-radius: 50%; width: 22px; height: 22px; justify-content: center; }
+  
+  .cmd-k-trigger span:first-child { display: none; }
+  .cmd-k-trigger .cmd-kbd { display: none; }
+  .cmd-k-trigger { padding: 6px 8px; }
+  .cmd-k-trigger::before { content: "🔍"; font-size: 0.9rem; }
+  
+  #btnShareDeckModal { display: none; }
+  #btnEnterZenMode { padding: 5px 8px; font-size: 0.78rem; }
+  #btnEnterZenMode span { display: none; }
+  
+  #userDisplayName { display: none; }
+  .user-profile-btn { padding: 3px 6px; }
+
   .sidebar {
     transform: translateX(-100%);
     width: 260px !important;
   }
   .sidebar.mobile-open { transform: translateX(0); }
-  .main { margin-left: 0 !important; padding: 74px 14px 24px; }
+  .main { margin-left: 0 !important; padding: 70px 12px 24px; }
   .form-row { grid-template-columns: 1fr; gap: 8px; }
   .blurt-results { grid-template-columns: 1fr; }
   #btnSidebarCollapse { display: none; }
@@ -800,17 +871,17 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
 <header class="app-header">
   <div class="header-left">
     <button class="btn btn-outline btn-sm" id="btnToggleMobileMenu" style="display:none">☰</button>
-    <div class="status-badge online" id="networkStatusBadge">
+    <div class="status-badge online" id="networkStatusBadge" title="Network Sync Status">
       <span class="status-dot"></span>
       <span id="networkStatusText">Online Sync</span>
     </div>
-    <button class="cmd-k-trigger" id="btnOpenCmdPalette">
-      <span>🔍 Search & Jump</span>
+    <button class="cmd-k-trigger" id="btnOpenCmdPalette" title="Search & Quick Jump">
+      <span>Search & Jump</span>
       <span class="cmd-kbd">Ctrl K</span>
     </button>
   </div>
   <div class="header-right">
-    <button class="btn btn-primary btn-sm" id="btnEnterZenMode">🧘 Zen Mode</button>
+    <button class="btn btn-primary btn-sm" id="btnEnterZenMode">🧘 <span>Zen Mode</span></button>
     <button class="btn btn-outline btn-sm" id="btnShareDeckModal">📲 Share / Import QR</button>
     <button class="btn btn-outline btn-sm" id="btnToggleDark">🌙</button>
     <button class="user-profile-btn" id="btnUserMenu">
@@ -846,6 +917,7 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
     <div class="nav-group">
       <div class="nav-group-title">Core Workspace</div>
       <button class="nav-btn active" data-page="home"><span class="icon">🏠</span><span class="label">Dashboard & Quests</span></button>
+      <button class="nav-btn" data-page="pathway"><span class="icon">🚀</span><span class="label">Self-Study Pathway</span></button>
       <button class="nav-btn" data-page="upload"><span class="icon">📝</span><span class="label">Creator & Decks</span></button>
       <button class="nav-btn" data-page="reviewer"><span class="icon">📖</span><span class="label">Reviewer Guide</span></button>
     </div>
@@ -898,6 +970,18 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
 
   <!-- DASHBOARD & MASCOT -->
   <section class="page active" id="page-home">
+    <!-- ZERO-TO-HERO HERO CALLOUT -->
+    <div class="pathway-banner">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+        <div>
+          <span style="font-size:0.75rem;background:var(--accent);color:#000;font-weight:900;padding:2px 8px;border-radius:10px;text-transform:uppercase">Self-Study Acceleration</span>
+          <h3 style="font-size:1.3rem;font-weight:800;margin:6px 0 2px">🚀 Starting from Zero? Follow Your Custom Pathway</h3>
+          <p style="font-size:0.85rem;color:#CBD5E1;max-width:560px">Step-by-step roadmap with real-world analogies, beginner pitfalls, and auto-generated study tracks.</p>
+        </div>
+        <button class="btn btn-primary" onclick="navigateTo('pathway')">Open Learning Path →</button>
+      </div>
+    </div>
+
     <div class="mascot-quest-grid">
       <div class="mascot-card">
         <div class="mascot-tier" id="mascotTier">Tier 1 Companion</div>
@@ -930,10 +1014,58 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
     </div>
 
     <div class="hero-cards">
-      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Leitner Cards</h4><p>Spaced repetition boxes</p></div>
-      <div class="mini-card" data-page="quiz"><span>🎯</span><h4>Exam Arena</h4><p>4 interactive test modes</p></div>
-      <div class="mini-card" data-page="oral"><span>🎙️</span><h4>AI Voice Recitation</h4><p>Spoken verbal oral exam</p></div>
-      <div class="mini-card" data-page="mindmap"><span>🗺️</span><h4>Concept Mind Map</h4><p>Visual relationship graph</p></div>
+      <div class="mini-card" data-page="pathway"><span>🚀</span><h4>Self-Study Pathway</h4><p>Curated step-by-step master plan</p></div>
+      <div class="mini-card" data-page="flashcards"><span>🃏</span><h4>Leitner Cards</h4><p>Spaced repetition review boxes</p></div>
+      <div class="mini-card" data-page="quiz"><span>🎯</span><h4>Exam Arena</h4><p>4 adaptive test formats</p></div>
+      <div class="mini-card" data-page="oral"><span>🎙️</span><h4>AI Voice Recitation</h4><p>Verbal exam with spoken grading</p></div>
+    </div>
+  </section>
+
+  <!-- ZERO-TO-HERO SELF-STUDY PATHWAY -->
+  <section class="page" id="page-pathway">
+    <div class="page-head-flex">
+      <div>
+        <h2 class="page-title">🚀 Zero-to-Hero Self-Study Pathway</h2>
+        <p class="page-sub" style="margin-bottom:0">Personalized study roadmap, real-world analogies, and mistake alerts designed for complete beginners.</p>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btnRunDiagnostic">🎯 Diagnostic Self-Check</button>
+    </div>
+
+    <!-- 4-PHASE ROADMAP TILES -->
+    <div class="pathway-steps" id="pathwayStepsContainer">
+      <div class="path-step-card">
+        <div class="path-step-num">Step 1 • Fundamentals</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Understand Core Ideas</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Read the simplified analogies below and review basic vocabulary.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('flashcards')">Start Leitner Box 1 →</button>
+      </div>
+      <div class="path-step-card">
+        <div class="path-step-num">Step 2 • Concept Mapping</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Connect Relationships</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Explore how every topic links together in the visual hierarchy graph.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('mindmap')">Explore Mind Map →</button>
+      </div>
+      <div class="path-step-card">
+        <div class="path-step-num">Step 3 • Active Free-Recall</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Test Memory Blurts</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Write everything you remember from memory in a 2-minute sprint.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('blurt')">Run Blurting Sprint →</button>
+      </div>
+      <div class="path-step-card">
+        <div class="path-step-num">Step 4 • Exam Readiness</div>
+        <h4 style="font-size:0.92rem;margin-bottom:4px">Simulated Arena</h4>
+        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.4">Eliminate final blind spots with multiple choice and sudden death drills.</p>
+        <button class="btn btn-outline btn-sm full" style="margin-top:8px" onclick="navigateTo('quiz')">Take Practice Exam →</button>
+      </div>
+    </div>
+
+    <!-- CONCEPT DEMYSTIFIER SECTION -->
+    <div style="margin-top:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 style="font-size:1.15rem;font-weight:800">💡 Concept Demystifier (ELI10 Breakdown)</h3>
+        <span style="font-size:0.75rem;color:var(--text-muted)">Auto-generated for active deck</span>
+      </div>
+      <div class="demystifier-grid" id="demystifierGrid"></div>
     </div>
   </section>
 
@@ -1039,6 +1171,7 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
           <button class="sample-btn" data-sample="bio">🌿 Biology 101</button>
           <button class="sample-btn" data-sample="hist">🇵🇭 PH History & Rizal</button>
           <button class="sample-btn" data-sample="cs">💻 Computer Science</button>
+          <button class="sample-btn" data-sample="law">⚖️ Phil. Constitution</button>
         </div>
       </details>
     </div>
@@ -1282,6 +1415,7 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
   <div class="cmd-palette-card">
     <input type="text" id="cmdPaletteInput" class="cmd-input" placeholder="Type a command or jump to feature...">
     <div class="cmd-list" id="cmdPaletteList">
+      <div class="cmd-item" data-action="nav:pathway"><span>🚀 Self-Study Pathway (Zero-to-Hero)</span> <span class="cmd-kbd">S</span></div>
       <div class="cmd-item" data-action="nav:flashcards"><span>🃏 Practice Leitner Flashcards</span> <span class="cmd-kbd">1</span></div>
       <div class="cmd-item" data-action="nav:quiz"><span>🎯 Start Practice Exam</span> <span class="cmd-kbd">2</span></div>
       <div class="cmd-item" data-action="nav:mindmap"><span>🗺️ Open Concept Mind Map</span> <span class="cmd-kbd">3</span></div>
@@ -1289,6 +1423,31 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
       <div class="cmd-item" data-action="zen"><span>🧘 Enter Zen Focus Mode</span> <span class="cmd-kbd">Z</span></div>
       <div class="cmd-item" data-action="audio:lofi"><span>🎵 Toggle Lo-Fi Audio</span> <span class="cmd-kbd">A</span></div>
       <div class="cmd-item" data-action="dark"><span>🌙 Toggle Theme</span> <span class="cmd-kbd">T</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGNOSTIC SELF-CHECK MODAL -->
+<div class="modal-overlay" id="diagnosticModal" style="display:none">
+  <div class="auth-modal-card" style="max-width:500px">
+    <button class="modal-close-btn" id="btnCloseDiagnosticModal">✕</button>
+    <div style="text-align:center;margin-bottom:14px">
+      <span style="font-size:1.8rem">🎯</span>
+      <h3 style="font-size:1.25rem;font-weight:800">Self-Study Diagnostic Check</h3>
+      <p style="font-size:0.84rem;color:var(--text-muted)">Assess your readiness for <strong id="diagSubjectName">this deck</strong>.</p>
+    </div>
+    
+    <div id="diagQuizArea">
+      <div id="diagQuestionProgress" style="font-size:0.8rem;color:var(--primary);font-weight:700;margin-bottom:6px">Question 1 of 3</div>
+      <p id="diagQuestionText" style="font-size:1rem;font-weight:700;margin-bottom:12px"></p>
+      <div id="diagOptions" style="display:grid;gap:8px"></div>
+    </div>
+
+    <div id="diagResultArea" style="display:none;text-align:center;padding:12px 0">
+      <div id="diagResultBadge" style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.85rem;font-weight:800;margin-bottom:8px"></div>
+      <h4 id="diagResultTitle" style="font-size:1.15rem;font-weight:800;margin-bottom:6px"></h4>
+      <p id="diagResultDesc" style="font-size:0.86rem;color:var(--text-muted);line-height:1.45;margin-bottom:16px"></p>
+      <button class="btn btn-primary full" id="btnDiagStartPath">🚀 Start Recommended Path</button>
     </div>
   </div>
 </div>
@@ -1354,8 +1513,8 @@ body.dark-mode .fc-back { background: #111827; color: #fff; }
    1. AUTHENTICATION & MULTI-USER STORAGE
    ============================================================ */
 const Auth = {
-  USERS_KEY: "studybuddy_users_db_v13",
-  SESSION_KEY: "studybuddy_session_v13",
+  USERS_KEY: "studybuddy_users_db_v14",
+  SESSION_KEY: "studybuddy_session_v14",
   getUsers() { try { return JSON.parse(localStorage.getItem(this.USERS_KEY)) || {}; } catch { return {}; } },
   saveUsers(users) { localStorage.setItem(this.USERS_KEY, JSON.stringify(users)); },
   getSession() { try { return JSON.parse(localStorage.getItem(this.SESSION_KEY)); } catch { return null; } },
@@ -1538,9 +1697,29 @@ window.addEventListener("keydown", e => {
     if ($("zenOverlay").classList.contains("active")) $("btnExitZenMode").click();
     if ($("qrModal").classList.contains("show")) $("btnCloseQrModal").click();
     if ($("authModal").classList.contains("show")) $("btnCloseAuthModal").click();
+    if ($("diagnosticModal").classList.contains("show")) $("btnCloseDiagnosticModal").click();
   }
   if (e.key.toLowerCase() === "z" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
     enterZenMode();
+  }
+  // Flashcard Keyboard Shortcuts
+  if (!["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+    if (e.code === "Space" && $("page-flashcards").classList.contains("active")) {
+      e.preventDefault();
+      $("flashcard").click();
+    } else if (e.key === "ArrowLeft" && $("page-flashcards").classList.contains("active")) {
+      $("fcPrev").click();
+    } else if (e.key === "ArrowRight" && $("page-flashcards").classList.contains("active")) {
+      $("fcNext").click();
+    } else if (e.key === "1" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateAgain").click();
+    } else if (e.key === "2" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateHard").click();
+    } else if (e.key === "3" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateGood").click();
+    } else if (e.key === "4" && $("page-flashcards").classList.contains("active")) {
+      $("btnRateEasy").click();
+    }
   }
 });
 
@@ -1582,7 +1761,147 @@ $("btnClaimQuest2").addEventListener("click", () => { addXP(40); $("btnClaimQues
 $("btnClaimQuest3").addEventListener("click", () => { addXP(30); $("btnClaimQuest3").disabled = true; $("btnClaimQuest3").textContent = "Claimed ✅"; });
 
 /* ============================================================
-   5. CONCEPT MIND MAP GRAPH
+   5. ZERO-TO-HERO SELF-STUDY ROADMAP & DEMYSTIFIER
+   ============================================================ */
+function renderDemystifier() {
+  const deck = Store.getActiveDeck();
+  const grid = $("demystifierGrid");
+  if (!grid) return;
+  if (!deck.terms || !deck.terms.length) {
+    grid.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;grid-column:1/-1">No terms loaded yet. Add concepts in Creator tab to build your pathway.</p>';
+    return;
+  }
+
+  grid.innerHTML = deck.terms.map(t => {
+    let analogy = `Think of <strong>${esc(t.term)}</strong> like a specialized engine that handles: ${esc(t.def.toLowerCase().slice(0, 45))}...`;
+    let trap = `⚠️ <strong>Common Beginner Trap:</strong> Don't confuse ${esc(t.term)} with broader general categories. Remember its exact keyword function.`;
+
+    if (t.term.toLowerCase().includes("mito")) {
+      analogy = `⚡ <strong>Real-World Analogy:</strong> Think of Mitochondria like the rechargeable battery/Meralco power station of your phone!`;
+    } else if (t.term.toLowerCase().includes("photo")) {
+      analogy = `☀️ <strong>Real-World Analogy:</strong> Think of Photosynthesis like a solar cooker turning sunlight and water into sugar food!`;
+    } else if (t.term.toLowerCase().includes("membrane")) {
+      analogy = `🛡️ <strong>Real-World Analogy:</strong> Think of the Cell Membrane like a VIP security guard deciding who gets inside the club!`;
+    }
+
+    return `
+      <div class="demystify-card">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong style="font-size:1.05rem;color:var(--primary)">${esc(t.term)}</strong>
+            <span style="font-size:0.7rem;font-weight:700;background:var(--primary-light);color:var(--primary);padding:2px 6px;border-radius:4px">Box ${t.box || 1}</span>
+          </div>
+          <p style="font-size:0.86rem;margin-top:4px;color:var(--text-main)">${esc(t.def)}</p>
+          <div class="demystify-analogy">${analogy}</div>
+          <div class="demystify-trap">${trap}</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn btn-outline btn-sm" onclick="pareBotRespond('${esc(t.term)}', 'eli5'); navigateTo('tutor');">🤖 Ask PareBot</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('⭐ Mastered ${esc(t.term)}!'); addXP(15);">Mark Understood ✅</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// Interactive 3-Question Diagnostic Assessment
+let diagIdx = 0, diagScore = 0, diagQuestions = [];
+function openDiagnosticModal() {
+  const deck = Store.getActiveDeck();
+  if (!deck.terms || deck.terms.length < 2) {
+    showToast("⚠️ Need at least 2 terms in active deck for diagnostic.");
+    return;
+  }
+  $("diagSubjectName").textContent = `"${deck.subject}"`;
+  diagQuestions = shuffle([...deck.terms]).slice(0, 3);
+  diagIdx = 0;
+  diagScore = 0;
+  $("diagQuizArea").style.display = "block";
+  $("diagResultArea").style.display = "none";
+  renderDiagQuestion();
+  $("diagnosticModal").classList.add("show");
+}
+
+function renderDiagQuestion() {
+  const deck = Store.getActiveDeck();
+  const q = diagQuestions[diagIdx];
+  $("diagQuestionProgress").textContent = `Diagnostic Question ${diagIdx + 1} of ${diagQuestions.length}`;
+  $("diagQuestionText").textContent = `What is the function / meaning of "${q.term}"?`;
+  
+  const distractors = shuffle(deck.terms.filter(t => t.id !== q.id));
+  const opts = shuffle([...distractors.slice(0, 2).map(t => t.def), q.def]);
+  
+  $("diagOptions").innerHTML = opts.map(o => `
+    <button class="btn btn-outline" style="text-align:left;font-size:0.84rem;padding:9px 12px">${esc(o)}</button>
+  `).join("");
+
+  document.querySelectorAll("#diagOptions button").forEach(b => {
+    b.addEventListener("click", () => {
+      if (b.textContent === q.def) {
+        diagScore++;
+        successSfx();
+      } else {
+        failSfx();
+      }
+      diagIdx++;
+      if (diagIdx < diagQuestions.length) {
+        renderDiagQuestion();
+      } else {
+        finishDiagnostic();
+      }
+    });
+  });
+}
+
+function finishDiagnostic() {
+  $("diagQuizArea").style.display = "none";
+  $("diagResultArea").style.display = "block";
+  addXP(30);
+
+  const badge = $("diagResultBadge");
+  const title = $("diagResultTitle");
+  const desc = $("diagResultDesc");
+  const btn = $("btnDiagStartPath");
+
+  if (diagScore === 0 || diagScore === 1) {
+    badge.style.background = "var(--danger-light)";
+    badge.style.color = "var(--danger)";
+    badge.textContent = "🌱 Level: Starting from Scratch (Beginner)";
+    title.textContent = "Your Plan: Step 1 Foundations";
+    desc.textContent = "You're brand new to this topic! Start with the Concept Demystifier analogies below, then move to Leitner Box 1 flashcards.";
+    btn.onclick = () => {
+      $("diagnosticModal").classList.remove("show");
+      navigateTo("pathway");
+    };
+  } else if (diagScore === 2) {
+    badge.style.background = "var(--accent-light)";
+    badge.style.color = "#B45309";
+    badge.textContent = "⚡ Level: Developing Basics (Intermediate)";
+    title.textContent = "Your Plan: Step 2 & 3 Concept Mapping & Blurting";
+    desc.textContent = "You know some core terms! Connect the relationships in the Concept Mind Map and test recall with the Blurting scratchpad.";
+    btn.onclick = () => {
+      $("diagnosticModal").classList.remove("show");
+      navigateTo("mindmap");
+    };
+  } else {
+    badge.style.background = "var(--success-light)";
+    badge.style.color = "var(--success)";
+    badge.textContent = "🏆 Level: High Retention (Master / Exam Ready)";
+    title.textContent = "Your Plan: Step 4 Exam Arena & Sudden Death";
+    desc.textContent = "Outstanding baseline! You're ready for timed 60s sudden death exams and AI voice oral recitations.";
+    btn.onclick = () => {
+      $("diagnosticModal").classList.remove("show");
+      navigateTo("quiz");
+    };
+    if (typeof confetti === "function") confetti({ particleCount: 70, spread: 50 });
+  }
+}
+
+$("btnRunDiagnostic").addEventListener("click", openDiagnosticModal);
+$("btnCloseDiagnosticModal").addEventListener("click", () => $("diagnosticModal").classList.remove("show"));
+
+/* ============================================================
+   6. CONCEPT MIND MAP GRAPH
    ============================================================ */
 function renderMindMap() {
   const deck = Store.getActiveDeck();
@@ -1617,7 +1936,7 @@ window.addEventListener("resize", () => {
 });
 
 /* ============================================================
-   6. AI VOICE ORAL EXAM
+   7. AI VOICE ORAL EXAM
    ============================================================ */
 let oralCurrentTerm = null;
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1675,7 +1994,7 @@ function gradeOral(spoken) {
 }
 
 /* ============================================================
-   7. BLURTING RECALL
+   8. BLURTING RECALL
    ============================================================ */
 let blurtTimerInt = null, blurtSec = 120;
 $("btnStartBlurtTimer").addEventListener("click", () => {
@@ -1708,7 +2027,7 @@ $("btnEvaluateBlurt").addEventListener("click", () => {
 });
 
 /* ============================================================
-   8. PROCEDURAL AMBIENT & SOUND
+   9. PROCEDURAL AMBIENT & SOUND
    ============================================================ */
 let audioCtx = null;
 function getAudioCtx() {
@@ -1794,7 +2113,7 @@ $("ambRain").addEventListener("click", () => playAmbient("rain"));
 $("ambCafe").addEventListener("click", () => playAmbient("cafe"));
 
 /* ============================================================
-   9. THEME & CORE NAVIGATION
+   10. THEME & CORE NAVIGATION
    ============================================================ */
 $("btnToggleDark").addEventListener("click", () => {
   uiClick();
@@ -1840,6 +2159,7 @@ function renderActiveDeckUI() {
   renderTracker();
   renderCalendar(calView);
   renderMindMap();
+  renderDemystifier();
   setupFeynmanTerm();
   renderDeckSelector();
   updateMascot();
@@ -1855,6 +2175,7 @@ function navigateTo(page) {
   sidebar.classList.remove("mobile-open");
   mobileBackdrop.classList.remove("active");
 
+  if (page === "pathway") renderDemystifier();
   if (page === "mindmap") renderMindMap();
   if (page === "reviewer") renderReviewer();
   if (page === "flashcards") initFlashcards();
@@ -1873,7 +2194,7 @@ document.querySelectorAll(".nav-btn, [data-page]").forEach(btn => {
 });
 
 /* ============================================================
-   10. BULLET PARSER & SAMPLES
+   11. BULLET PARSER & SAMPLES
    ============================================================ */
 const SAMPLES = {
   bio: {
@@ -1897,6 +2218,13 @@ const SAMPLES = {
 • Data Structure: Format for organizing, storing, and accessing data efficiently.
 • Recursion: Technique where a function calls itself to solve smaller instances.
 • Binary Search: O(log n) search algorithm dividing a sorted array in half.`
+  },
+  law: {
+    subject: "Philippine Constitution 101",
+    text: `• Bill of Rights: Article III of the Philippine Constitution declaring fundamental citizen protections.
+• Due Process: Requirement that legal proceedings must be fair and follow established rules.
+• Executive Power: Vested in the President of the Philippines to implement and execute laws.
+• Legislative Power: Vested in the Congress of the Philippines comprising Senate and House of Reps.`
   }
 };
 
@@ -1954,11 +2282,11 @@ $("btnGenerate").addEventListener("click", () => {
   addXP(30);
   renderActiveDeckUI();
   showToast(`✅ Saved "${subject}" with ${terms.length} terms!`);
-  navigateTo("reviewer");
+  navigateTo("pathway");
 });
 
 /* ============================================================
-   11. REVIEWER & FLASHCARDS
+   12. REVIEWER & FLASHCARDS
    ============================================================ */
 function renderReviewer() {
   const deck = Store.getActiveDeck();
@@ -2086,7 +2414,7 @@ $("fcAudio").addEventListener("click", () => {
 });
 
 /* ============================================================
-   12. EXAM ARENA & PAREBOT
+   13. EXAM ARENA & PAREBOT
    ============================================================ */
 let quizTerms = [], quizIdx = 0, quizCorrect = 0, quizCurrentMode = "mc", suddenDeathTimer = null, suddenSec = 60;
 function initQuizScreen() {
@@ -2311,7 +2639,7 @@ function renderTracker() {
 }
 
 /* ============================================================
-   13. QR CODE 2-WAY SHARE & IMPORT SYSTEM
+   14. QR CODE 2-WAY SHARE & IMPORT SYSTEM
    ============================================================ */
 $("btnShareDeckModal").addEventListener("click", () => {
   const deck = Store.getActiveDeck();
@@ -2369,7 +2697,7 @@ $("btnExecuteImport").addEventListener("click", () => {
     renderActiveDeckUI();
     $("qrModal").classList.remove("show");
     showToast(`🎉 Imported "${imported.subject}" with ${imported.terms.length} terms!`);
-    navigateTo("reviewer");
+    navigateTo("pathway");
   } catch (e) {
     showToast("❌ Invalid deck JSON format.");
   }
