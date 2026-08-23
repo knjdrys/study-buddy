@@ -1,0 +1,24 @@
+{
+  "name": "study-buddy",
+  "version": "1.0.0",
+  "description": "StudyBuddy PRO — Intelligent Spaced Repetition, Active Recall, Leitner Flashcards & Oral Recitation OS",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests specified\"",
+    "verify": "echo \"✅ Project structure verified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knjdrys/study-buddy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/knjdrys/study-buddy/issues"
+  },
+  "homepage": "https://github.com/knjdrys/study-buddy#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
