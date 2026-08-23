@@ -8,7 +8,8 @@ const ASSETS_TO_CACHE = [
   "./manifest.json",
   "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js",
   "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js",
-  "https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"
+  "https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js",
+  "https://cdn.jsdelivr.net/npm/@vercel/speed-insights@1/dist/index.mjs"
 ];
 
 // Install: Cache core assets for 100% offline availability
