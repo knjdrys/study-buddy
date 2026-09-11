@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- StudyBuddy mark: open book + sprout, indigo on cool paper -->
+  <rect width="512" height="512" rx="116" fill="#F4F5F9"/>
+  <rect x="8" y="8" width="496" height="496" rx="108" fill="none" stroke="#2E3650" stroke-width="4" opacity="0.25"/>
+  <!-- sprout -->
+  <g fill="none" stroke="#3C7A56" stroke-width="16" stroke-linecap="round">
+    <path d="M256 118 C256 158 256 186 256 210"/>
+    <path d="M256 160 C214 148 186 158 176 184 C206 186 236 178 254 158"/>
+    <path d="M256 138 C298 126 326 136 336 162 C306 164 276 156 258 136"/>
+  </g>
+  <!-- open book -->
+  <g fill="#2E3650">
+    <path d="M256 218 C228 194 176 188 118 197 L118 344 C176 335 228 341 256 365 Z"/>
+    <path d="M256 218 C284 194 336 188 394 197 L394 344 C336 335 284 341 256 365 Z"/>
+    <path d="M256 222 L256 361" fill="none" stroke="#F4F5F9" stroke-width="10"/>
+  </g>
+  <g fill="#F4F5F9">
+    <circle cx="174" cy="250" r="7"/>
+    <circle cx="174" cy="292" r="7"/>
+    <circle cx="338" cy="250" r="7"/>
+    <circle cx="338" cy="292" r="7"/>
+  </g>
+  <!-- warm underline accent -->
+  <rect x="196" y="392" width="120" height="12" rx="6" fill="#3C7A56"/>
+</svg>

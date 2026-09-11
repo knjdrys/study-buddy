@@ -1,0 +1,147 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  * { margin: 0; box-sizing: border-box; }
+  body { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 24px; background: #e8e8e8; font-family: Georgia, 'Times New Roman', serif; }
+  .panel { border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,.12); display: flex; flex-direction: column; }
+  .p-head { padding: 14px 16px; font-size: 15px; letter-spacing: .02em; }
+  .p-name { font-weight: 700; }
+  .p-desc { font-size: 11px; opacity: .75; margin-top: 2px; }
+  .mock { padding: 16px; flex: 1; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .h { font-family: Georgia, serif; font-size: 21px; font-weight: 700; line-height: 1.2; }
+  .sub { font-size: 12px; margin-top: 4px; }
+  .btns { display: flex; gap: 8px; margin-top: 12px; }
+  .b { font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 10px; display: inline-block; }
+  .b2 { font-size: 12.5px; font-weight: 600; padding: 8px 14px; border-radius: 10px; display: inline-block; border: 1.5px solid; }
+  .card { margin-top: 14px; border-radius: 12px; padding: 12px; border: 1.5px solid; }
+  .card-t { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .card-x { font-size: 12px; margin-top: 6px; line-height: 1.45; }
+  .bar { height: 6px; border-radius: 3px; margin-top: 10px; }
+  .bar i { display: block; height: 100%; border-radius: 3px; width: 62%; }
+  .chips { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .c { font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+  .swatches { display: flex; gap: 5px; margin-top: 14px; }
+  .sw { width: 26px; height: 26px; border-radius: 7px; border: 1px solid rgba(0,0,0,.08); }
+  .cap { font-size: 9.5px; color: #999; margin-top: 10px; letter-spacing: .02em; }
+</style></head><body>
+
+  <!-- A · Botanical -->
+  <div class="panel" style="background:#f2f5f0">
+    <div class="p-head" style="background:#234838;color:#eaf1ea">
+      <div class="p-name">A · Botanical</div>
+      <div class="p-desc">cool sage-grey paper · deep forest green · calm, academic, alive</div>
+    </div>
+    <div class="mock" style="background:#f2f5f0;color:#202721">
+      <div class="h">Good morning, Maya.</div>
+      <div class="sub" style="color:#59665b">3 concepts to review · ~10 minutes</div>
+      <div class="btns">
+        <span class="b" style="background:#234838;color:#fff">Start review</span>
+        <span class="b2" style="border-color:#cfd8cd;color:#4a574c">Practice exam</span>
+      </div>
+      <div class="card" style="background:#fbfdfb;border-color:#e0e7dc">
+        <div class="card-t" style="color:#234838">Insight</div>
+        <div class="card-x" style="color:#3d4a3f">Your recall of “Photosynthesis” jumped 14% this week.</div>
+        <div class="bar" style="background:#e6ebe2"><i style="background:#37734c"></i></div>
+      </div>
+      <div class="chips">
+        <span class="c" style="background:#e0ece1;color:#225a3d">mastered</span>
+        <span class="c" style="background:#f6e9d2;color:#8a5c12">needs review</span>
+        <span class="c" style="background:#f6e4dd;color:#9c4634">weak</span>
+      </div>
+      <div class="swatches">
+        <span class="sw" style="background:#f2f5f0"></span><span class="sw" style="background:#234838"></span><span class="sw" style="background:#37734c"></span><span class="sw" style="background:#4a6b7a"></span><span class="sw" style="background:#a5711e"></span><span class="sw" style="background:#b04836"></span>
+      </div>
+      <div class="cap">paper #F2F5F0 · ink #202721 · primary #234838 · success #37734C · info #4A6B7A · warn #A5711E · danger #B04836</div>
+    </div>
+  </div>
+
+  <!-- B · Ink & Indigo -->
+  <div class="panel" style="background:#f4f5f9">
+    <div class="p-head" style="background:#2e3650;color:#e8eaf2">
+      <div class="p-name">B · Ink &amp; Indigo</div>
+      <div class="p-desc">crisp blue-white paper · deep ink indigo · precise, editorial</div>
+    </div>
+    <div class="mock" style="background:#f4f5f9;color:#1c2233">
+      <div class="h">Good morning, Maya.</div>
+      <div class="sub" style="color:#4c5468">3 concepts to review · ~10 minutes</div>
+      <div class="btns">
+        <span class="b" style="background:#2e3650;color:#fff">Start review</span>
+        <span class="b2" style="border-color:#d4d9e6;color:#434b63">Practice exam</span>
+      </div>
+      <div class="card" style="background:#ffffff;border-color:#e2e5ee">
+        <div class="card-t" style="color:#2e3650">Insight</div>
+        <div class="card-x" style="color:#3a4158">Your recall of “Photosynthesis” jumped 14% this week.</div>
+        <div class="bar" style="background:#e9ebf3"><i style="background:#3c7a56"></i></div>
+      </div>
+      <div class="chips">
+        <span class="c" style="background:#e2efe7;color:#2c6245">mastered</span>
+        <span class="c" style="background:#f6ead7;color:#8a5c12">needs review</span>
+        <span class="c" style="background:#f6e5e1;color:#9c4634">weak</span>
+      </div>
+      <div class="swatches">
+        <span class="sw" style="background:#f4f5f9"></span><span class="sw" style="background:#2e3650"></span><span class="sw" style="background:#3c7a56"></span><span class="sw" style="background:#5a6c85"></span><span class="sw" style="background:#a06a1d"></span><span class="sw" style="background:#b24a3a"></span>
+      </div>
+      <div class="cap">paper #F4F5F9 · ink #1C2233 · primary #2E3650 · success #3C7A56 · info #5A6C85 · warn #A06A1D · danger #B24A3A</div>
+    </div>
+  </div>
+
+  <!-- C · Eucalyptus -->
+  <div class="panel" style="background:#eef3ec">
+    <div class="p-head" style="background:#1f4d33;color:#e9f2ea">
+      <div class="p-name">C · Eucalyptus</div>
+      <div class="p-desc">soft green-tinted paper · fresh green accents · airy, hopeful</div>
+    </div>
+    <div class="mock" style="background:#eef3ec;color:#1e2a20">
+      <div class="h">Good morning, Maya.</div>
+      <div class="sub" style="color:#54634f">3 concepts to review · ~10 minutes</div>
+      <div class="btns">
+        <span class="b" style="background:#1f4d33;color:#fff">Start review</span>
+        <span class="b2" style="border-color:#cdd8c9;color:#44513f">Practice exam</span>
+      </div>
+      <div class="card" style="background:#fbfdfa;border-color:#dde6d8">
+        <div class="card-t" style="color:#1f4d33">Insight</div>
+        <div class="card-x" style="color:#37432f">Your recall of “Photosynthesis” jumped 14% this week.</div>
+        <div class="bar" style="background:#e2eade"><i style="background:#3d8a4e"></i></div>
+      </div>
+      <div class="chips">
+        <span class="c" style="background:#ddefdc;color:#1f6a3a">mastered</span>
+        <span class="c" style="background:#f6e9d2;color:#8a5c12">needs review</span>
+        <span class="c" style="background:#f6e4dd;color:#9c4634">weak</span>
+      </div>
+      <div class="swatches">
+        <span class="sw" style="background:#eef3ec"></span><span class="sw" style="background:#1f4d33"></span><span class="sw" style="background:#3d8a4e"></span><span class="sw" style="background:#4a6b7a"></span><span class="sw" style="background:#a06a1d"></span><span class="sw" style="background:#b04a33"></span>
+      </div>
+      <div class="cap">paper #EEF3EC · ink #1E2A20 · primary #1F4D33 · success #3D8A4E · info #4A6B7A · warn #A06A1D · danger #B04A33</div>
+    </div>
+  </div>
+
+  <!-- D · Graphite & Steel -->
+  <div class="panel" style="background:#f3f4f6">
+    <div class="p-head" style="background:#2b3138;color:#e9ebee">
+      <div class="p-name">D · Graphite &amp; Steel</div>
+      <div class="p-desc">neutral stone grey · steel blue accent · quiet, technical</div>
+    </div>
+    <div class="mock" style="background:#f3f4f6;color:#23272e">
+      <div class="h">Good morning, Maya.</div>
+      <div class="sub" style="color:#545a64">3 concepts to review · ~10 minutes</div>
+      <div class="btns">
+        <span class="b" style="background:#2b3138;color:#fff">Start review</span>
+        <span class="b2" style="border-color:#d4d7dc;color:#4b515a">Practice exam</span>
+      </div>
+      <div class="card" style="background:#fcfdfe;border-color:#e1e4e9">
+        <div class="card-t" style="color:#3f628f">Insight</div>
+        <div class="card-x" style="color:#3a3f47">Your recall of “Photosynthesis” jumped 14% this week.</div>
+        <div class="bar" style="background:#e8eaee"><i style="background:#3d7a4f"></i></div>
+      </div>
+      <div class="chips">
+        <span class="c" style="background:#e2efe3;color:#2c6245">mastered</span>
+        <span class="c" style="background:#f5ead9;color:#8a5c12">needs review</span>
+        <span class="c" style="background:#f6e5df;color:#9c4634">weak</span>
+      </div>
+      <div class="swatches">
+        <span class="sw" style="background:#f3f4f6"></span><span class="sw" style="background:#2b3138"></span><span class="sw" style="background:#3d7a4f"></span><span class="sw" style="background:#3f628f"></span><span class="sw" style="background:#a06b1c"></span><span class="sw" style="background:#ae4a38"></span>
+      </div>
+      <div class="cap">paper #F3F4F6 · ink #23272E · primary #2B3138 · success #3D7A4F · info #3F628F · warn #A06B1C · danger #AE4A38</div>
+    </div>
+  </div>
+
+</body></html>
